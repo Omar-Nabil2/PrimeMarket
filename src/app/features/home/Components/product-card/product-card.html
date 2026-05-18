@@ -1,0 +1,31 @@
+<div class="card">
+  <div class="card-image">
+    <img [src]="product.primaryImageUrl" [alt]="product.name" />
+    <div class="overlay">
+      <button class="wishlist-btn" aria-label="Add to wishlist">
+        <i class="ti ti-heart"></i>
+      </button>
+    </div>
+    <span class="category-badge">{{ product.categoryName }}</span>
+  </div>
+
+  <div class="card-body">
+    <p class="product-name">{{ product.name }}</p>
+
+    <div class="rating">
+      <i *ngFor="let s of stars; let i = index"
+         class="ti"
+         [ngClass]="i < product.averageRating ? 'ti-star-filled' : 'ti-star'"
+         [style.color]="i < product.averageRating ? '#f59e0b' : '#ddd'">
+      </i>
+      <span class="review-count">{{ product.reviewCount }} reviews</span>
+    </div>
+
+    <div class="card-footer">
+      <span class="price">{{ product.price | currency:'EGP' }}</span>
+      <button class="details-btn" [routerLink]="['/products', product.id]">
+        View Details <i class="ti ti-arrow-right"></i>
+      </button>
+    </div>
+  </div>
+</div>

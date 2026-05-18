@@ -1,0 +1,49 @@
+<div class="product-info">
+
+  <span class="category">{{ product.categoryName }}</span>
+  <h1 class="product-name">{{ product.name }}</h1>
+
+  <div class="rating">
+  @for (s of stars; track $index) {
+    <i class="ti"
+       [ngClass]="$index < product.averageRating ? 'ti-star-filled' : 'ti-star'"
+       [style.color]="$index < product.averageRating ? '#f59e0b' : '#ddd'">
+    </i>
+  }
+  <span class="review-count">({{ product.reviewCount }} Reviews)</span>
+</div>
+
+  <div class="meta">
+    <div class="meta-row">
+      <span class="meta-label">Brand</span>
+      <span class="meta-value">: {{ product.sellerName }}</span>
+    </div>
+    <div class="meta-row">
+      <span class="meta-label">Availability</span>
+      <span class="meta-value">:
+        <span [class]="product.stock > 0 ? 'in-stock' : 'out-of-stock'">
+          {{ product.stock > 0 ? 'In Stock (' + product.stock + ' left)' : 'Out of Stock' }}
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <div class="price">{{ product.price | currency:'EGP' }}</div>
+
+  <div class="actions">
+    <div class="quantity-selector">
+      <button (click)="decrement()">-</button>
+      <span>{{ quantity }}</span>
+      <button (click)="increment()">+</button>
+    </div>
+
+    <button class="btn-cart" [disabled]="product.stock === 0">
+      <i class="ti ti-shopping-cart"></i> Add to Cart
+    </button>
+
+    <button class="btn-wishlist" aria-label="Add to wishlist">
+      <i class="ti ti-heart"></i>
+    </button>
+  </div>
+
+</div>

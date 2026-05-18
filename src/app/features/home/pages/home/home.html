@@ -2,37 +2,18 @@
   <h2 class="mb-4 fw-bold">Products</h2>
 
   <div class="row row-cols-1 row-cols-md-3 g-4">
-    <ng-container *ngIf="products | async as products; else loading">
-      <div class="col" *ngFor="let product of products">
-        <div class="card h-100 shadow-sm">
-          <img [src]="product.primaryImageUrl" class="card-img-top" [alt]="product.name" style="height: 220px; object-fit: cover;">
-          <div class="card-body">
-            <h5 class="card-title">{{ product.name }}</h5>
-            <p class="card-text text-muted small">{{ product.description }}</p>
-            <div class="mb-2">
-              <span class="badge bg-secondary me-1" *ngFor="let cat of product.categories">{{ cat }}</span>
-            </div>
-            <p class="fw-bold text-primary fs-5">{{ product.price | currency:'EGP' }}</p>
-            <p class="small text-muted mb-1">Seller: {{ product.sellerName }}</p>
-            <p class="small text-muted mb-1">⭐ {{ product.averageRating }} ({{ product.reviewCount }} reviews)</p>
-            <span class="badge" [ngClass]="product.inStock ? 'bg-success' : 'bg-danger'">
-              {{ product.inStock ? 'In Stock' : 'Out of Stock' }}
-            </span>
-          </div>
-          <div class="card-footer d-flex justify-content-between align-items-center">
-            <small class="text-muted">{{ product.orderCount }} orders</small>
-            <button class="btn btn-primary btn-sm">Add to Cart</button>
-          </div>
+    @if (products$ | async; as products) {
+      @for (product of products; track product.id) {
+        <div class="col">
+          <app-product-card [product]="product" />
         </div>
-      </div>
-    </ng-container>
-
-    <ng-template #loading>
+      }
+    } @else {
       <div class="d-flex justify-content-center py-5 w-100">
         <div class="spinner-border text-primary" role="status">
           <span class="visually-hidden">Loading...</span>
         </div>
       </div>
-    </ng-template>
+    }
   </div>
 </div>

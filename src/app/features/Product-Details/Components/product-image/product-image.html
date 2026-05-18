@@ -1,0 +1,13 @@
+<div class="images-wrapper">
+  <div class="main-image">
+    <img [src]="selectedImage" alt="Product image" />
+  </div>
+
+  <div class="thumbnails">
+    @for (image of images; track image) {
+      <div class="thumb" [class.active]="image === selectedImage" (click)="selectImage(image)">
+        <img [src]="image" alt="thumbnail" />
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,52 @@
+<div class="tabs-wrapper">
+
+  <div class="tabs-header">
+    <button class="tab-btn" [class.active]="activeTab === 'description'" (click)="setTab('description')">
+      Description
+    </button>
+    <button class="tab-btn" [class.active]="activeTab === 'reviews'" (click)="setTab('reviews')">
+      Reviews ({{ reviews.length }})
+    </button>
+  </div>
+
+  <div class="tab-content">
+
+    @if (activeTab === 'description') {
+      <p class="description-text">{{ description }}</p>
+    }
+
+    @if (activeTab === 'reviews') {
+      @if (reviews.length === 0) {
+        <p class="no-reviews">No reviews yet.</p>
+      } @else {
+        @for (review of reviews; track review.userName) {
+          <div class="review-card">
+            <div class="review-header">
+              <div class="avatar">
+                @if (review.userAvatar) {
+                  <img [src]="review.userAvatar" [alt]="review.userName" />
+                } @else {
+                  <span>{{ review.userName.charAt(0) }}</span>
+                }
+              </div>
+              <div>
+                <p class="reviewer-name">{{ review.userName }}</p>
+                <p class="review-date">{{ review.createdAt | date:'mediumDate' }}</p>
+              </div>
+              <div class="review-stars">
+                @for (s of stars; track $index) {
+                  <i class="ti"
+                     [ngClass]="$index < review.rating ? 'ti-star-filled' : 'ti-star'"
+                     [style.color]="$index < review.rating ? '#f59e0b' : '#ddd'">
+                  </i>
+                }
+              </div>
+            </div>
+            <p class="review-comment">{{ review.comment }}</p>
+          </div>
+        }
+      }
+    }
+
+  </div>
+</div>

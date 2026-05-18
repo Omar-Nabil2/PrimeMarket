@@ -2,17 +2,17 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
-import { IProcuctCard } from '../../../shared/Models/iprocuct-card';
+import { IProductDetails } from '../../../shared/Models/iproduct-details';
 
 @Injectable({
   providedIn: 'root',
 })
-export class HomeService {
+export class ProductDetailService {
   private BaseUrl = environment.apiUrl
   constructor(private httpClinet:HttpClient){}
 
-  getProducts(): Observable<IProcuctCard[]> {
-    return this.httpClinet.get<IProcuctCard[]>(`${this.BaseUrl}/api/Products`);
+  getProductDetails(id:number): Observable<IProductDetails> {
+    return this.httpClinet.get<IProductDetails>(`${this.BaseUrl}/api/Products/details/${id}`);
   }
 
 }

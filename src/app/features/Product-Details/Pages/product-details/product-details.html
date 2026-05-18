@@ -1,0 +1,23 @@
+@if (product$ | async; as product) {
+  <div class="container py-5">
+    <div class="row g-4">
+      <div class="col-md-5">
+        <app-product-image [images]="product.imageUrls" [primaryImageUrl]="product.primaryImageUrl"></app-product-image>
+      </div>
+      <div class="col-md-7">
+        <app-product-info [product]="product"></app-product-info>
+      </div>
+    </div>
+    <div class="row mt-5">
+      <div class="col-12">
+        <app-product-tabs [description]="product.description" [reviews]="product.reviews"></app-product-tabs>
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="d-flex justify-content-center py-5">
+    <div class="spinner-border text-danger" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
+  </div>
+}

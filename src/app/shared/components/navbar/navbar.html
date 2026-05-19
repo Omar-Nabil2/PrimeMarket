@@ -1,20 +1,20 @@
 <header>
   <div class="top-bar">
-  <div class="top-bar-left">
-    <i class="ti ti-menu-2" style="font-size: 20px; cursor: pointer;"></i>
-    <nav class="top-nav">
-      <a routerLink="/">Home</a>
-      <a href="#">Category <i class="ti ti-chevron-down"></i></a>
-      <a href="#">Products <i class="ti ti-chevron-down"></i></a>
-      <a href="#">Pages <i class="ti ti-chevron-down"></i></a>
-      <a href="#">Blog <i class="ti ti-chevron-down"></i></a>
-      <a href="#">Elements <i class="ti ti-chevron-down"></i></a>
-    </nav>
+    <div class="top-bar-left">
+      <i class="ti ti-menu-2" style="font-size: 20px; cursor: pointer;"></i>
+      <nav class="top-nav">
+        <a routerLink="/">Home</a>
+        <a href="#">Category <i class="ti ti-chevron-down"></i></a>
+        <a href="#">Products <i class="ti ti-chevron-down"></i></a>
+        <a href="#">Pages <i class="ti ti-chevron-down"></i></a>
+        <a href="#">Blog <i class="ti ti-chevron-down"></i></a>
+        <a href="#">Elements <i class="ti ti-chevron-down"></i></a>
+      </nav>
+    </div>
+    <div class="contact">
+      <i class="ti ti-phone"></i> +123 (456) (7890)
+    </div>
   </div>
-  <div class="contact">
-    <i class="ti ti-phone"></i> +123 (456) (7890)
-  </div>
-</div>
 
   <div class="main-bar">
     <div class="brand">
@@ -57,6 +57,49 @@
           }
         }
       </a>
+      <!-- Not Authenticated View -->
+      @if (!isAuthenticated) {
+        <a routerLink="/auth" class="login-link">
+          <i class="ti ti-login"></i> Login
+        </a>
+      }
+
+      <!-- Authenticated View -->
+      @if (isAuthenticated) {
+        <div class="auth-actions">
+          <!-- User Menu Dropdown (Bootstrap) -->
+          <div class="dropdown">
+            <button class="user-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="ti ti-user"></i>
+              <span class="user-name">{{ getFullName() }}</span>
+              <i class="ti ti-chevron-down"></i>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end custom-dropdown-menu">
+              <li>
+                <a class="dropdown-item" href="#">
+                  <i class="ti ti-user"></i> Account
+                </a>
+              </li>
+              <li><hr class="dropdown-divider"></li>
+              <li>
+                <button (click)="logout()" class="dropdown-item logout-item">
+                  <i class="ti ti-logout"></i> Logout
+                </button>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Wishlist and Cart -->
+          <a href="#" class="action-icon">
+            <i class="ti ti-heart"></i>
+            <span class="action-label">Wishlist</span>
+          </a>
+          <a href="#" class="action-icon">
+            <i class="ti ti-shopping-cart"></i>
+            <span class="action-label">Cart</span>
+          </a>
+        </div>
+      }
     </div>
   </div>
 </header>

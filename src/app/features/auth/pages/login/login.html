@@ -1,1 +1,89 @@
-<p>login works!</p>
+<div class="login-container">
+  <div class="login-box">
+    <!-- Header -->
+    <div class="login-header">
+      <h1>Welcome Back</h1>
+      <p>Sign in to your account</p>
+    </div>
+
+    <!-- Alert Messages -->
+    <div *ngIf="errorMessage" class="alert alert-danger">
+      <i class="ti ti-alert-circle"></i>
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="successMessage" class="alert alert-success">
+      <i class="ti ti-check"></i>
+      {{ successMessage }}
+    </div>
+
+    <!-- Login Form -->
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <div class="input-group">
+          <i class="ti ti-mail"></i>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            class="form-input"
+            [class.is-invalid]="email?.invalid && email?.touched"
+          />
+        </div>
+        <div *ngIf="email?.invalid && email?.touched" class="error-message">
+          <span *ngIf="email?.hasError('required')">Email is required</span>
+          <span *ngIf="email?.hasError('email')">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="form-input"
+            [class.is-invalid]="password?.invalid && password?.touched"
+          />
+        </div>
+        <div *ngIf="password?.invalid && password?.touched" class="error-message">
+          <span *ngIf="password?.hasError('required')">Password is required</span>
+          <span *ngIf="password?.hasError('minlength')">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <!-- Remember Me & Forgot Password -->
+      <div class="form-options">
+        <label class="remember-me">
+          <input type="checkbox" />
+          <span>Remember me</span>
+        </label>
+        <a href="#" class="forgot-password">Forgot password?</a>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="login-button"
+        [disabled]="isLoading || loginForm.invalid"
+      >
+        <span *ngIf="!isLoading">Sign In</span>
+        <span *ngIf="isLoading">
+          <i class="ti ti-loader-2"></i> Signing in...
+        </span>
+      </button>
+    </form>
+
+    <!-- Sign Up Link -->
+    <div class="signup-link">
+      <p>Don't have an account? <a routerLink="/auth/signup">Sign up here</a></p>
+    </div>
+  </div>
+</div>

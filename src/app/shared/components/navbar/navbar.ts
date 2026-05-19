@@ -1,14 +1,18 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
-import { RouterLink } from "@angular/router";
+import { Component, inject, OnInit,  effect } from '@angular/core';
+import { RouterLink,  Router } from "@angular/router";
 import { HomeService } from '../../../features/home/Services/home-service';
 import { debounceTime, distinctUntilChanged, Observable, Subject } from 'rxjs';
 import { WishListService } from '../../Services/wish-list-service';
 import { CartService } from '../../Services/cart-service';
+import { AuthService } from '../../services/auth.service';
+import { AuthResponse } from '../../Models/auth.model';
+
 
 @Component({
   selector: 'app-navbar',
-  imports: [RouterLink,CommonModule],
+  standalone: true,
+  imports: [RouterLink, CommonModule],
   templateUrl: './navbar.html',
   styleUrl: './navbar.css',
 })
@@ -20,21 +24,44 @@ export class Navbar implements OnInit {
   private cartService = inject(CartService)
   wishlistCount$: Observable<number> = this.wishlistService.count$;
   cartCount$: Observable<number> = inject(CartService).count$;
+  isAuthenticated = false;
+  currentUser: AuthResponse | null = null;
 
   ngOnInit(): void {
     this.wishlistService.loadWishlist().subscribe();
     this.cartService.loadCart().subscribe();
   }
 
-  constructor() {
-
+  onSearch(value: string): void {
+    this.searchInput$.next(value);
+  }
+ 
+  constructor(
+    public authService: AuthService,
+    private router: Router
+  ) {
     this.searchInput$.pipe(
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe(value => this.homeService.search(value));
+    
+    // Use effect to reactively update the component when auth state changes
+    effect(() => {
+      const state = this.authService.authState();
+      this.isAuthenticated = state.isAuthenticated;
+      this.currentUser = state.user;
+    });
   }
 
-  onSearch(value: string): void {
-    this.searchInput$.next(value);
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/']);
+  }
+
+  getFullName(): string {
+    if (this.currentUser) {
+      return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
+    }
+    return '';
   }
 }

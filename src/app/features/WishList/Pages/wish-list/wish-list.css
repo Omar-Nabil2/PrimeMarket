@@ -1,0 +1,19 @@
+.wishlist-img {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+}
+
+.wishlist-img-placeholder {
+  width: 120px;
+  height: 120px;
+  background-color: #f3f4f6;
+}
+
+.wishlist-card {
+  transition: box-shadow 0.2s ease;
+}
+
+.wishlist-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}

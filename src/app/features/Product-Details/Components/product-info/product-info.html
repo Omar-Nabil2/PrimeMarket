@@ -37,11 +37,15 @@
       <button (click)="increment()">+</button>
     </div>
 
-    <button class="btn-cart" [disabled]="product.stock === 0">
-      <i class="ti ti-shopping-cart"></i> Add to Cart
+    <button class="btn-cart" 
+        [disabled]="product.stock === 0"
+        (click)="onAddToCart.emit(quantity)">
+        <i class="ti ti-shopping-cart"></i> Add to Cart
     </button>
 
-    <button class="btn-wishlist" aria-label="Add to wishlist">
+    <button class="btn-wishlist" 
+            aria-label="Add to wishlist"
+            (click)="onAddToWishlist.emit()">
       <i class="ti ti-heart"></i>
     </button>
   </div>

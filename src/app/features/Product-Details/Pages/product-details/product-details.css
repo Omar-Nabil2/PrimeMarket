@@ -1,0 +1,31 @@
+.product-details-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 32px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.top-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: start;
+}
+
+.image-col,
+.info-col {
+  min-width: 0; /* prevents grid blowout */
+}
+
+.bottom-section {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .top-section {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}

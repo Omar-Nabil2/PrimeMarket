@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe, NgClass } from '@angular/common';
-import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { IProductDetails } from '../../../../shared/Models/iproduct-details';
 
 @Component({
@@ -11,6 +11,8 @@ import { IProductDetails } from '../../../../shared/Models/iproduct-details';
 })
 export class ProductInfo {
   @Input() product!: IProductDetails;
+  @Output() onAddToCart = new EventEmitter<number>(); // emits quantity
+  @Output() onAddToWishlist = new EventEmitter<void>();
 
   quantity = 1;
 

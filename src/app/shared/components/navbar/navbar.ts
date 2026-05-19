@@ -5,7 +5,7 @@ import { HomeService } from '../../../features/home/Services/home-service';
 import { debounceTime, distinctUntilChanged, Observable, Subject } from 'rxjs';
 import { WishListService } from '../../Services/wish-list-service';
 import { CartService } from '../../Services/cart-service';
-import { AuthService } from '../../services/auth.service';
+import { AuthService } from '../../Services/auth.service';
 import { AuthResponse } from '../../Models/auth.model';
 
 

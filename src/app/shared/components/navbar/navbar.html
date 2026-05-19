@@ -40,23 +40,6 @@
 </div>
 
     <div class="actions">
-      <a href="#"><i class="ti ti-user"></i> Account</a>
-      <a routerLink="/wishlist" style="position: relative;">
-        <i class="ti ti-heart"></i> Wishlist
-        @if (wishlistCount$ | async; as count) {
-          @if (count > 0) {
-            <span class="wishlist-badge">{{ count }}</span>
-          }
-        }
-      </a>
-      <a routerLink="/cart" style="position: relative;">
-        <i class="ti ti-shopping-cart"></i> Cart
-        @if (cartCount$ | async; as count) {
-          @if (count > 0) {
-            <span class="wishlist-badge">{{ count }}</span>
-          }
-        }
-      </a>
       <!-- Not Authenticated View -->
       @if (!isAuthenticated) {
         <a routerLink="/auth" class="login-link">
@@ -88,18 +71,25 @@
               </li>
             </ul>
           </div>
-
-          <!-- Wishlist and Cart -->
-          <a href="#" class="action-icon">
-            <i class="ti ti-heart"></i>
-            <span class="action-label">Wishlist</span>
-          </a>
-          <a href="#" class="action-icon">
-            <i class="ti ti-shopping-cart"></i>
-            <span class="action-label">Cart</span>
-          </a>
         </div>
       }
+
+      <a routerLink="/wishlist" style="position: relative;">
+        <i class="ti ti-heart"></i> Wishlist
+        @if (wishlistCount$ | async; as count) {
+          @if (count > 0) {
+            <span class="wishlist-badge">{{ count }}</span>
+          }
+        }
+      </a>
+      <a routerLink="/cart" style="position: relative;">
+        <i class="ti ti-shopping-cart"></i> Cart
+        @if (cartCount$ | async; as count) {
+          @if (count > 0) {
+            <span class="wishlist-badge">{{ count }}</span>
+          }
+        }
+      </a>
     </div>
   </div>
 </header>

@@ -11,51 +11,38 @@ import { ToastService } from './toast-service';
 })
 export class WishListService {
   private http = inject(HttpClient);
-  private baseUrl = environment.apiUrl;
-   private toast = inject(ToastService);
+  private toast = inject(ToastService);
+  private wishlistUrl= `${environment.apiUrl}/api/WishList`
 
   private items$ = new BehaviorSubject<IWishlistItem[]>([]);
   readonly wishlist$ = this.items$.asObservable();
   readonly count$ = this.wishlist$.pipe(map(items => items.length));
 
+  loadWishlist() {
+    return this.http.get<IWishlistItem[]>(`${this.wishlistUrl}`).pipe(
+      tap(items => this.items$.next(items ?? [])),
+      catchError(err => this.toast.handleError(err))
+    );
+  }
 
-  private get authHeaders() {
-  const token = localStorage.getItem('token'); // adjust key to whatever your team uses
-  return { headers: { Authorization: `Bearer ${token}` } };
-}
-
-loadWishlist() {
-  return this.http.get<IWishlistItem[]>(`${this.baseUrl}/api/WishList`, this.authHeaders).pipe(
-    tap(items => this.items$.next(items))
+addToWishlist(productId: number) {
+  return this.http.post<void>(`${this.wishlistUrl}/${productId}`, {}).pipe(
+    tap(() => {
+      this.loadWishlist().subscribe();
+      this.toast.success('Added to wishlist!');
+    }),
+    catchError(err => this.toast.handleError(err))
   );
 }
 
-addToWishlist(productId: number) {
-    return this.http.post<void>(`${this.baseUrl}/api/WishList/${productId}`, {}, this.authHeaders).pipe(
-      tap(() => {
-        this.loadWishlist().subscribe();
-        this.toast.success('Added to wishlist!');
-      }),
-      catchError(err => {
-        const message = err.error?.Errors?.[1] ?? 'Something went wrong';
-        this.toast.error(message);
-        return EMPTY;
-      })
-    );
-  }
-
-  removeFromWishlist(productId: number) {
-    return this.http.delete<void>(`${this.baseUrl}/api/WishList/${productId}`, this.authHeaders).pipe(
-      tap(() => {
-        const updated = this.items$.value.filter(i => i.productId !== productId);
-        this.items$.next(updated);
-        this.toast.success('Removed from wishlist');
-      }),
-      catchError(err => {
-        const message = err.error?.Errors?.[1] ?? 'Something went wrong';
-        this.toast.error(message);
-        return EMPTY;
-      })
-    );
-  }
+removeFromWishlist(productId: number) {
+  return this.http.delete<void>(`${this.wishlistUrl}/${productId}`).pipe(
+    tap(() => {
+      const updated = this.items$.value.filter(i => i.productId !== productId);
+      this.items$.next(updated);
+      this.toast.success('Removed from wishlist');
+    }),
+    catchError(err => this.toast.handleError(err))
+  );
+}
 }

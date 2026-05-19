@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProductDetailService } from '../../Services/product-detail-service';
 import { Observable } from 'rxjs';
@@ -7,6 +7,8 @@ import { ProductImage } from "../../Components/product-image/product-image";
 import { ProductInfo } from "../../Components/product-info/product-info";
 import { ProductTabs } from "../../Components/product-tabs/product-tabs";
 import { AsyncPipe } from '@angular/common';
+import { CartService } from '../../../../shared/Services/cart-service';
+import { WishListService } from '../../../../shared/Services/wish-list-service';
 
 @Component({
   selector: 'app-product-details',
@@ -16,15 +18,24 @@ import { AsyncPipe } from '@angular/common';
   changeDetection:ChangeDetectionStrategy.OnPush
 })
 export class ProductDetails implements OnInit {
-  product$!: Observable<IProductDetails>;
+  private cartService = inject(CartService);
+  private wishlistService = inject(WishListService);
+  private productService = inject(ProductDetailService);
+  private route = inject(ActivatedRoute);
 
-  constructor(
-    private productService: ProductDetailService,
-    private route: ActivatedRoute
-  ) {}
+  product$!: Observable<IProductDetails>;
+  productId!: number;
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.product$ = this.productService.getProductDetails(id);
+    this.productId = Number(this.route.snapshot.paramMap.get('id'));
+    this.product$ = this.productService.getProductDetails(this.productId);
+  }
+
+  addToCart(quantity: number): void {
+    this.cartService.addToCart(this.productId, quantity).subscribe();
+  }
+
+  addToWishlist(): void {
+    this.wishlistService.addToWishlist(this.productId).subscribe();
   }
 }

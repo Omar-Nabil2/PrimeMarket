@@ -2,7 +2,7 @@
   <div class="card-image">
     <img [src]="product.primaryImageUrl" [alt]="product.name" />
     <div class="overlay">
-      <button class="wishlist-btn" aria-label="Add to wishlist">
+      <button class="wishlist-btn" aria-label="Add to wishlist" (click)="addToWishlist()">
         <i class="ti ti-heart"></i>
       </button>
     </div>

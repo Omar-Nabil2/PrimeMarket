@@ -1,0 +1,47 @@
+<div class="cart-card d-flex align-items-center gap-4 p-3 rounded-3 border bg-white">
+
+  <!-- Image -->
+  <div class="flex-shrink-0">
+    @if (item.imageUrl) {
+      <img [src]="item.imageUrl" [alt]="item.name" class="cart-img rounded-2" />
+    } @else {
+      <div class="cart-img rounded-2 d-flex align-items-center justify-content-center bg-light">
+        <i class="ti ti-photo text-muted" style="font-size: 32px;"></i>
+      </div>
+    }
+  </div>
+
+  <!-- Details -->
+  <div class="flex-grow-1">
+    <h6 class="fw-semibold mb-1">{{ item.name }}</h6>
+    <p class="text-primary fw-bold mb-2">{{ item.price | currency:'EGP' }}</p>
+
+    @if (!item.isAvailable) {
+      <span class="badge text-bg-danger mb-2">Out of stock</span>
+    }
+
+    <!-- Quantity controls -->
+    <div class="d-flex align-items-center gap-2">
+      <button class="btn btn-outline-secondary btn-sm qty-btn"
+              (click)="onDecrement.emit()"
+              [disabled]="item.quantity <= 1">
+        <i class="ti ti-minus"></i>
+      </button>
+      <span class="qty-value">{{ item.quantity }}</span>
+      <button class="btn btn-outline-secondary btn-sm qty-btn"
+              (click)="onIncrement.emit()"
+              [disabled]="item.quantity >= item.stock">
+        <i class="ti ti-plus"></i>
+      </button>
+    </div>
+  </div>
+
+  <!-- Subtotal + Remove -->
+  <div class="d-flex flex-column align-items-end gap-3 flex-shrink-0">
+    <span class="fw-bold fs-6">{{ item.subtotal | currency:'EGP' }}</span>
+    <button class="btn btn-outline-danger btn-sm" (click)="onRemove.emit()">
+      <i class="ti ti-trash me-1"></i> Remove
+    </button>
+  </div>
+
+</div>

@@ -1,1 +1,101 @@
-<p>dashboard-home works!</p>
+<div class="dashboard-home">
+
+  @if (loading$ | async) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    <div class="stats-grid">
+      <app-stats-card
+        label="Total Products"
+        [value]="(totalProducts$ | async) ?? 0"
+        icon="ti-package"
+        color="blue"
+      />
+      <app-stats-card
+        label="In Stock"
+        [value]="(inStock$ | async) ?? 0"
+        icon="ti-circle-check"
+        color="green"
+        sublabel="Products available"
+      />
+      <app-stats-card
+        label="Out of Stock"
+        [value]="(outOfStock$ | async) ?? 0"
+        icon="ti-alert-circle"
+        color="red"
+        sublabel="Needs restocking"
+      />
+      <app-stats-card
+        label="Avg. Rating"
+        [value]="(avgRating$ | async) ?? '0.0'"
+        icon="ti-star"
+        color="orange"
+        sublabel="Across all products"
+      />
+    </div>
+
+    <div class="quick-actions mt-4">
+      <h6 class="section-title">Quick Actions</h6>
+      <div class="actions-row">
+        <a routerLink="/dashboard/products/create" class="action-card action-card--primary">
+          <i class="ti ti-circle-plus"></i>
+          <span>Add New Product</span>
+        </a>
+        <a routerLink="/dashboard/products" class="action-card">
+          <i class="ti ti-list"></i>
+          <span>Manage Products</span>
+        </a>
+        <a routerLink="/dashboard/inventory" class="action-card">
+          <i class="ti ti-building-warehouse"></i>
+          <span>Manage Inventory</span>
+        </a>
+      </div>
+    </div>
+
+    @if (products$ | async; as data) {
+      @if (data.items.length > 0) {
+        <div class="recent-products mt-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h6 class="section-title mb-0">Recent Products</h6>
+            <a routerLink="/dashboard/products" class="view-all-link">View All →</a>
+          </div>
+
+          <div class="product-preview-list">
+            @for (product of data.items.slice(0, 5); track product.id) {
+              <div class="product-preview-row">
+                <div class="product-preview-img">
+                  @if (product.primaryImageUrl) {
+                    <img [src]="product.primaryImageUrl" [alt]="product.name" />
+                  } @else {
+                    <div class="img-placeholder"><i class="ti ti-photo"></i></div>
+                  }
+                </div>
+                <div class="product-preview-info">
+                  <p class="product-preview-name">{{ product.name }}</p>
+                   <div class="category-tags">
+                    @for (cat of product.categories.slice(0, 2); track cat) {
+                      <span class="category-tag">{{ cat }}</span>
+                    }
+                    @if (product.categories.length > 2) {
+                      <span class="category-tag category-tag--more">+{{ product.categories.length - 2 }}</span>
+                    }
+                  </div>
+                </div>
+                <div class="product-preview-meta">
+                  <span class="product-preview-price">EGP {{ product.price | number:'1.2-2' }}</span>
+                  <span class="stock-badge" [class.stock-badge--out]="product.stock === 0">
+                    {{ product.stock > 0 ? 'In Stock (' + product.stock + ')' : 'Out of Stock' }}
+                  </span>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  }
+
+</div>

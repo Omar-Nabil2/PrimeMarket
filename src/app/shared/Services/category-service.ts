@@ -4,6 +4,15 @@ import { environment } from '../../../environments/environment';
 import { Observable, shareReplay } from 'rxjs';
 import { ICategory } from '../Models/icategory';
 import { IProcuctCard } from '../Models/iproduct-card';
+import { catchError } from 'rxjs/operators';
+import { ToastService } from './toast-service';
+
+export interface ICategory {
+  id: number;
+  name: string;
+  slug: string;
+}
+
 
 @Injectable({
   providedIn: 'root',
@@ -27,5 +36,15 @@ export class CategoryService {
     return this.http.get<IProcuctCard[]>(
       `${this.baseUrl}/api/Products/category/${categoryId}`
     );
+  }
+}
+  private http = inject(HttpClient);
+  private toast = inject(ToastService);
+  private baseUrl = `${environment.apiUrl}/api/Categories`;
+
+  getAll() {
+    return this.http
+      .get<ICategory[]>(this.baseUrl)
+      .pipe(catchError(err => this.toast.handleError(err)));
   }
 }

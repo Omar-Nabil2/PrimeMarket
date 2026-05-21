@@ -19,7 +19,7 @@ export class AuthInterceptor implements HttpInterceptor {
   ): Observable<HttpEvent<any>> {
     const publicUrls = [
       '/api/Products/all',
-      '/api/Products/',
+      // '/api/Products/',
       '/api/Auth'
     ];
 

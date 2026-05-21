@@ -75,9 +75,14 @@
                 </div>
                 <div class="product-preview-info">
                   <p class="product-preview-name">{{ product.name }}</p>
-                  <span class="product-preview-category">
-                    {{ product.categories[0] }}
-                  </span>
+                   <div class="category-tags">
+                    @for (cat of product.categories.slice(0, 2); track cat) {
+                      <span class="category-tag">{{ cat }}</span>
+                    }
+                    @if (product.categories.length > 2) {
+                      <span class="category-tag category-tag--more">+{{ product.categories.length - 2 }}</span>
+                    }
+                  </div>
                 </div>
                 <div class="product-preview-meta">
                   <span class="product-preview-price">EGP {{ product.price | number:'1.2-2' }}</span>

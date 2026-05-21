@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { BehaviorSubject, catchError, tap } from 'rxjs';
+import { BehaviorSubject, catchError, tap, throwError, Observable } from 'rxjs';
 import { ToastService } from './toast-service';
 import { IPaginatedResul } from '../Models/Common/ipaginated-result';
 import { IRequestFilter } from '../Models/Common/irequest-filter';
@@ -61,10 +61,52 @@ export class DashboardService {
     );
   }
 
+  addImage(productId: number, image: File, options?: { silent?: boolean }) {
+    const fd = new FormData();
+    fd.append('image', image);
+    return this.http.post<any>(`${this.baseUrl}/${productId}/images`, fd).pipe(
+      tap(() => {
+        if (!options?.silent) this.toast.success('Image uploaded');
+      }),
+      catchError(err => {
+        this.toast.handleError(err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  deleteImage(productId: number, imageId: number, options?: { silent?: boolean }) {
+    return this.http.delete<void>(`${this.baseUrl}/${productId}/images/${imageId}`).pipe(
+      tap(() => {
+        if (!options?.silent) this.toast.success('Image deleted');
+      }),
+      catchError(err => {
+        this.toast.handleError(err);
+        return throwError(() => err);
+      })
+    );
+  }
+
+  setPrimaryImage(productId: number, imageId: number, options?: { silent?: boolean }) {
+    return this.http.put<void>(`${this.baseUrl}/${productId}/images/${imageId}/set-primary`, {}).pipe(
+      tap(() => {
+        if (!options?.silent) this.toast.success('Primary image set');
+      }),
+      catchError(err => {
+        this.toast.handleError(err);
+        return throwError(() => err);
+      })
+    );
+  }
+
   updateProduct(productId: number, body: object) {
     return this.http.put<void>(`${this.baseUrl}/${productId}`, body).pipe(
       tap(() => this.toast.success('Product updated successfully')),
-      catchError(err => this.toast.handleError(err))
+      catchError(err => {
+        // Show toast and rethrow so callers can handle validation errors
+        this.toast.handleError(err);
+        return throwError(() => err);
+      })
     );
   }
 

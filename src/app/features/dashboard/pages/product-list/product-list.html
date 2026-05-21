@@ -41,7 +41,7 @@
           </thead>
           <tbody>
             @for (product of data.items; track product.id) {
-              <tr>
+              <tr [class.product-row--inactive]="!product.isActive">
                 <td>
                   <div class="product-cell">
                     <div class="product-thumb">
@@ -95,20 +95,26 @@
 
                 <td>
                   <div class="action-btns">
-                    <a [routerLink]="['/dashboard/products/edit', product.id]"
-                       class="action-btn action-btn--edit"
-                       title="Edit product">
+                      <a [routerLink]="product.isActive ? ['/dashboard/products/edit', product.id] : undefined"
+                        class="action-btn action-btn--edit"
+                        [class.action-btn--disabled]="!product.isActive"
+                        [attr.aria-disabled]="!product.isActive"
+                        title="Edit product">
                       <i class="ti ti-edit"></i>
                     </a>
-                    <a [routerLink]="['/dashboard/inventory', product.id]"
-                       class="action-btn action-btn--stock"
-                       title="Manage stock">
+                      <a [routerLink]="product.isActive ? ['/dashboard/inventory', product.id] : undefined"
+                        class="action-btn action-btn--stock"
+                        [class.action-btn--disabled]="!product.isActive"
+                        [attr.aria-disabled]="!product.isActive"
+                        title="Manage stock">
                       <i class="ti ti-building-warehouse"></i>
                     </a>
                     <button
                       class="action-btn action-btn--delete"
-                      (click)="onDelete(product)"
-                      [disabled]="deletingId === product.id"
+                      type="button"
+                      (click)="product.isActive && onDelete(product)"
+                      [disabled]="deletingId === product.id || !product.isActive"
+                      [attr.aria-disabled]="!product.isActive"
                       title="Delete product">
                       @if (deletingId === product.id) {
                         <span class="spinner-border spinner-border-sm"></span>

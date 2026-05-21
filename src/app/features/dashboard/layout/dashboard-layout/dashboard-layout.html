@@ -18,17 +18,17 @@
         @if (!isCollapsed) { <span>Overview</span> }
       </a>
 
-      <a routerLink="/dashboard/products" routerLinkActive="active" class="nav-item">
+      <a routerLink="/dashboard/products" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-package"></i>
         @if (!isCollapsed) { <span>Products</span> }
       </a>
 
-      <a routerLink="/dashboard/products/create" routerLinkActive="active" class="nav-item">
+      <a routerLink="/dashboard/products/create" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-circle-plus"></i>
         @if (!isCollapsed) { <span>Add Product</span> }
       </a>
 
-      <a routerLink="/dashboard/inventory" routerLinkActive="active" class="nav-item">
+      <a routerLink="/dashboard/inventory" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-building-warehouse"></i>
         @if (!isCollapsed) { <span>Inventory</span> }
       </a>

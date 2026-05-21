@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { catchError } from 'rxjs/operators';
+import { throwError } from 'rxjs';
 import { ToastService } from './toast-service';
 
 export interface IStockSummary {
@@ -30,7 +31,12 @@ export class InventoryService {
   getStockSummary(productId: number) {
     return this.http
       .get<IStockSummary>(`${this.baseUrl}/${productId}/inventory`)
-      .pipe(catchError(err => this.toast.handleError(err)));
+      .pipe(
+        catchError(err => {
+          this.toast.handleError(err);
+          return throwError(() => err);
+        })
+      );
   }
 
   adjustStock(productId: number, quantityChange: number) {
@@ -40,7 +46,10 @@ export class InventoryService {
         { quantityChange }
       )
       .pipe(
-        catchError(err => this.toast.handleError(err))
+        catchError(err => {
+          this.toast.handleError(err);
+          return throwError(() => err);
+        })
       );
   }
 }

@@ -28,6 +28,15 @@
   border-color: #e74c3c;
 }
 
+/* Inactive product styles */
+.inventory-card.inactive, .inventory-row.inactive {
+  opacity: 0.6;
+}
+
+.adjust-panel.inactive {
+  background: #fff7f7;
+}
+
 .inventory-row {
   display: grid;
   grid-template-columns: 1fr auto auto 40px;
@@ -40,6 +49,18 @@
 
 .inventory-row:hover {
   background: #fafafa;
+}
+
+/* Make inactive rows non-interactive and pale */
+.inventory-card.inactive .inventory-row {
+  cursor: default;
+}
+.inventory-card.inactive .inv-expand {
+  opacity: 0.5;
+  cursor: default;
+}
+.inventory-card.inactive .inv-expand .ti {
+  color: #c0c0c0;
 }
 
 .inv-product {
@@ -239,4 +260,24 @@
   .current-stock-info {
     gap: 24px;
   }
+}
+
+.category-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.category-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.category-tag--more {
+  background: #f5f5f5;
+  color: #888;
 }

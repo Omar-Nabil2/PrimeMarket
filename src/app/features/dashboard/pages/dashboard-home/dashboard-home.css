@@ -164,3 +164,23 @@
   background: #fee2e2;
   color: #991b1b;
 }
+
+.category-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.category-tag {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: #eff6ff;
+  color: #3b82f6;
+  font-weight: 500;
+}
+
+.category-tag--more {
+  background: #f5f5f5;
+  color: #888;
+}

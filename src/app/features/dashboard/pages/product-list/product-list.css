@@ -224,6 +224,16 @@
   cursor: not-allowed;
 }
 
+/* Inactive product row styling */
+.product-row--inactive {
+  opacity: 0.55;
+}
+
+.action-btn--disabled {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
 .empty-state {
   background: #fff;
   border-radius: 12px;

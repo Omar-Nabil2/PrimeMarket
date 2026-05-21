@@ -25,9 +25,9 @@
     } @else {
       <div class="inventory-list">
         @for (product of products; track product.id) {
-          <div class="inventory-card" [class.expanded]="expandedProductId === product.id">
+          <div class="inventory-card" [class.expanded]="expandedProductId === product.id" [class.inactive]="!product.isActive">
 
-            <div class="inventory-row" (click)="toggleExpand(product.id)">
+              <div class="inventory-row" (click)="product.isActive && toggleExpand(product.id)" [attr.aria-disabled]="!product.isActive">
 
               <div class="inv-product">
                 <div class="inv-thumb">
@@ -39,7 +39,14 @@
                 </div>
                 <div>
                   <p class="inv-name">{{ product.name }}</p>
-                  <span class="inv-category">{{ product.categories[0]}}</span>
+                   <div class="category-tags">
+                    @for (cat of product.categories.slice(0, 2); track cat) {
+                      <span class="category-tag">{{ cat }}</span>
+                    }
+                    @if (product.categories.length > 2) {
+                      <span class="category-tag category-tag--more">+{{ product.categories.length - 2 }}</span>
+                    }
+                  </div>
                 </div>
               </div>
 
@@ -66,19 +73,17 @@
               <div class="inv-price">EGP {{ product.price | number:'1.2-2' }}</div>
 
               <!-- Expand Arrow -->
-              <div class="inv-expand">
+              <div class="inv-expand" [class.inactive]="!product.isActive">
                 <i class="ti" [class.ti-chevron-down]="expandedProductId !== product.id"
                               [class.ti-chevron-up]="expandedProductId === product.id"></i>
               </div>
 
             </div>
 
-            <!-- Expanded Adjust Panel -->
             @if (expandedProductId === product.id) {
-              <div class="adjust-panel">
+              <div class="adjust-panel" [class.inactive]="!product.isActive">
                 <div class="adjust-panel-inner">
 
-                  <!-- Current Stock Info -->
                   <div class="current-stock-info">
                     <div class="stock-stat">
                       <span class="stock-stat-label">Current Stock</span>
@@ -108,11 +113,12 @@
                         class="form-control"
                         formControlName="quantityChange"
                         placeholder="e.g. +50 or -10"
+                        [disabled]="!product.isActive || !!product.isAdjusting"
                       />
                       <button
                         type="submit"
                         class="btn btn-danger"
-                        [disabled]="product.isAdjusting"
+                        [disabled]="!!product.isAdjusting || !product.isActive"
                       >
                         @if (product.isAdjusting) {
                           <span class="spinner-border spinner-border-sm me-1"></span> Saving...
@@ -121,6 +127,10 @@
                         }
                       </button>
                     </div>
+
+                    @if (!product.isActive) {
+                      <p class="error-text mt-2">This product is inactive — stock adjustments are disabled.</p>
+                    }
 
                     @if (adjustForms[product.id].get('quantityChange')?.touched &&
                          adjustForms[product.id].get('quantityChange')?.invalid) {

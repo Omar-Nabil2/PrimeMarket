@@ -1,0 +1,62 @@
+<!-- Components/checkout-address/checkout-address.html -->
+<div class="card border rounded-3 p-4">
+  <h5 class="fw-bold mb-3"><i class="ti ti-map-pin me-2"></i>Delivery Address</h5>
+
+  @if (addresses.length > 0) {
+    <div class="d-flex flex-column gap-2 mb-3">
+      @for (address of addresses; track address.id) {
+        <label class="address-option p-3 rounded-3 border d-flex align-items-start gap-3"
+               [class.selected]="selectedAddressId === address.id">
+          <input type="radio" name="address" [value]="address.id"
+                 [ngModel]="selectedAddressId"
+                 (ngModelChange)="selectAddress($event)"
+                 class="mt-1" />
+          <div>
+            <p class="mb-0 fw-semibold">{{ address.street }}</p>
+            <p class="mb-0 text-muted small">{{ address.city }}, {{ address.country }}</p>
+            @if (address.isDefault) {
+              <span class="badge text-bg-success mt-1">Default</span>
+            }
+          </div>
+        </label>
+      }
+    </div>
+  } @else {
+    <p class="text-muted small mb-3">No saved addresses. Add one below.</p>
+  }
+
+  <button class="btn btn-outline-secondary btn-sm"
+          (click)="showNewAddressForm = !showNewAddressForm">
+    <i class="ti ti-plus me-1"></i>
+    {{ showNewAddressForm ? 'Cancel' : 'Add New Address' }}
+  </button>
+
+  @if (showNewAddressForm) {
+    <div class="mt-3 d-flex flex-column gap-2">
+      <input type="text" class="form-control" placeholder="Street"
+             [(ngModel)]="newAddress.street" />
+      <div class="row g-2">
+        <div class="col">
+          <input type="text" class="form-control" placeholder="City"
+                 [(ngModel)]="newAddress.city" />
+        </div>
+        <div class="col">
+          <input type="text" class="form-control" placeholder="Country"
+                 [(ngModel)]="newAddress.country" />
+        </div>
+      </div>
+      <div class="form-check">
+        <input type="checkbox" class="form-check-input" id="isDefault"
+               [(ngModel)]="newAddress.isDefault" />
+        <label class="form-check-label small" for="isDefault">Set as default</label>
+      </div>
+      <button class="btn btn-primary btn-sm" (click)="submitAddress()"
+              [disabled]="isAddingAddress">
+        @if (isAddingAddress) {
+          <span class="spinner-border spinner-border-sm me-1"></span>
+        }
+        Save Address
+      </button>
+    </div>
+  }
+</div>

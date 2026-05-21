@@ -10,9 +10,10 @@ import { ToastService } from './toast-service';
   providedIn: 'root',
 })
 export class WishListService {
-  private http = inject(HttpClient);
-  private toast = inject(ToastService);
+  private http = inject(HttpClient); 
   private wishlistUrl= `${environment.apiUrl}/api/WishList`
+  
+  private toast = inject(ToastService);
 
   private items$ = new BehaviorSubject<IWishlistItem[]>([]);
   readonly wishlist$ = this.items$.asObservable();

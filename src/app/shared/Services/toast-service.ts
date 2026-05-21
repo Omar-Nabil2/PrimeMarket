@@ -20,8 +20,10 @@ export class ToastService {
     this.toastr.info(message);
   }
   handleError(err: any): Observable<never> {
-    const message = err.error?.Errors?.[1] ?? 'Something went wrong';
-    this.toastr.error(message);
+    if (err.status !== 401) {
+      const message = err.error?.Errors?.[1] ?? 'Something went wrong';
+      this.toastr.error(message);
+    }
     return EMPTY;
   }
 }

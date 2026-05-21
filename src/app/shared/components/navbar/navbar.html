@@ -26,18 +26,27 @@
     </div>
 
     <div class="search-bar">
-  <input 
-    type="text" 
-    placeholder="Search for items..." 
-    (input)="onSearch($any($event.target).value)" 
-  />
-  <select>
-    <option>All Categories</option>
-    <option>Electronics</option>
-    <option>Laptops</option>
-  </select>
-  <button><i class="ti ti-search"></i></button>
-</div>
+      <div class="input-wrapper">
+        <input
+          #searchInput
+          type="text"
+          placeholder="Search for items..."
+          (input)="onSearch($any($event.target).value)"
+        />
+        @if (searchInput.value) {
+          <button class="clear-btn" (click)="onClear(searchInput)">
+            <i class="ti ti-x"></i>
+          </button>
+        }
+      </div>
+      <select (change)="onCategoryChange($any($event.target).value)">
+        <option value="">All Categories</option>
+        @for (cat of categories; track cat.id) {
+          <option [value]="cat.id">{{ cat.name }}</option>
+        }
+      </select>
+      <button><i class="ti ti-search"></i></button>
+    </div>
 
     <div class="actions">
       <!-- Not Authenticated View -->

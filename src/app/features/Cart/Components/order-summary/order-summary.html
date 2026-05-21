@@ -18,7 +18,10 @@
     <span>{{ cart.total | currency:'EGP' }}</span>
   </div>
 
-  <button class="btn btn-primary w-100 mt-3" [disabled]="cart.items.length === 0">
-    Proceed to Checkout
-  </button>
+ <button 
+  class="btn btn-primary w-100 mt-3"
+  routerLink="/checkout"
+  [disabled]="cart.items.length === 0">
+  Proceed to Checkout
+</button>
 </div>

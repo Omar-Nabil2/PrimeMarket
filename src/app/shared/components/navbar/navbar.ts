@@ -7,6 +7,8 @@ import { WishListService } from '../../Services/wish-list-service';
 import { CartService } from '../../Services/cart-service';
 import { AuthService } from '../../Services/auth.service';
 import { AuthResponse } from '../../Models/auth.model';
+import { CategoryService } from '../../Services/category-service';
+import { ICategory } from '../../Models/icategory';
 
 
 @Component({
@@ -26,10 +28,17 @@ export class Navbar implements OnInit {
   cartCount$: Observable<number> = inject(CartService).count$;
   isAuthenticated = false;
   currentUser: AuthResponse | null = null;
+  categories: ICategory[] = [];
 
   ngOnInit(): void {
     this.wishlistService.loadWishlist().subscribe();
     this.cartService.loadCart().subscribe();
+    this.categoryService.getCategories().subscribe(cats => this.categories = cats);
+  }
+
+  onCategoryChange(value: string): void {
+    const id = value ? Number(value) : null;
+    this.homeService.filterByCategory(id);
   }
 
   onSearch(value: string): void {
@@ -38,7 +47,8 @@ export class Navbar implements OnInit {
  
   constructor(
     public authService: AuthService,
-    private router: Router
+    private router: Router,
+    private categoryService:CategoryService
   ) {
     this.searchInput$.pipe(
       debounceTime(400),
@@ -63,5 +73,9 @@ export class Navbar implements OnInit {
       return `${this.currentUser.firstName} ${this.currentUser.lastName}`;
     }
     return '';
+  }
+  onClear(input: HTMLInputElement): void {
+    input.value = '';
+    this.homeService.search('');
   }
 }

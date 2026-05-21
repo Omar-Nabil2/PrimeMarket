@@ -5,26 +5,35 @@ import { BehaviorSubject, Observable, switchMap } from 'rxjs';
 import { IProcuctCard } from '../../../shared/Models/iproduct-card';
 import { IRequestFilter } from '../../../shared/Models/Common/irequest-filter';
 import { IPaginatedResul } from '../../../shared/Models/Common/ipaginated-result';
+import { CategoryService } from '../../../shared/Services/category-service';
 
 @Injectable({
   providedIn: 'root',
 })
 export class HomeService {
   private baseUrl = environment.apiUrl;
-
+  
   private filter$ = new BehaviorSubject<IRequestFilter>({
     pageNumber: 1,
     pageSize: 10,
-    sortDirection: 'ASC'
+    sortDirection: 'ASC',
   });
 
   readonly filter = this.filter$.asObservable();
 
+  // null means "show all products" (paginated), a number means filter by category
+  private selectedCategoryId$ = new BehaviorSubject<number | null>(null);
+  readonly selectedCategoryId = this.selectedCategoryId$.asObservable();
+
   readonly result$: Observable<IPaginatedResul<IProcuctCard>> = this.filter$.pipe(
-    switchMap(filter => this.getProducts(filter))
+    switchMap((filter) => this.getProducts(filter))
   );
 
-  constructor(private http: HttpClient) {}
+  readonly categoryProducts$: Observable<IProcuctCard[]> =
+    this.selectedCategoryId$.pipe(
+      switchMap((id) => this.categoryService.getProductsByCategoryId(id!))
+    );
+  constructor(private http: HttpClient, private categoryService: CategoryService) {}
 
   private getProducts(filter: IRequestFilter): Observable<IPaginatedResul<IProcuctCard>> {
     const params = new HttpParams({ fromObject: { ...filter } as any });
@@ -52,4 +61,7 @@ export class HomeService {
     });
   }
 
+  filterByCategory(categoryId: number | null): void {
+    this.selectedCategoryId$.next(categoryId);
+  }
 }

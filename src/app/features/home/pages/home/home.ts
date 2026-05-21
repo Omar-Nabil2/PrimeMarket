@@ -14,6 +14,8 @@ import { ProductCard } from '../../Components/product-card/product-card';
 export class Home{
   private homeService = inject(HomeService);
   result$ = this.homeService.result$;
+  categoryProducts$ = this.homeService.categoryProducts$;
+  selectedCategoryId$ = this.homeService.selectedCategoryId;
 
   onPageChange(page: number): void {
     this.homeService.setPage(page);

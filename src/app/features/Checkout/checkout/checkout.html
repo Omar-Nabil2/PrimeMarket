@@ -1,0 +1,43 @@
+<div class="container py-5">
+  <div class="row g-4">
+
+    <div class="col-12 col-lg-8 d-flex flex-column gap-4">
+  <app-checkout-payment
+    [selectedPayment]="selectedPayment"
+    (selectedPaymentChange)="selectedPayment = $event"
+  />
+
+  @if (selectedPayment === PaymentType.CreditCard) {
+    <app-checkout-address
+      [addresses]="addresses"
+      [selectedAddressId]="selectedAddressId"
+      [isAddingAddress]="isAddingAddress"
+      (selectedAddressIdChange)="selectedAddressId = $event"
+      (onAddAddress)="onAddAddress($event)"
+    />
+  }
+
+  <app-checkout-promo
+    [isValidating]="isValidatingPromo"
+    [promoApplied]="promoApplied"
+    [promoDiscount]="promoDiscount"
+    [promoError]="promoError"
+    (onApply)="onApplyPromo($event)"
+    (onClear)="onClearPromo()"
+  />
+</div>
+
+    <div class="col-12 col-lg-4">
+      @if (cart) {
+        <app-checkout-order-summary
+          [cart]="cart"
+          [promoDiscount]="promoDiscount"
+          [isPlacingOrder]="isPlacingOrder"
+          [canPlaceOrder]="canPlaceOrder"
+          (onPlaceOrder)="placeOrder()"
+        />
+      }
+    </div>
+
+  </div>
+</div>

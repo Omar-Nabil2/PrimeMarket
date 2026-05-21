@@ -276,3 +276,39 @@ header {
   padding: 0 4px;
 }
 
+.search-bar {
+  display: flex;
+  flex: 1;
+  max-width: 680px; /* was 520px */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.input-wrapper {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-wrapper input {
+  width: 100%;
+  padding-right: 28px; /* leave room for the X */
+}
+
+.clear-btn {
+  position: absolute;
+  right: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #aaa;
+  padding: 0;
+  line-height: 1;
+  font-size: 14px;
+}
+
+.clear-btn:hover {
+  color: #555;
+}

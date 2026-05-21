@@ -1,0 +1,31 @@
+<!-- Components/checkout-payment/checkout-payment.html -->
+<div class="card border rounded-3 p-4">
+  <h5 class="fw-bold mb-3"><i class="ti ti-credit-card me-2"></i>Payment Method</h5>
+
+  <div class="d-flex flex-column gap-2">
+    <label class="address-option p-3 rounded-3 border d-flex align-items-center gap-3"
+           [class.selected]="selectedPayment === PaymentType.COD">
+      <input type="radio" name="payment" [value]="PaymentType.COD"
+             [ngModel]="selectedPayment"
+             (ngModelChange)="select($event)" />
+      <div>
+        <p class="mb-0 fw-semibold">Cash on Delivery</p>
+        <p class="mb-0 text-muted small">Pay when your order arrives</p>
+      </div>
+    </label>
+
+    <label class="address-option p-3 rounded-3 border d-flex align-items-center gap-3"
+           [class.selected]="selectedPayment === PaymentType.CreditCard">
+      <input type="radio" name="payment" [value]="PaymentType.CreditCard"
+             [ngModel]="selectedPayment"
+             (ngModelChange)="select($event)" />
+      <div>
+        <p class="mb-0 fw-semibold">
+          Credit Card
+          <span class="badge text-bg-warning ms-1">Coming Soon</span>
+        </p>
+        <p class="mb-0 text-muted small">Secure payment via Stripe</p>
+      </div>
+    </label>
+  </div>
+</div>

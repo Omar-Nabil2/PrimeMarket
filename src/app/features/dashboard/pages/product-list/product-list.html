@@ -1,0 +1,145 @@
+<div class="product-list-page">
+
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h5 class="page-title mb-1">My Products</h5>
+      <p class="page-subtitle mb-0">Manage and update your product catalogue</p>
+    </div>
+    <a routerLink="/dashboard/products/create" class="btn btn-danger btn-sm d-flex align-items-center gap-2">
+      <i class="ti ti-circle-plus"></i> Add Product
+    </a>
+  </div>
+
+  @if (loading$ | async) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  }
+
+  @if (products$ | async; as data) {
+    @if (data.items.length === 0) {
+      <div class="empty-state text-center py-5">
+        <i class="ti ti-package-off" style="font-size:56px; color:#ccc;"></i>
+        <h6 class="mt-3 text-muted">No products yet</h6>
+        <a routerLink="/dashboard/products/create" class="btn btn-danger mt-3">Add Your First Product</a>
+      </div>
+    } @else {
+      <div class="table-card">
+        <table class="product-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Categories</th>
+              <th>Price</th>
+              <th>Stock</th>
+              <th>Rating</th>
+              <th>Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (product of data.items; track product.id) {
+              <tr>
+                <td>
+                  <div class="product-cell">
+                    <div class="product-thumb">
+                      @if (product.primaryImageUrl) {
+                        <img [src]="product.primaryImageUrl" [alt]="product.name" />
+                      } @else {
+                        <div class="thumb-placeholder"><i class="ti ti-photo"></i></div>
+                      }
+                    </div>
+                    <div>
+                      <p class="product-name">{{ product.name }}</p>
+                      <span class="product-id">#{{ product.id }}</span>
+                    </div>
+                  </div>
+                </td>
+
+                <td>
+                  <div class="category-tags">
+                    @for (cat of product.categories.slice(0, 2); track cat) {
+                      <span class="category-tag">{{ cat }}</span>
+                    }
+                    @if (product.categories.length > 2) {
+                      <span class="category-tag category-tag--more">+{{ product.categories.length - 2 }}</span>
+                    }
+                  </div>
+                </td>
+
+                <td>
+                  <span class="price-cell">EGP {{ product.price | number:'1.2-2' }}</span>
+                </td>
+
+                <td>
+                  <span class="stock-cell" [ngClass]="{ 'stock-cell--low': product.stock > 0 && product.stock <= 5, 'stock-cell--out': product.stock === 0 }">
+                    {{ product.stock }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="rating-cell">
+                    <i class="ti ti-star-filled" style="color:#f59e0b; font-size:13px;"></i>
+                    <span>{{ product.averageRating.toFixed(1) }}</span>
+                    <span class="review-count">({{ product.reviewCount }})</span>
+                  </div>
+                </td>
+
+                <td>
+                  <span class="status-badge" [ngClass]="product.isActive ? 'status-badge--active' : 'status-badge--inactive'">
+                    {{ product.isActive ? 'Active' : 'Inactive' }}
+                  </span>
+                </td>
+
+                <td>
+                  <div class="action-btns">
+                    <a [routerLink]="['/dashboard/products/edit', product.id]"
+                       class="action-btn action-btn--edit"
+                       title="Edit product">
+                      <i class="ti ti-edit"></i>
+                    </a>
+                    <a [routerLink]="['/dashboard/inventory', product.id]"
+                       class="action-btn action-btn--stock"
+                       title="Manage stock">
+                      <i class="ti ti-building-warehouse"></i>
+                    </a>
+                    <button
+                      class="action-btn action-btn--delete"
+                      (click)="onDelete(product)"
+                      [disabled]="deletingId === product.id"
+                      title="Delete product">
+                      @if (deletingId === product.id) {
+                        <span class="spinner-border spinner-border-sm"></span>
+                      } @else {
+                        <i class="ti ti-trash"></i>
+                      }
+                    </button>
+                  </div>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      @if (data.totalPages > 1) {
+        <div class="d-flex justify-content-center align-items-center gap-3 mt-4">
+          <button class="btn btn-outline-secondary btn-sm"
+                  [disabled]="!data.hasPreviousPage"
+                  (click)="onPageChange(data.pageNumber - 1)">
+            <i class="ti ti-chevron-left"></i> Prev
+          </button>
+          <span class="text-muted small">Page {{ data.pageNumber }} of {{ data.totalPages }}</span>
+          <button class="btn btn-outline-secondary btn-sm"
+                  [disabled]="!data.hasNextPage"
+                  (click)="onPageChange(data.pageNumber + 1)">
+            Next <i class="ti ti-chevron-right"></i>
+          </button>
+        </div>
+      }
+    }
+  }
+
+</div>

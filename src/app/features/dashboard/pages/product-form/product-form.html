@@ -1,0 +1,230 @@
+<div class="product-form-page">
+
+  <!-- Page Header -->
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h5 class="page-title mb-1">{{ isEditMode ? 'Edit Product' : 'Add New Product' }}</h5>
+      <p class="page-subtitle mb-0">
+        {{ isEditMode ? 'Update your product details' : 'Fill in the details to list a new product' }}
+      </p>
+    </div>
+    <a routerLink="/dashboard/products" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+      <i class="ti ti-arrow-left"></i> Back
+    </a>
+  </div>
+
+  <!-- Loading skeleton for edit mode -->
+  @if (isLoading) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="form-grid">
+
+        <!-- LEFT COLUMN -->
+        <div class="form-col">
+
+          <!-- Basic Info Card -->
+          <div class="form-card">
+            <h6 class="form-card-title">Basic Information</h6>
+
+            <!-- Name -->
+            <div class="form-group">
+              <label class="form-label">Product Name <span class="required">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': isInvalid('name') }"
+                formControlName="name"
+                placeholder="e.g. Wireless Headphones"
+              />
+              @if (isInvalid('name')) {
+                <div class="invalid-feedback">
+                  @if (form.get('name')?.hasError('required')) { Name is required. }
+                  @if (form.get('name')?.hasError('minlength')) { At least 3 characters. }
+                </div>
+              }
+            </div>
+
+            <!-- Description -->
+            <div class="form-group">
+              <label class="form-label">Description</label>
+              <textarea
+                class="form-control"
+                formControlName="description"
+                rows="4"
+                placeholder="Describe your product..."
+              ></textarea>
+            </div>
+
+            <!-- Price & Stock -->
+            <div class="two-col-row">
+              <div class="form-group">
+                <label class="form-label">Price (EGP) <span class="required">*</span></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  [ngClass]="{ 'is-invalid': isInvalid('price') }"
+                  formControlName="price"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                />
+                @if (isInvalid('price')) {
+                  <div class="invalid-feedback">
+                    @if (form.get('price')?.hasError('required')) { Price is required. }
+                    @if (form.get('price')?.hasError('min')) { Must be greater than 0. }
+                  </div>
+                }
+              </div>
+
+              <!-- Stock only shown on create mode -->
+              @if (!isEditMode) {
+                <div class="form-group">
+                  <label class="form-label">Initial Stock <span class="required">*</span></label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    [ngClass]="{ 'is-invalid': isInvalid('stock') }"
+                    formControlName="stock"
+                    placeholder="0"
+                    min="0"
+                  />
+                  @if (isInvalid('stock')) {
+                    <div class="invalid-feedback">
+                      @if (form.get('stock')?.hasError('required')) { Stock is required. }
+                      @if (form.get('stock')?.hasError('min')) { Cannot be negative. }
+                    </div>
+                  }
+                </div>
+              }
+            </div>
+          </div>
+
+          <!-- Categories Card -->
+          <div class="form-card">
+            <h6 class="form-card-title">Categories <span class="required">*</span></h6>
+            <p class="form-card-subtitle">Select one or more categories</p>
+
+            @if (categories.length === 0) {
+              <p class="text-muted small">Loading categories...</p>
+            } @else {
+              <div class="category-grid">
+                @for (cat of categories; track cat.id) {
+                  <button
+                    type="button"
+                    class="category-chip"
+                    [class.selected]="isCategorySelected(cat.id)"
+                    (click)="toggleCategory(cat.id)"
+                  >
+                    {{ cat.name }}
+                  </button>
+                }
+              </div>
+            }
+
+            @if (form.get('categoryIds')?.touched && form.get('categoryIds')?.value?.length === 0) {
+              <p class="error-text mt-2">Please select at least one category.</p>
+            }
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="form-col">
+
+          <!-- Primary Image Card -->
+          <div class="form-card">
+            <h6 class="form-card-title">
+              Primary Image @if (!isEditMode) { <span class="required">*</span> }
+            </h6>
+            <p class="form-card-subtitle">This is the main product image shown in listings</p>
+
+            <div
+              class="image-upload-zone"
+              [class.has-image]="primaryImagePreview"
+              (click)="primaryInput.click()"
+            >
+              @if (primaryImagePreview) {
+                <img [src]="primaryImagePreview" alt="Primary image preview" class="image-preview" />
+                <div class="image-overlay">
+                  <i class="ti ti-camera"></i>
+                  <span>Change Image</span>
+                </div>
+              } @else {
+                <div class="upload-placeholder">
+                  <i class="ti ti-cloud-upload"></i>
+                  <p>Click to upload primary image</p>
+                  <span>JPG, PNG, WEBP — Max 5MB</span>
+                </div>
+              }
+            </div>
+            <input
+              #primaryInput
+              type="file"
+              accept="image/*"
+              class="d-none"
+              (change)="onPrimaryImageChange($event)"
+            />
+          </div>
+
+          <!-- Extra Images Card -->
+          <div class="form-card">
+            <h6 class="form-card-title">Additional Images</h6>
+            <p class="form-card-subtitle">Upload more product photos (optional)</p>
+
+            <button type="button" class="btn btn-outline-secondary btn-sm mb-3" (click)="extrasInput.click()">
+              <i class="ti ti-plus me-1"></i> Add Images
+            </button>
+            <input
+              #extrasInput
+              type="file"
+              accept="image/*"
+              multiple
+              class="d-none"
+              (change)="onExtraImagesChange($event)"
+            />
+
+            @if (extraImagePreviews.length > 0) {
+              <div class="extra-images-grid">
+                @for (preview of extraImagePreviews; track $index) {
+                  <div class="extra-image-wrap">
+                    <img [src]="preview" alt="Extra image" />
+                    <button
+                      type="button"
+                      class="remove-image-btn"
+                      (click)="removeExtraImage($index)"
+                    >
+                      <i class="ti ti-x"></i>
+                    </button>
+                  </div>
+                }
+              </div>
+            }
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Submit Bar -->
+      <div class="submit-bar">
+        <a routerLink="/dashboard/products" class="btn btn-outline-secondary">Cancel</a>
+        <button type="submit" class="btn btn-danger d-flex align-items-center gap-2" [disabled]="isSaving">
+          @if (isSaving) {
+            <span class="spinner-border spinner-border-sm"></span>
+            {{ isEditMode ? 'Saving...' : 'Creating...' }}
+          } @else {
+            <i class="ti" [class.ti-device-floppy]="isEditMode" [class.ti-circle-plus]="!isEditMode"></i>
+            {{ isEditMode ? 'Save Changes' : 'Create Product' }}
+          }
+        </button>
+      </div>
+
+    </form>
+  }
+
+</div>

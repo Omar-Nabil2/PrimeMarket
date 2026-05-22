@@ -2,7 +2,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
 import { BehaviorSubject, Observable, switchMap } from 'rxjs';
-import { IProcuctCard } from '../../../shared/Models/iproduct-card';
+import { IProcuctCard } from '../../../shared/Models/Product/iproduct-card';
 import { IRequestFilter } from '../../../shared/Models/Common/irequest-filter';
 import { IPaginatedResul } from '../../../shared/Models/Common/ipaginated-result';
 import { CategoryService } from '../../../shared/Services/category-service';

@@ -2,10 +2,10 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { Observable, shareReplay } from 'rxjs';
-import { IProcuctCard } from '../Models/iproduct-card';
+import { IProcuctCard } from '../Models/Product/iproduct-card';
 import { catchError } from 'rxjs/operators';
 import { ToastService } from './toast-service';
-import { ICategory } from '../Models/icategory';
+import { ICategory } from '../Models/Category/icategory';
 
 
 @Injectable({

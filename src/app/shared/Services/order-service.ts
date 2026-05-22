@@ -9,7 +9,7 @@ import { ISellerOrder, OrderStatus } from '../Models/Orders/iseller-order';
 @Injectable({
   providedIn: 'root',
 })
-export class OrdersService {
+export class OrderService {
   private http = inject(HttpClient);
   private baseUrl = `${environment.apiUrl}/api/Orders`;
 

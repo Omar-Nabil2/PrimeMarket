@@ -9,7 +9,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InventoryService, IStockSummary } from '../../../../shared/Services/inventory-service';
-import { ISellerProduct } from '../../../../shared/Models/iseller-product';
+import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
 import { DashboardService } from '../../../../shared/Services/dashboard-service';
 
 

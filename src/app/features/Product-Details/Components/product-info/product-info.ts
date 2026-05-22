@@ -1,6 +1,6 @@
 import { CommonModule, CurrencyPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
-import { IProductDetails } from '../../../../shared/Models/iproduct-details';
+import { IProductDetails } from '../../../../shared/Models/Product/iproduct-details';
 
 @Component({
   selector: 'app-product-info',

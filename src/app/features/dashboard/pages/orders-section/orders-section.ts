@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
 import { DecimalPipe, NgClass, DatePipe } from '@angular/common';
-import { OrdersService } from '../../../../shared/Services/orders-service';
+import { OrderService } from '../../../../shared/Services/order-service';
 import { IPaginatedResul } from '../../../../shared/Models/Common/ipaginated-result';
 import { ISellerOrder, OrderStatus } from '../../../../shared/Models/Orders/iseller-order';
 import { IRequestFilter } from '../../../../shared/Models/Common/irequest-filter';
@@ -14,7 +14,7 @@ import { ToastService } from '../../../../shared/Services/toast-service';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Orders implements OnInit {
-  private ordersService = inject(OrdersService);
+  private ordersService = inject(OrderService);
   private toast = inject(ToastService);
 
   orders = signal<IPaginatedResul<ISellerOrder> | null>(null);

@@ -18,7 +18,7 @@ import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, finalize } from 'rxjs/operators';
 import { CategoryService } from '../../../../shared/Services/category-service';
 import { ToastService } from '../../../../shared/Services/toast-service';
-import { ICategory } from '../../../../shared/Models/icategory';
+import { ICategory } from '../../../../shared/Models/Category/icategory';
 
 
 @Component({

@@ -12,6 +12,10 @@ export const DASHBOARD_ROUTES: Routes = [
           import('./pages/dashboard-home/dashboard-home').then(m => m.DashboardHome),
       },
       {
+        path: 'orders',
+        loadComponent: () => import('./pages/orders-section/orders-section').then(m => m.Orders),
+      },
+      {
         path: 'products',
         loadComponent: () =>
           import('./pages/product-list/product-list').then(m => m.ProductList),

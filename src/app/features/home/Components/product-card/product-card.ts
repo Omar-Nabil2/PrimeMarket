@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, Input } from '@angular/core';
-import { IProcuctCard } from '../../../../shared/Models/iproduct-card';
+import { IProcuctCard } from '../../../../shared/Models/Product/iproduct-card';
 import { RouterLink } from "@angular/router";
 import { WishListService } from '../../../../shared/Services/wish-list-service';
 

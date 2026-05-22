@@ -8,7 +8,7 @@ import { CartService } from '../../Services/cart-service';
 import { AuthService } from '../../Services/auth.service';
 import { AuthResponse } from '../../Models/auth.model';
 import { CategoryService } from '../../Services/category-service';
-import { ICategory } from '../../Models/icategory';
+import { ICategory } from '../../Models/Category/icategory';
 
 
 @Component({

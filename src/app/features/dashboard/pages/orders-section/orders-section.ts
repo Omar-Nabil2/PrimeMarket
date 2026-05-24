@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
-import { DecimalPipe, NgClass, DatePipe, NgStyle } from '@angular/common'; // تم إضافة NgStyle للـ Badges الديناميكية
+import { DecimalPipe, NgClass, DatePipe, NgStyle } from '@angular/common';
 import { OrderService } from '../../../../shared/Services/order-service';
 import { IPaginatedResul } from '../../../../shared/Models/Common/ipaginated-result';
 import { ISellerOrder, OrderStatus } from '../../../../shared/Models/Orders/iseller-order';
@@ -17,30 +17,59 @@ export class Orders implements OnInit {
   private ordersService = inject(OrderService);
   private toast = inject(ToastService);
 
-  orders = signal<IPaginatedResul<ISellerOrder> | null>(null);
+  allOrders = signal<ISellerOrder[]>([]);
   loading = signal(false);
 
-  filter = signal<IRequestFilter>({ pageNumber: 1, pageSize: 5, searchValue: '', sortColumn: 'createdon', sortDirection: 'DESC' });
+  pageSize = signal(5);
+  currentPage = signal(1);
   statusFilter = signal<'All' | OrderStatus>('All');
-
   searchTerm = signal('');
-  private searchTimer: any = null;
+  
   expanded = signal<Record<number, boolean>>({});
   confirmData = signal<{ order: ISellerOrder, status: OrderStatus } | null>(null);
 
+  filteredItems = computed(() => {
+    let items = this.allOrders();
+    
+    const status = this.statusFilter();
+    if (status !== 'All') {
+      items = items.filter(i => i.status === status);
+    }
+
+    const search = this.searchTerm().trim().toLowerCase();
+    if (search) {
+      items = items.filter(i => 
+        i.orderId.toString().includes(search) || 
+        (i.customerName && i.customerName.toLowerCase().includes(search))
+      );
+    }
+
+    return items;
+  });
+
   visible = computed(() => {
-    const data = this.orders();
-    if (!data) return { items: [] as ISellerOrder[], pageNumber: 1, totalPages: 1, hasPreviousPage: false, hasNextPage: false, pageSize: this.filter().pageSize } as any;
-    const filtered = data.items.filter(i => (this.statusFilter() === 'All' ? true : i.status === this.statusFilter()));
-    return { ...data, items: filtered } as IPaginatedResul<ISellerOrder> & { pageSize: number };
+    const items = this.filteredItems();
+    const size = this.pageSize();
+    const page = this.currentPage();
+    
+    const start = (page - 1) * size;
+    const end = start + size;
+    const pagedItems = items.slice(start, end);
+
+    const totalPages = Math.max(1, Math.ceil(items.length / size));
+
+    return {
+      items: pagedItems,
+      pageNumber: page,
+      pageSize: size,
+      totalPages: totalPages,
+      hasPreviousPage: page > 1,
+      hasNextPage: page < totalPages
+    };
   });
 
   stats = computed(() => {
-    const data = this.orders();
-    if (!data || !data.items) {
-      return { total: 0, revenue: 0, pending: 0, active: 0 };
-    }
-    const items = data.items;
+    const items = this.allOrders();
     const total = items.length;
     const revenue = items.reduce((sum, item) => sum + item.totalAmount, 0);
     const pending = items.filter(item => item.status === 'Pending').length;
@@ -63,9 +92,11 @@ export class Orders implements OnInit {
 
   loadOrders(): void {
     this.loading.set(true);
-    this.ordersService.getSellerOrders(this.filter()).subscribe({
+    const serverFilter: IRequestFilter = { pageNumber: 1, pageSize: 1000, searchValue: '', sortColumn: 'createdon', sortDirection: 'DESC' };
+    
+    this.ordersService.getSellerOrders(serverFilter).subscribe({
       next: res => {
-        this.orders.set(res);
+        this.allOrders.set(res?.items ?? []);
         this.loading.set(false);
       },
       error: err => {
@@ -76,38 +107,25 @@ export class Orders implements OnInit {
   }
 
   onPageChange(page: number) {
-    this.filter.update(f => ({ ...f, pageNumber: page }));
-    this.loadOrders();
+    this.currentPage.set(page);
   }
 
   onSort(value: string) {
-    let column = 'createdon';
-    let direction: 'ASC' | 'DESC' = 'DESC';
-
+    const items = [...this.allOrders()];
     if (value === 'createdon') {
-      column = 'createdon';
-      direction = 'DESC';
+      items.sort((a, b) => new Date(b.orderDate).getTime() - new Date(a.orderDate).getTime());
     } else if (value === 'createdon_desc') {
-      column = 'createdon';
-      direction = 'ASC';
+      items.sort((a, b) => new Date(a.orderDate).getTime() - new Date(b.orderDate).getTime());
     } else if (value === 'status') {
-      column = 'status';
-      direction = 'ASC';
+      items.sort((a, b) => a.status.localeCompare(b.status));
     }
-
-    this.filter.set({
-      ...this.filter(),
-      sortColumn: column,
-      sortDirection: direction,
-      pageNumber: 1
-    });
-    this.loadOrders();
+    this.allOrders.set(items);
+    this.currentPage.set(1);
   }
 
   setStatusFilter(status: 'All' | OrderStatus) {
     this.statusFilter.set(status);
-    this.filter.update(f => ({ ...f, pageNumber: 1 }));
-    this.loadOrders();
+    this.currentPage.set(1);
   }
 
   updateStatus(order: ISellerOrder, status: OrderStatus) {
@@ -125,11 +143,8 @@ export class Orders implements OnInit {
     
     this.ordersService.updateOrderStatus(data.order.orderId, data.status).subscribe({
       next: () => {
-        const pag = this.orders();
-        if (pag) {
-          const updatedItems = pag.items.map(o => (o.orderId === data.order.orderId ? { ...o, status: data.status } : o));
-          this.orders.set({ ...pag, items: updatedItems } as any);
-        }
+        const updatedItems = this.allOrders().map(o => (o.orderId === data.order.orderId ? { ...o, status: data.status } : o));
+        this.allOrders.set(updatedItems);
         this.toast.success('Order status updated successfully');
       },
       error: err => {
@@ -140,26 +155,16 @@ export class Orders implements OnInit {
 
   onSearchChange(value: string) {
     this.searchTerm.set(value);
-    if (this.searchTimer) clearTimeout(this.searchTimer);
-    
-    if (!value) {
-      this.filter.update(f => ({ ...f, searchValue: '', pageNumber: 1 }));
-      this.loadOrders();
-      return;
-    }
-
-    this.searchTimer = setTimeout(() => {
-      this.filter.update(f => ({ ...f, searchValue: value, pageNumber: 1 }));
-      this.loadOrders();
-    }, 350);
+    this.currentPage.set(1);
   }
 
-  get totalPages() { return this.orders()?.totalPages ?? 1; }
-  get currentPage() { return this.orders()?.pageNumber ?? 1; }
+  get totalPages() { 
+    return Math.max(1, Math.ceil(this.filteredItems().length / this.pageSize())); 
+  }
   
   pageNumbers(max = 7) {
     const total = this.totalPages;
-    const current = this.currentPage;
+    const current = this.currentPage();
     const half = Math.floor(max / 2);
     let start = Math.max(1, current - half);
     let end = Math.min(total, start + max - 1);

@@ -1,0 +1,30 @@
+<div class="confirmation-container">
+  <div class="confirmation-box">
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="confirmation-content">
+      <div class="spinner"></div>
+      <h2>Verifying your email...</h2>
+      <p>Please wait while we confirm your email address.</p>
+    </div>
+
+    <!-- Success State -->
+    <div *ngIf="!isLoading && isSuccess" class="confirmation-content success">
+      <div class="success-icon">
+        <i class="ti ti-check"></i>
+      </div>
+      <h2>Email Verified Successfully!</h2>
+      <p>{{ message }}</p>
+      <a routerLink="/auth" class="login-link">Go to Login</a>
+    </div>
+
+    <!-- Error State -->
+    <div *ngIf="!isLoading && !isSuccess" class="confirmation-content error">
+      <div class="error-icon">
+        <i class="ti ti-alert-circle"></i>
+      </div>
+      <h2>Verification Failed</h2>
+      <p>{{ message }}</p>
+      <a routerLink="/auth/signup" class="signup-link">Try Again</a>
+    </div>
+  </div>
+</div>

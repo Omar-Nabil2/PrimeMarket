@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, AuthState } from '../Models/auth.model';
+import { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, AuthState } from '../Models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -57,8 +57,101 @@ export class AuthService {
         });
       }),
       catchError((error: HttpErrorResponse) => {
-        console.error('Login failed:', error);
-        return throwError(() => new Error(error.error?.message || 'Login failed'));
+        // Extract error message from backend response
+        let errorMessage = 'Login failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          // Get the user-friendly error message (usually at index 1)
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Login failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Register a new user
+   */
+  register(data: RegisterRequest): Observable<RegisterResponse> {
+    return this.http.post<RegisterResponse>(`${this.apiUrl}/register`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Registration failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          // Get the user-friendly error message (usually at index 1)
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Registration failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Confirm email with userId and confirmation code
+   */
+  confirmEmail(data: ConfirmEmailRequest): Observable<ConfirmEmailResponse> {
+    return this.http.post<ConfirmEmailResponse>(`${this.apiUrl}/confirm-email`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Email confirmation failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          // Get the user-friendly error message (usually at index 1)
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Email confirmation failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Request password reset via email
+   */
+  forgetPassword(data: ForgetPasswordRequest): Observable<ForgetPasswordResponse> {
+    return this.http.post<ForgetPasswordResponse>(`${this.apiUrl}/ForgetPassword-Confirm`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Password reset request failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          // Get the user-friendly error message (usually at index 1)
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Password reset request failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Reset password with userId, code, and new password
+   */
+  resetPassword(data: ResetPasswordRequest): Observable<ResetPasswordResponse> {
+    return this.http.post<ResetPasswordResponse>(`${this.apiUrl}/reset-password`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Password reset failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          // Get the user-friendly error message (usually at index 1)
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Password reset failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
       })
     );
   }

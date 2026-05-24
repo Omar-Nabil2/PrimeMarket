@@ -1,1 +1,125 @@
-<p>register works!</p>
+<div class="register-container">
+  <div class="register-box">
+    <!-- Header -->
+    <div class="register-header">
+      <h1>Create Account</h1>
+      <p>Sign up to get started</p>
+    </div>
+
+    <!-- Register Form -->
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+      <!-- First Name Field -->
+      <div class="form-group">
+        <label for="firstName" class="form-label">First Name</label>
+        <div class="input-group">
+          <i class="ti ti-user"></i>
+          <input
+            id="firstName"
+            type="text"
+            formControlName="firstName"
+            placeholder="Enter your first name"
+            class="form-input"
+            [class.is-invalid]="firstName?.invalid && firstName?.touched"
+          />
+        </div>
+        <div *ngIf="firstName?.invalid && firstName?.touched" class="error-message">
+          <span *ngIf="firstName?.hasError('required')">First name is required</span>
+        </div>
+      </div>
+
+      <!-- Last Name Field -->
+      <div class="form-group">
+        <label for="lastName" class="form-label">Last Name</label>
+        <div class="input-group">
+          <i class="ti ti-user"></i>
+          <input
+            id="lastName"
+            type="text"
+            formControlName="lastName"
+            placeholder="Enter your last name"
+            class="form-input"
+            [class.is-invalid]="lastName?.invalid && lastName?.touched"
+          />
+        </div>
+        <div *ngIf="lastName?.invalid && lastName?.touched" class="error-message">
+          <span *ngIf="lastName?.hasError('required')">Last name is required</span>
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email" class="form-label">Email Address</label>
+        <div class="input-group">
+          <i class="ti ti-mail"></i>
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            placeholder="Enter your email"
+            class="form-input"
+            [class.is-invalid]="email?.invalid && email?.touched"
+          />
+        </div>
+        <div *ngIf="email?.invalid && email?.touched" class="error-message">
+          <span *ngIf="email?.hasError('required')">Email is required</span>
+          <span *ngIf="email?.hasError('email')">Please enter a valid email</span>
+        </div>
+      </div>
+
+      <!-- Password Field -->
+      <div class="form-group">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            placeholder="Enter your password"
+            class="form-input"
+            [class.is-invalid]="password?.invalid && password?.touched"
+          />
+        </div>
+        <div *ngIf="password?.invalid && password?.touched" class="error-message">
+          <span *ngIf="password?.hasError('required')">Password is required</span>
+          <span *ngIf="password?.hasError('minlength')">Password must be at least 6 characters</span>
+        </div>
+      </div>
+
+      <!-- Confirm Password Field -->
+      <div class="form-group">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="input-group">
+          <i class="ti ti-lock"></i>
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            placeholder="Confirm your password"
+            class="form-input"
+            [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+          />
+        </div>
+        <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="error-message">
+          <span *ngIf="confirmPassword?.hasError('required')">Confirm password is required</span>
+          <span *ngIf="confirmPassword?.hasError('passwordMismatch')">Passwords do not match</span>
+        </div>
+      </div>
+
+      <!-- Submit Button -->
+      <button
+        type="submit"
+        class="register-button"
+        [disabled]="registerForm.invalid"
+      >
+        <span>Sign Up</span>
+      </button>
+    </form>
+
+    <!-- Sign In Link -->
+    <div class="signin-link">
+      <p>Already have an account? <a routerLink="/auth">Sign in here</a></p>
+    </div>
+  </div>
+</div>
+

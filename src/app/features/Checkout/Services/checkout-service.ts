@@ -6,6 +6,7 @@ import { IAddress } from '../../../shared/Models/Checkout/iaddress';
 import { IPromoValidation } from '../../../shared/Models/Checkout/ipromo-validation';
 import { IPlaceOrderRequest } from '../../../shared/Models/Checkout/iplace-order-request';
 import { IPlaceOrderResponse } from '../../../shared/Models/Checkout/i-place-order-response';
+import { IOrderDetails } from '../../../shared/Models/iorder-details';
 
 @Injectable({
   providedIn: 'root',
@@ -31,5 +32,8 @@ export class CheckoutService {
 
   placeOrder(request: IPlaceOrderRequest): Observable<IPlaceOrderResponse> {
     return this.http.post<IPlaceOrderResponse>(`${this.baseUrl}/api/Orders`, request);
+  }
+  getOrderById(id: number): Observable<IOrderDetails> {
+    return this.http.get<IOrderDetails>(`${this.baseUrl}/api/Orders/${id}`);
   }
 }

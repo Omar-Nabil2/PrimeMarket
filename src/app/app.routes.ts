@@ -12,7 +12,8 @@ export const routes: Routes = [
       { path: 'products', loadChildren: () => import('./features/Product-Details/productDetails.routes').then(m => m.PRODUCT_DETAILS_ROUTES) },
       { path: 'wishlist',loadChildren: () => import('./features/WishList/wishlist.route').then( w => w.WISHLIST_ROUTES)},
       { path: 'cart', loadChildren: () => import('./features/Cart/Cart.routes').then(m => m.CART_ROUTES) },
-      { path: 'checkout', loadChildren: () => import('./features/Checkout/Checkout.routes').then(m => m.CHECKOUT_ROUTES) }
+      { path: 'checkout', loadChildren: () => import('./features/Checkout/Checkout.routes').then(m => m.CHECKOUT_ROUTES) },
+      { path: 'order-confirmation', loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) }
     ]
   },
   {

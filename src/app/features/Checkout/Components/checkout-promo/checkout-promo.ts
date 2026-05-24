@@ -1,5 +1,5 @@
 import { CommonModule, CurrencyPipe } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, inject, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -7,6 +7,7 @@ import { FormsModule } from '@angular/forms';
   imports: [CommonModule, FormsModule, CurrencyPipe],
   templateUrl: './checkout-promo.html',
   styleUrl: './checkout-promo.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckoutPromo {
   @Input() isValidating = false;

@@ -1,31 +1,35 @@
 <div class="container py-5">
+  <h2 class="fw-bold mb-4">Checkout</h2>
   <div class="row g-4">
 
     <div class="col-12 col-lg-8 d-flex flex-column gap-4">
-  <app-checkout-payment
-    [selectedPayment]="selectedPayment"
-    (selectedPaymentChange)="selectedPayment = $event"
-  />
 
-  @if (selectedPayment === PaymentType.CreditCard) {
-    <app-checkout-address
-      [addresses]="addresses"
-      [selectedAddressId]="selectedAddressId"
-      [isAddingAddress]="isAddingAddress"
-      (selectedAddressIdChange)="selectedAddressId = $event"
-      (onAddAddress)="onAddAddress($event)"
-    />
-  }
+      <!-- 1. Address first -->
+      <app-checkout-address
+        [addresses]="addresses"
+        [selectedAddressId]="selectedAddressId"
+        [isAddingAddress]="isAddingAddress"
+        (selectedAddressIdChange)="selectedAddressId = $event"
+        (onAddAddress)="onAddAddress($event)"
+      />
 
-  <app-checkout-promo
-    [isValidating]="isValidatingPromo"
-    [promoApplied]="promoApplied"
-    [promoDiscount]="promoDiscount"
-    [promoError]="promoError"
-    (onApply)="onApplyPromo($event)"
-    (onClear)="onClearPromo()"
-  />
-</div>
+      <!-- 2. Payment -->
+      <app-checkout-payment
+        [selectedPayment]="selectedPayment"
+        (selectedPaymentChange)="onPaymentChange($event)"
+      />
+
+      <!-- 3. Promo -->
+      <app-checkout-promo
+        [isValidating]="isValidatingPromo"
+        [promoApplied]="promoApplied"
+        [promoDiscount]="promoDiscount"
+        [promoError]="promoError"
+        (onApply)="onApplyPromo($event)"
+        (onClear)="onClearPromo()"
+      />
+
+    </div>
 
     <div class="col-12 col-lg-4">
       @if (cart) {

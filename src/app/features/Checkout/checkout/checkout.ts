@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, inject, OnInit } from '@angular/core';
 import { CheckoutService } from '../Services/checkout-service';
 import { CartService } from '../../../shared/Services/cart-service';
 import { ToastService } from '../../../shared/Services/toast-service';
@@ -11,18 +11,24 @@ import { CheckoutAddress } from '../Components/checkout-address/checkout-address
 import { CheckoutPayment } from '../Components/checkout-payment/checkout-payment';
 import { CheckoutPromo } from '../Components/checkout-promo/checkout-promo';
 import { CheckoutOrderSummary } from '../Components/checkout-order-summary/checkout-order-summary';
+import { StripeService } from '../../../shared/Services/stripe-service';
+import { firstValueFrom } from 'rxjs';
 
 @Component({
   selector: 'app-checkout',
   imports: [CommonModule, CheckoutAddress, CheckoutPayment, CheckoutPromo, CheckoutOrderSummary],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Checkout implements OnInit {
   private checkoutService = inject(CheckoutService);
   private cartService = inject(CartService);
   private toast = inject(ToastService);
   private router = inject(Router);
+  private stripeService = inject(StripeService)
+  private cdr = inject(ChangeDetectorRef);
+
   PaymentType = PaymentType;
 
   cart: ICart | null = null;
@@ -45,7 +51,12 @@ export class Checkout implements OnInit {
       this.addresses = addresses;
       const def = addresses.find(a => a.isDefault) ?? addresses[0];
       if (def) this.selectedAddressId = def.id;
+      this.cdr.markForCheck(); // ← change this
     });
+    // mount immediately so element is ready
+    setTimeout(async () => {
+      await this.stripeService.mountCardElement();
+    }, 100);
   }
 
   onAddAddress(data: { street: string; city: string; country: string; isDefault: boolean }): void {
@@ -65,27 +76,28 @@ export class Checkout implements OnInit {
   }
 
   onApplyPromo(code: string): void {
-    if (!this.cart) return;
-    this.isValidatingPromo = true;
-    this.promoError = '';
-    this.checkoutService.validatePromo(code, this.cart.total).subscribe({
-      next: result => {
-        this.isValidatingPromo = false;
-        if (result.isValid) {
-          this.promoCode = code;
-          this.promoDiscount = result.discountAmount;
-          this.promoApplied = true;
-          this.toast.success('Promo code applied!');
-        } else {
-          this.promoError = result.errorMessage ?? 'Invalid promo code.';
-        }
-      },
-      error: () => {
-        this.isValidatingPromo = false;
-        this.promoError = 'Failed to validate promo code.';
+  if (!this.cart) return;
+  this.isValidatingPromo = true;
+  this.promoError = '';
+  this.checkoutService.validatePromo(code, this.cart.total).subscribe({
+    next: result => {
+      this.isValidatingPromo = false;
+      if (result.isValid) {
+        this.promoCode = code;
+        this.promoDiscount = result.discountAmount;
+        this.promoApplied = true;
+      } else {
+        this.promoError = result.errorMessage ?? 'Invalid promo code.';
       }
-    });
-  }
+      this.cdr.markForCheck(); // ← add
+    },
+    error: () => {
+      this.isValidatingPromo = false;
+      this.promoError = 'Failed to validate promo code.';
+      this.cdr.markForCheck(); // ← add
+    }
+  });
+}
 
   onClearPromo(): void {
     this.promoCode = '';
@@ -93,28 +105,45 @@ export class Checkout implements OnInit {
     this.promoApplied = false;
     this.promoError = '';
   }
-
-  placeOrder(): void {
-    if (!this.selectedAddressId || !this.cart?.items.length) return;
-    this.isPlacingOrder = true;
-    this.checkoutService.placeOrder({
-      addressId: this.selectedAddressId,
-      paymentMethod: this.selectedPayment,
-      promoCode: this.promoApplied ? this.promoCode : null
-    }).subscribe({
-      next: response => {
-        this.isPlacingOrder = false;
-        this.toast.success('Order placed successfully!');
-        this.router.navigate(['/order-confirmation', response.orderId]);
-      },
-      error: () => {
-        this.isPlacingOrder = false;
-        this.toast.error('Failed to place order.');
-      }
-    });
-  }
-
+    
   get canPlaceOrder(): boolean {
     return !!this.selectedAddressId && !!this.cart?.items.length;
   }
+
+  onPaymentChange(payment: PaymentType): void {
+    this.selectedPayment = payment;
+  }
+
+  async placeOrder(): Promise<void> {
+  if (!this.selectedAddressId || !this.cart?.items.length) return;
+  this.isPlacingOrder = true;
+
+  try {
+    const response = await firstValueFrom(this.checkoutService.placeOrder({
+      addressId: this.selectedAddressId,
+      paymentMethod: this.selectedPayment,
+      promoCode: this.promoApplied ? this.promoCode : null
+    }));
+
+    if (response.clientSecret) {
+      const { error } = await this.stripeService.confirmPayment(response.clientSecret);
+      if (error) {
+        this.toast.error(error);
+      } else {
+        this.toast.success('Payment successful!');
+        this.cartService.clearCart();
+        this.router.navigate(['/order-confirmation', response.orderId]);
+      }
+      this.isPlacingOrder = false; // ← moved here, always resets
+    } else {
+      this.toast.success('Order placed successfully!');
+      this.cartService.clearCart();
+      this.router.navigate(['/order-confirmation', response.orderId]);
+    }
+  } catch {
+    this.toast.error('Failed to place order.');
+  } finally {
+    this.isPlacingOrder = false;
+  }
+}
 }

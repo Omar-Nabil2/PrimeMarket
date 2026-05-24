@@ -57,4 +57,7 @@ removeFromCart(cartItemId: number) {
     catchError(err => this.toast.handleError(err))
   );
 }
+clearCart(): void {
+  this.cart$.next({ items: [], total: 0, itemCount: 0 });
+}
 }

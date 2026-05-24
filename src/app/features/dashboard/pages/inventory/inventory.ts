@@ -1,17 +1,20 @@
 import {
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   inject,
   OnInit,
+  signal,
+  computed,
+  effect
 } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { AsyncPipe, DecimalPipe, NgClass } from '@angular/common';
+import { DecimalPipe, NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InventoryService, IStockSummary } from '../../../../shared/Services/inventory-service';
 import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
-import { DashboardService } from '../../../../shared/Services/dashboard-service';
-
+import { ProductService } from '../../../../shared/Services/product-service';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { IRequestFilter } from '../../../../shared/Models/Common/irequest-filter';
 
 interface ProductWithStock extends ISellerProduct {
   stockSummary?: IStockSummary;
@@ -26,64 +29,99 @@ interface ProductWithStock extends ISellerProduct {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Inventory implements OnInit {
-  private dashboardService = inject(DashboardService);
+  private productService = inject(ProductService);
   private inventoryService = inject(InventoryService);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
-  private cdr = inject(ChangeDetectorRef);
 
-  products: ProductWithStock[] = [];
-  isLoading = true;
+  apiResult = toSignal(this.productService.result$);
+  private currentFilterSignal = toSignal(this.productService.filter);
 
-  expandedProductId: number | null = null;
-
+  products = signal<ProductWithStock[]>([]);
+  isLoading = signal<boolean>(true);
+  expandedProductId = signal<number | null>(null);
+  isSortDropdownOpen = signal<boolean>(false);
+  
   adjustForms: Record<number, FormGroup> = {};
-
   preselectedId: number | null = null;
+
+  currentFilter = computed<IRequestFilter>(() => {
+    return this.currentFilterSignal() || { pageNumber: 1, pageSize: 10, sortDirection: 'ASC' };
+  });
+
+  sortLabel = computed<string>(() => {
+    const filter = this.currentFilter();
+    if (!filter.sortColumn) return 'Sort By';
+    return filter.sortColumn.charAt(0).toUpperCase() + filter.sortColumn.slice(1);
+  });
+
+  constructor() {
+    effect(() => {
+      this.isLoading.set(true);
+      const res = this.apiResult();
+      if (res) {
+        const mappedProducts = res.items.map(p => ({ ...p }));
+        this.products.set(mappedProducts);
+
+        mappedProducts.forEach(p => {
+          if (!this.adjustForms[p.id]) {
+            this.adjustForms[p.id] = this.fb.group({
+              quantityChange: [null, [Validators.required]],
+            });
+          }
+        });
+
+        if (this.preselectedId) {
+          this.toggleExpand(this.preselectedId);
+          this.preselectedId = null;
+        }
+        this.isLoading.set(false);
+      }
+    });
+  }
 
   ngOnInit(): void {
     const idParam = this.route.snapshot.paramMap.get('productId');
     if (idParam) {
       this.preselectedId = Number(idParam);
     }
-
-    this.loadProducts();
   }
 
-  private loadProducts(): void {
-    this.dashboardService
-      .loadSellerProducts({ pageNumber: 1, pageSize: 100 })
-      .subscribe(() => {
-        this.products = this.dashboardService.getProductsSnapshot().map(p => ({ ...p }));
+  onSearch(event: Event): void {
+    const value = (event.target as HTMLInputElement).value;
+    this.productService.search(value);
+  }
 
-        this.products.forEach(p => {
-          this.adjustForms[p.id] = this.fb.group({
-            quantityChange: [null, [Validators.required]],
-          });
-        });
+  toggleSortDropdown(): void {
+    this.isSortDropdownOpen.update(v => !v);
+  }
 
-        if (this.preselectedId) {
-          this.toggleExpand(this.preselectedId);
-        }
+  onSort(column: string): void {
+    this.productService.sort(column);
+    this.isSortDropdownOpen.set(false);
+  }
 
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      });
+  onPageChange(page: number): void {
+    const res = this.apiResult();
+    if (res && page >= 1 && page <= (res.totalPages || 1)) {
+      this.productService.setPage(page);
+    }
   }
 
   toggleExpand(productId: number): void {
-    if (this.expandedProductId === productId) {
-      this.expandedProductId = null;
+    if (this.expandedProductId() === productId) {
+      this.expandedProductId.set(null);
       return;
     }
-    this.expandedProductId = productId;
+    this.expandedProductId.set(productId);
 
-    const product = this.products.find(p => p.id === productId);
+    const product = this.products().find(p => p.id === productId);
     if (product && !product.stockSummary) {
       this.inventoryService.getStockSummary(productId).subscribe(summary => {
-        if (product && summary) {
-          product.stockSummary = summary;
-          this.cdr.markForCheck();
+        if (summary) {
+          this.products.update(allProducts => 
+            allProducts.map(p => p.id === productId ? { ...p, stockSummary: summary } : p)
+          );
         }
       });
     }
@@ -97,27 +135,34 @@ export class Inventory implements OnInit {
     }
 
     const quantityChange = Number(form.get('quantityChange')!.value);
-    product.isAdjusting = true;
-    this.cdr.markForCheck();
+    
+    this.products.update(allProducts =>
+      allProducts.map(p => p.id === product.id ? { ...p, isAdjusting: true } : p)
+    );
 
     this.inventoryService.adjustStock(product.id, quantityChange).subscribe({
       next: result => {
         if (result) {
-          product.stock = result.newStock;
-          product.stockSummary = {
-            productId: result.productId,
-            productName: result.productName,
-            currentStock: result.newStock,
-            inStock: result.newStock > 0,
-          };
+          this.products.update(allProducts =>
+            allProducts.map(p => p.id === product.id ? {
+              ...p,
+              stock: result.newStock,
+              isAdjusting: false,
+              stockSummary: {
+                productId: result.productId,
+                productName: result.productName,
+                currentStock: result.newStock,
+                inStock: result.newStock > 0,
+              }
+            } : p)
+          );
           form.reset();
         }
-        product.isAdjusting = false;
-        this.cdr.markForCheck();
       },
       error: () => {
-        product.isAdjusting = false;
-        this.cdr.markForCheck();
+        this.products.update(allProducts =>
+          allProducts.map(p => p.id === product.id ? { ...p, isAdjusting: false } : p)
+        );
       },
     });
   }

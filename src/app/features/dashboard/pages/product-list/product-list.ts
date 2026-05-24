@@ -1,40 +1,48 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgClass } from '@angular/common';
-import { DashboardService } from '../../../../shared/Services/dashboard-service';
+import { ProductService } from '../../../../shared/Services/product-service';
 import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
-
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-list',
-  imports: [RouterLink, AsyncPipe, DecimalPipe, NgClass],
+  imports: [RouterLink, AsyncPipe, DecimalPipe, NgClass, FormsModule],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductList implements OnInit {
-  private dashboardService = inject(DashboardService);
+  private productService = inject(ProductService);
 
-  products$ = this.dashboardService.products;
-  loading$ = this.dashboardService.loading;
+  result$ = this.productService.result$;
+  loading$ = this.productService.loading;
+  currentFilter$ = this.productService.filter;
 
+  searchTerm: string = '';
   deletingId: number | null = null;
 
-  ngOnInit(): void {
-    this.dashboardService.loadSellerProducts({ pageNumber: 1, pageSize: 20 }).subscribe();
+  ngOnInit(): void {}
+
+  onSearch(): void {
+    this.productService.search(this.searchTerm);
   }
 
-  onDelete(product: ISellerProduct): void {
-    if (!confirm(`Delete "${product.name}"? This cannot be undone.`)) return;
-
-    this.deletingId = product.id;
-    this.dashboardService.deleteProduct(product.id).subscribe({
-      next: () => (this.deletingId = null),
-      error: () => (this.deletingId = null),
-    });
+  onSort(column: string): void {
+    this.productService.sort(column);
   }
 
   onPageChange(page: number): void {
-    this.dashboardService.loadSellerProducts({ pageNumber: page, pageSize: 20 }).subscribe();
+    this.productService.setPage(page);
+  }
+
+  onDelete(product: ISellerProduct): void {
+    if (!confirm(`Delete "${product.name}"?`)) return;
+
+    this.deletingId = product.id;
+    this.productService.deleteProduct(product.id).subscribe({
+      next: () => (this.deletingId = null),
+      error: () => (this.deletingId = null),
+    });
   }
 }

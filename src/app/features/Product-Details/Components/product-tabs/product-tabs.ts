@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input } from '@angular/core';
-import { IProductReview } from '../../../../shared/Models/iproduct-review';
+import { IProductReview } from '../../../../shared/Models/Product/iproduct-review';
 import { DatePipe, NgClass } from '@angular/common';
 
 type TabType = 'description' | 'reviews';

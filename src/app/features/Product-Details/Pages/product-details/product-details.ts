@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { ActivatedRoute } from '@angular/router';
 import { ProductDetailService } from '../../Services/product-detail-service';
 import { Observable } from 'rxjs';
-import { IProductDetails } from '../../../../shared/Models/iproduct-details';
+import { IProductDetails } from '../../../../shared/Models/Product/iproduct-details';
 import { ProductImage } from "../../Components/product-image/product-image";
 import { ProductInfo } from "../../Components/product-info/product-info";
 import { ProductTabs } from "../../Components/product-tabs/product-tabs";

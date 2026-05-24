@@ -8,7 +8,9 @@
         <a href="#">Products <i class="ti ti-chevron-down"></i></a>
         <a href="#">Pages <i class="ti ti-chevron-down"></i></a>
         <a href="#">Blog <i class="ti ti-chevron-down"></i></a>
-        <a href="#">Elements <i class="ti ti-chevron-down"></i></a>
+        @if (isAuthenticated) {
+          <a routerLink="/dashboard">Seller Dashboard</a>
+        }
       </nav>
     </div>
     <div class="contact">

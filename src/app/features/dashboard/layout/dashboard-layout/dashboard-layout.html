@@ -33,6 +33,11 @@
         @if (!isCollapsed) { <span>Inventory</span> }
       </a>
 
+      <a routerLink="/dashboard/orders" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-receipt"></i>
+        @if (!isCollapsed) { <span>Orders</span> }
+      </a>
+
       <div class="nav-divider"></div>
 
       <a routerLink="/" class="nav-item">

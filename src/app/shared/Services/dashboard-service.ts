@@ -5,7 +5,7 @@ import { BehaviorSubject, catchError, tap, throwError, Observable } from 'rxjs';
 import { ToastService } from './toast-service';
 import { IPaginatedResul } from '../Models/Common/ipaginated-result';
 import { IRequestFilter } from '../Models/Common/irequest-filter';
-import { ISellerProduct } from '../Models/iseller-product';
+import { ISellerProduct } from '../Models/Product/iseller-product';
 
 
 @Injectable({

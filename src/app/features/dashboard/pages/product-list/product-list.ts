@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/cor
 import { RouterLink } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgClass } from '@angular/common';
 import { DashboardService } from '../../../../shared/Services/dashboard-service';
-import { ISellerProduct } from '../../../../shared/Models/iseller-product';
+import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
 
 
 @Component({

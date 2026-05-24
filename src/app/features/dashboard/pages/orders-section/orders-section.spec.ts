@@ -1,19 +1,37 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { of } from 'rxjs';
+import { Orders } from './orders-section';
+import { OrderService } from '../../../../shared/Services/order-service';
+import { ToastService } from '../../../../shared/Services/toast-service';
 
-import { OrdersSection } from './orders-section';
-
-describe('OrdersSection', () => {
-  let component: OrdersSection;
-  let fixture: ComponentFixture<OrdersSection>;
+describe('Orders', () => {
+  let component: Orders;
+  let fixture: ComponentFixture<Orders>;
+  let mockOrderService: any;
+  let mockToastService: any;
 
   beforeEach(async () => {
+    mockOrderService = {
+      getSellerOrders: () => of({ items: [], totalPages: 1, pageNumber: 1 }),
+      updateOrderStatus: () => of({})
+    };
+
+    mockToastService = {
+      success: () => {},
+      handleError: () => of({})
+    };
+
     await TestBed.configureTestingModule({
-      imports: [OrdersSection],
+      imports: [Orders],
+      providers: [
+        { provide: OrderService, useValue: mockOrderService },
+        { provide: ToastService, useValue: mockToastService }
+      ]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(OrdersSection);
+    fixture = TestBed.createComponent(Orders);
     component = fixture.componentInstance;
-    await fixture.whenStable();
+    fixture.detectChanges();
   });
 
   it('should create', () => {

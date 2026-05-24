@@ -26,7 +26,6 @@ export class ProductService {
   readonly result$: Observable<IPaginatedResul<ISellerProduct>> =
     this.filter$.pipe(
       switchMap(filter => this.getSellerProducts(filter)),
-      shareReplay(1)
     );
 
   private items$ = new BehaviorSubject<IPaginatedResul<ISellerProduct> | null>(null);
@@ -82,7 +81,7 @@ export class ProductService {
 
   deleteProduct(productId: number) {
     return this.http.delete<void>(`${this.baseUrl}/${productId}`).pipe(
-      tap(() => { this.toast.success('Product deleted successfully'); this.filter$.next({ ...this.filter$.value }); }),
+      tap(() => {this.filter$.next({ ...this.filter$.value }); }),
       catchError(err => this.toast.handleError(err))
     );
   }
@@ -110,21 +109,16 @@ export class ProductService {
     const formData = new FormData();
     formData.append('image', image);
     return this.http.post<any>(`${this.baseUrl}/${productId}/images`, formData).pipe(
-      tap(() => { if (!options?.silent) this.toast.success('Image uploaded'); }),
       catchError(err => this.toast.handleError(err))
     );
   }
 
   deleteImage(productId: number, imageId: number, options?: { silent?: boolean }) {
-    return this.http.delete<void>(`${this.baseUrl}/${productId}/images/${imageId}`).pipe(
-      tap(() => { if (!options?.silent) this.toast.success('Image deleted'); }),
-      catchError(err => this.toast.handleError(err))
-    );
+    return this.http.delete<void>(`${this.baseUrl}/${productId}/images/${imageId}`);
   }
 
   setPrimaryImage(productId: number, imageId: number, options?: { silent?: boolean }) {
     return this.http.put<void>(`${this.baseUrl}/${productId}/images/${imageId}/set-primary`, {}).pipe(
-      tap(() => { if (!options?.silent) this.toast.success('Primary image updated'); }),
       catchError(err => this.toast.handleError(err))
     );
   }

@@ -52,14 +52,10 @@
   <div class="custom-toolbar">
     <div class="search-wrapper">
       <i class="ti ti-search search-icon-inside"></i>
-      <input 
-        class="premium-search-input" 
-        placeholder="Search by customer or order #..." 
-        [value]="searchTerm()"
-        (input)="onSearchChange($any($event.target).value)" 
-      />
+      <input class="premium-search-input" placeholder="Search by customer or order #..." [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)" />
       @if (searchTerm()) {
-        <button class="clear-search-btn" (click)="onSearchChange('')" type="button">Clear</button>
+      <button class="clear-search-btn" (click)="onSearchChange('')" type="button">Clear</button>
       }
     </div>
 
@@ -68,19 +64,24 @@
         <button (click)="setStatusFilter('All')" [class.active]="statusFilter() === 'All'" class="status-pill-btn">
           <i class="ti ti-border-all"></i> All
         </button>
-        <button (click)="setStatusFilter('Pending')" [class.active]="statusFilter() === 'Pending'" class="status-pill-btn">
+        <button (click)="setStatusFilter('Pending')" [class.active]="statusFilter() === 'Pending'"
+          class="status-pill-btn">
           <i class="ti ti-clock-hour-4"></i> Pending
         </button>
-        <button (click)="setStatusFilter('Confirmed')" [class.active]="statusFilter() === 'Confirmed'" class="status-pill-btn">
+        <button (click)="setStatusFilter('Confirmed')" [class.active]="statusFilter() === 'Confirmed'"
+          class="status-pill-btn">
           <i class="ti ti-circle-check-filled"></i> Confirmed
         </button>
-        <button (click)="setStatusFilter('Shipped')" [class.active]="statusFilter() === 'Shipped'" class="status-pill-btn">
+        <button (click)="setStatusFilter('Shipped')" [class.active]="statusFilter() === 'Shipped'"
+          class="status-pill-btn">
           <i class="ti ti-truck-delivery"></i> Shipped
         </button>
-        <button (click)="setStatusFilter('Delivered')" [class.active]="statusFilter() === 'Delivered'" class="status-pill-btn">
+        <button (click)="setStatusFilter('Delivered')" [class.active]="statusFilter() === 'Delivered'"
+          class="status-pill-btn">
           <i class="ti ti-discount-check-filled"></i> Delivered
         </button>
-        <button (click)="setStatusFilter('Cancelled')" [class.active]="statusFilter() === 'Cancelled'" class="status-pill-btn">
+        <button (click)="setStatusFilter('Cancelled')" [class.active]="statusFilter() === 'Cancelled'"
+          class="status-pill-btn">
           <i class="ti ti-circle-x-filled"></i> Cancelled
         </button>
       </div>
@@ -96,271 +97,292 @@
   </div>
 
   @if (loading()) {
-    <div class="skeleton-list">
-      @for (item of [1, 2, 3]; track $index) {
-        <div class="skeleton-card">
-          <div class="skeleton-header">
-            <div class="skeleton-pulse skeleton-bar-sm"></div>
-            <div class="skeleton-pulse skeleton-bar-md"></div>
-          </div>
-          <div class="skeleton-body">
-            <div class="skeleton-pulse skeleton-circle"></div>
-            <div class="skeleton-lines">
-              <div class="skeleton-pulse skeleton-bar-lg"></div>
-              <div class="skeleton-pulse skeleton-bar-md"></div>
-            </div>
-          </div>
+  <div class="skeleton-list">
+    @for (item of [1, 2, 3]; track $index) {
+    <div class="skeleton-card">
+      <div class="skeleton-header">
+        <div class="skeleton-pulse skeleton-bar-sm"></div>
+        <div class="skeleton-pulse skeleton-bar-md"></div>
+      </div>
+      <div class="skeleton-body">
+        <div class="skeleton-pulse skeleton-circle"></div>
+        <div class="skeleton-lines">
+          <div class="skeleton-pulse skeleton-bar-lg"></div>
+          <div class="skeleton-pulse skeleton-bar-md"></div>
         </div>
-      }
+      </div>
     </div>
+    }
+  </div>
   }
 
   @if (visible(); as data) {
-    @if (data.items.length === 0) {
-      <div class="empty-state-card">
-        <div class="empty-state-icon-circle">
-          <i class="ti ti-package-off"></i>
+  @if (data.items.length === 0) {
+  <div class="empty-state-card">
+    <div class="empty-state-icon-circle">
+      <i class="ti ti-package-off"></i>
+    </div>
+    <h5 class="empty-state-title">No matching orders</h5>
+    <p class="empty-state-desc">We couldn't find any orders matching your chosen filters or search queries.</p>
+  </div>
+  } @else {
+
+  <div class="orders-list">
+    @for (order of data.items; track order.orderId) {
+
+    <div class="order-card-premium mb-4" [ngClass]="order.status">
+      <div class="card-state-accent"></div>
+
+      <div class="card-header-main">
+
+        <div class="order-meta-info">
+          <div class="order-id-badge">#{{ order.orderId }}</div>
+          <div class="order-date-text">{{ order.orderDate | date:'mediumDate' }}</div>
+          <div class="payment-method-badge d-flex align-items-center gap-1"
+            [ngStyle]="{'background': order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash' ? '#f8fafc' : '#f0fdf4', 
+                                 'color': order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash' ? '#64748b' : '#16a34a',
+                                 'border': '1px solid',
+                                 'border-color': order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash' ? '#e2e8f0' : '#bbf7d0',
+                                 'padding': '2px 8px', 'border-radius': '6px', 'font-size': '12px', 'font-weight': '500'}">
+            <i class="ti"
+              [class.ti-cash]="order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash'"
+              [class.ti-credit-card]="order.paymentMethod.toLowerCase() !== 'cod' && order.paymentMethod.toLowerCase() !== 'cash'"></i>
+            {{ order.paymentMethod || 'N/A' }}
+          </div>
         </div>
-        <h5 class="empty-state-title">No matching orders</h5>
-        <p class="empty-state-desc">We couldn't find any orders matching your chosen filters or search queries.</p>
-      </div>
-    } @else {
-      
-      <div class="orders-list">
-        @for (order of data.items; track order.orderId) {
-          
-          <div class="order-card-premium mb-4" [ngClass]="order.status">
-            <!-- Top Status Accent Line is drawn automatically by CSS -->
-            <div class="card-state-accent"></div>
 
-            <!-- Card Header details -->
-            <div class="card-header-main">
-              
-              <!-- Order reference block -->
-              <div class="order-meta-info">
-                <div class="order-id-badge">#{{ order.orderId }}</div>
-                <div class="order-date-text">{{ order.orderDate | date:'mediumDate' }}</div>
-              </div>
+        <div class="customer-profile-block">
+          <div class="avatar-initials">{{ getCustomerInitials(order.customerName) }}</div>
+          <div class="customer-meta-txt">
+            <span class="customer-name-label">{{ order.customerName }}</span>
+            <span class="customer-email-label">{{ order.customerEmail }}</span>
+          </div>
+        </div>
 
-              <!-- Customer profile block -->
-              <div class="customer-profile-block">
-                <div class="avatar-initials">{{ getCustomerInitials(order.customerName) }}</div>
-                <div class="customer-meta-txt">
-                  <span class="customer-name-label">{{ order.customerName }}</span>
-                  <span class="customer-email-label">{{ order.customerEmail }}</span>
-                </div>
-              </div>
-
-              <!-- Status horizontal progress timeline tracker -->
-              @if (order.status !== 'Cancelled') {
-                <div class="order-status-timeline">
-                  <div class="timeline-track">
-                    <div class="timeline-progress-bar"></div>
-                  </div>
-                  
-                  <div class="timeline-step" [class.completed]="order.status !== 'Pending'" [class.active]="order.status === 'Pending'">
-                    <div class="step-dot"><i class="ti ti-clock"></i></div>
-                    <span class="step-label">Pending</span>
-                  </div>
-
-                  <div class="timeline-step" [class.completed]="order.status === 'Shipped' || order.status === 'Delivered'" [class.active]="order.status === 'Confirmed'">
-                    <div class="step-dot"><i class="ti ti-check"></i></div>
-                    <span class="step-label">Confirmed</span>
-                  </div>
-
-                  <div class="timeline-step" [class.completed]="order.status === 'Delivered'" [class.active]="order.status === 'Shipped'">
-                    <div class="step-dot"><i class="ti ti-truck"></i></div>
-                    <span class="step-label">Shipped</span>
-                  </div>
-
-                  <div class="timeline-step" [class.completed]="order.status === 'Delivered'" [class.active]="order.status === 'Delivered'">
-                    <div class="step-dot"><i class="ti ti-discount-check"></i></div>
-                    <span class="step-label">Delivered</span>
-                  </div>
-                </div>
-              } @else {
-                <div class="order-status-timeline justify-content-center">
-                  <span class="text-danger fw-bold d-flex align-items-center gap-1">
-                    <i class="ti ti-circle-x-filled" style="font-size: 16px;"></i> Order Cancelled
-                  </span>
-                </div>
-              }
-
-              <!-- Total price and status badge -->
-              <div class="order-value-actions">
-                <div class="order-amount-display">
-                  <span>EGP</span>{{ order.totalAmount | number:'1.2-2' }}
-                </div>
-                <div class="premium-status-badge">
-                  {{ order.status }}
-                </div>
-              </div>
-
-            </div>
-
-            <!-- Row with micro product tags/chips -->
-            <div class="quick-items-row">
-              @for (it of order.items; track it.productId) {
-                <div class="item-micro-chip">
-                  @if (it.productThumbnail) {
-                    <img class="thumb" [src]="it.productThumbnail" [alt]="it.productName" />
-                  } @else {
-                    <div class="thumb-placeholder"><i class="ti ti-photo"></i></div>
-                  }
-                  <span class="item-chip-title">{{ it.productName }}</span>
-                  <span class="item-chip-qty">x{{ it.quantity }}</span>
-                </div>
-              }
-            </div>
-
-            <!-- Footer block with premium controls -->
-            <div class="card-footer-actions">
-              <div class="action-buttons-group">
-                @if (order.status === 'Pending') {
-                  <button class="btn-pill-premium success" (click)="updateStatus(order, 'Confirmed')" type="button">
-                    <i class="ti ti-check"></i> Confirm Order
-                  </button>
-                  <button class="btn-pill-premium danger-outline" (click)="updateStatus(order, 'Cancelled')" type="button">
-                    <i class="ti ti-x"></i> Cancel
-                  </button>
-                } @else if (order.status === 'Confirmed') {
-                  <button class="btn-pill-premium secondary" (click)="updateStatus(order, 'Shipped')" type="button">
-                    <i class="ti ti-truck-delivery"></i> Dispatch & Ship
-                  </button>
-                  <button class="btn-pill-premium danger-outline" (click)="updateStatus(order, 'Cancelled')" type="button">
-                    <i class="ti ti-x"></i> Cancel
-                  </button>
-                } @else if (order.status === 'Shipped') {
-                  <button class="btn-pill-premium success" (click)="updateStatus(order, 'Delivered')" type="button">
-                    <i class="ti ti-circle-check"></i> Handover Delivered
-                  </button>
-                } @else {
-                  <span class="text-muted small fw-semibold d-flex align-items-center gap-1">
-                    <i class="ti ti-info-circle"></i> State locked — {{ order.status }}
-                  </span>
-                }
-              </div>
-
-              <button class="btn-pill-premium link-btn" [class.expanded-btn]="expanded()[order.orderId]" (click)="toggleExpand(order.orderId)" type="button">
-                <i class="ti ti-chevron-down"></i> 
-                @if (expanded()[order.orderId]) { Collapse } @else { Detailed Summary }
-              </button>
-            </div>
-
-            <!-- Collapsible drawer panel -->
-            @if (expanded()[order.orderId]) {
-              <div class="order-card-details-drawer">
-                <div class="drawer-grid">
-                  
-                  <!-- Left Grid column: Items breakdown -->
-                  <div>
-                    <h6 class="detail-section-title"><i class="ti ti-package"></i> Items Breakdown</h6>
-                    <div class="drawer-product-list">
-                      @for (it of order.items; track it.productId) {
-                        <div class="drawer-product-card">
-                          @if (it.productThumbnail) {
-                            <img class="drawer-product-thumb" [src]="it.productThumbnail" [alt]="it.productName" />
-                          } @else {
-                            <div class="drawer-product-placeholder"><i class="ti ti-photo"></i></div>
-                          }
-                          <div class="product-info-column">
-                            <div class="product-name-txt">{{ it.productName }}</div>
-                            <div class="product-pricing-breakdown">
-                              Unit price: EGP {{ it.unitPrice | number:'1.2-2' }} &bull; Qty purchased: {{ it.quantity }}
-                            </div>
-                          </div>
-                          <div class="product-subtotal-block">
-                            <div class="product-subtotal-value">EGP {{ it.subtotal | number:'1.2-2' }}</div>
-                            <div class="product-subtotal-lbl">Subtotal</div>
-                          </div>
-                        </div>
-                      }
-                    </div>
-                  </div>
-
-                  <!-- Right Grid column: Client & Summary details -->
-                  <div>
-                    <h6 class="detail-section-title"><i class="ti ti-info-circle"></i> Customer & Invoice Summary</h6>
-                    <div class="customer-summary-panel">
-                      
-                      <div class="panel-row">
-                        <span class="panel-row-lbl">Customer Name</span>
-                        <span class="panel-row-val">{{ order.customerName }}</span>
-                      </div>
-
-                      <div class="panel-row">
-                        <span class="panel-row-lbl">Email Address</span>
-                        <span class="panel-row-val">{{ order.customerEmail }}</span>
-                      </div>
-
-                      <div class="panel-row">
-                        <span class="panel-row-lbl">Order Reference</span>
-                        <span class="panel-row-val">#ORD-{{ order.orderId }}</span>
-                      </div>
-
-                      <div class="panel-row">
-                        <span class="panel-row-lbl">Receipt Value</span>
-                        <span class="panel-row-val text-success fw-bold">EGP {{ order.totalAmount | number:'1.2-2' }}</span>
-                      </div>
-
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            }
-
+        @if (order.status !== 'Cancelled') {
+        <div class="order-status-timeline">
+          <div class="timeline-track">
+            <div class="timeline-progress-bar"></div>
           </div>
 
+          <div class="timeline-step" [class.completed]="order.status !== 'Pending'"
+            [class.active]="order.status === 'Pending'">
+            <div class="step-dot"><i class="ti ti-clock"></i></div>
+            <span class="step-label">Pending</span>
+          </div>
+
+          <div class="timeline-step" [class.completed]="order.status === 'Shipped' || order.status === 'Delivered'"
+            [class.active]="order.status === 'Confirmed'">
+            <div class="step-dot"><i class="ti ti-check"></i></div>
+            <span class="step-label">Confirmed</span>
+          </div>
+
+          <div class="timeline-step" [class.completed]="order.status === 'Delivered'"
+            [class.active]="order.status === 'Shipped'">
+            <div class="step-dot"><i class="ti ti-truck"></i></div>
+            <span class="step-label">Shipped</span>
+          </div>
+
+          <div class="timeline-step" [class.completed]="order.status === 'Delivered'"
+            [class.active]="order.status === 'Delivered'">
+            <div class="step-dot"><i class="ti ti-discount-check"></i></div>
+            <span class="step-label">Delivered</span>
+          </div>
+        </div>
+        } @else {
+        <div class="order-status-timeline justify-content-center">
+          <span class="text-danger fw-bold d-flex align-items-center gap-1">
+            <i class="ti ti-circle-x-filled" style="font-size: 16px;"></i> Order Cancelled
+          </span>
+        </div>
+        }
+
+        <div class="order-value-actions">
+          <div class="order-amount-display">
+            <span>EGP</span>{{ order.totalAmount | number:'1.2-2' }}
+          </div>
+          <div class="premium-status-badge">
+            {{ order.status }}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="quick-items-row">
+        @for (it of order.items; track it.productId) {
+        <div class="item-micro-chip">
+          @if (it.productThumbnail) {
+          <img class="thumb" [src]="it.productThumbnail" [alt]="it.productName" />
+          } @else {
+          <div class="thumb-placeholder"><i class="ti ti-photo"></i></div>
+          }
+          <span class="item-chip-title">{{ it.productName }}</span>
+          <span class="item-chip-qty">x{{ it.quantity }}</span>
+        </div>
         }
       </div>
 
-      <!-- Elegant Premium Pagination Bar -->
-      <div class="pagination-container-premium">
-        <div class="pagination-stats-lbl">
-          Showing <strong>{{ (data.pageNumber - 1) * data.pageSize + 1 }}</strong> to <strong>{{ ((data.pageNumber - 1) * data.pageSize + (data.items.length)) }}</strong> orders
-        </div>
-
-        <div class="pagination-btn-group">
-          <button class="pagination-arrow-btn" [disabled]="!data.hasPreviousPage" (click)="onPageChange(data.pageNumber - 1)" title="Previous Page" type="button">
-            <i class="ti ti-chevron-left"></i>
+      <div class="card-footer-actions">
+        <div class="action-buttons-group">
+          @if (order.status === 'Pending') {
+          <button class="btn-pill-premium success" (click)="updateStatus(order, 'Confirmed')" type="button">
+            <i class="ti ti-check"></i> Confirm Order
           </button>
-          
-          @for (p of pageNumbers(); track p) {
-            <button class="pagination-number-btn" [class.active]="p === data.pageNumber" (click)="onPageChange(p)" type="button">
-              {{ p }}
-            </button>
+          <button class="btn-pill-premium danger-outline" (click)="updateStatus(order, 'Cancelled')" type="button">
+            <i class="ti ti-x"></i> Cancel
+          </button>
+          } @else if (order.status === 'Confirmed') {
+          <button class="btn-pill-premium secondary" (click)="updateStatus(order, 'Shipped')" type="button">
+            <i class="ti ti-truck-delivery"></i> Dispatch & Ship
+          </button>
+          <button class="btn-pill-premium danger-outline" (click)="updateStatus(order, 'Cancelled')" type="button">
+            <i class="ti ti-x"></i> Cancel
+          </button>
+          } @else if (order.status === 'Shipped') {
+          <button class="btn-pill-premium success" (click)="updateStatus(order, 'Delivered')" type="button">
+            <i class="ti ti-circle-check"></i> Handover Delivered
+          </button>
+          } @else {
+          <span class="text-muted small fw-semibold d-flex align-items-center gap-1">
+            <i class="ti ti-info-circle"></i> State locked — {{ order.status }}
+          </span>
           }
-
-          <button class="pagination-arrow-btn" [disabled]="!data.hasNextPage" (click)="onPageChange(data.pageNumber + 1)" title="Next Page" type="button">
-            <i class="ti ti-chevron-right"></i>
-          </button>
         </div>
+
+        <button class="btn-pill-premium link-btn" [class.expanded-btn]="expanded()[order.orderId]"
+          (click)="toggleExpand(order.orderId)" type="button">
+          <i class="ti ti-chevron-down"></i>
+          @if (expanded()[order.orderId]) { Collapse } @else { Detailed Summary }
+        </button>
       </div>
 
+      @if (expanded()[order.orderId]) {
+      <div class="order-card-details-drawer">
+        <div class="drawer-grid">
+
+          <div>
+            <h6 class="detail-section-title"><i class="ti ti-package"></i> Items Breakdown</h6>
+            <div class="drawer-product-list">
+              @for (it of order.items; track it.productId) {
+              <div class="drawer-product-card">
+                @if (it.productThumbnail) {
+                <img class="drawer-product-thumb" [src]="it.productThumbnail" [alt]="it.productName" />
+                } @else {
+                <div class="drawer-product-placeholder"><i class="ti ti-photo"></i></div>
+                }
+                <div class="product-info-column">
+                  <div class="product-name-txt">{{ it.productName }}</div>
+                  <div class="product-pricing-breakdown">
+                    Unit price: EGP {{ it.unitPrice | number:'1.2-2' }} &bull; Qty purchased: {{ it.quantity }}
+                  </div>
+                </div>
+                <div class="product-subtotal-block">
+                  <div class="product-subtotal-value">EGP {{ it.subtotal | number:'1.2-2' }}</div>
+                  <div class="product-subtotal-lbl">Subtotal</div>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div>
+            <h6 class="detail-section-title"><i class="ti ti-info-circle"></i> Customer & Invoice Summary</h6>
+            <div class="customer-summary-panel">
+
+              <div class="panel-row">
+                <span class="panel-row-lbl">Customer Name</span>
+                <span class="panel-row-val">{{ order.customerName }}</span>
+              </div>
+
+              <div class="panel-row">
+                <span class="panel-row-lbl">Email Address</span>
+                <span class="panel-row-val">{{ order.customerEmail }}</span>
+              </div>
+
+              <div class="panel-row">
+                <span class="panel-row-lbl">Order Reference</span>
+                <span class="panel-row-val">#ORD-{{ order.orderId }}</span>
+              </div>
+
+              <div class="panel-row">
+                <span class="panel-row-lbl">Payment Method</span>
+                <span class="panel-row-val fw-semibold d-flex align-items-center gap-1">
+                  <i class="ti"
+                    [class.ti-cash]="order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash'"
+                    [class.ti-credit-card]="order.paymentMethod.toLowerCase() !== 'cod' && order.paymentMethod.toLowerCase() !== 'cash'"></i>
+                  {{ order.paymentMethod || 'N/A' }}
+                </span>
+              </div>
+
+              <div class="panel-row">
+                <span class="panel-row-lbl">Receipt Value</span>
+                <span class="panel-row-val text-success fw-bold">EGP {{ order.totalAmount | number:'1.2-2' }}</span>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+      }
+
+    </div>
+
     }
+  </div>
+
+  <div class="pagination-container-premium">
+    <div class="pagination-stats-lbl">
+      Showing <strong>{{ (data.pageNumber - 1) * data.pageSize + 1 }}</strong> to <strong>{{ ((data.pageNumber - 1) *
+        data.pageSize + (data.items.length)) }}</strong> orders
+    </div>
+
+    <div class="pagination-btn-group">
+      <button class="pagination-arrow-btn" [disabled]="!data.hasPreviousPage"
+        (click)="onPageChange(data.pageNumber - 1)" title="Previous Page" type="button">
+        <i class="ti ti-chevron-left"></i>
+      </button>
+
+      @for (p of pageNumbers(); track p) {
+      <button class="pagination-number-btn" [class.active]="p === data.pageNumber" (click)="onPageChange(p)"
+        type="button">
+        {{ p }}
+      </button>
+      }
+
+      <button class="pagination-arrow-btn" [disabled]="!data.hasNextPage" (click)="onPageChange(data.pageNumber + 1)"
+        title="Next Page" type="button">
+        <i class="ti ti-chevron-right"></i>
+      </button>
+    </div>
+  </div>
+
+  }
   }
 
-  <!-- Professional Confirmation Modal -->
   @if (confirmData(); as data) {
-    <div class="modal-backdrop fade show" style="z-index: 1040; backdrop-filter: blur(4px);"></div>
-    <div class="modal d-block fade show" tabindex="-1" style="z-index: 1050; background: rgba(15, 23, 42, 0.4);" (click)="cancelConfirm()">
-      <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
-        <div class="modal-content border-0 shadow-lg" style="border-radius: var(--border-radius-lg); overflow: hidden;">
-          <div class="modal-header p-4">
-            <h5 class="modal-title fw-bold text-dark">Confirm Action</h5>
-            <button type="button" class="btn-close" (click)="cancelConfirm()" aria-label="Close"></button>
-          </div>
-          <div class="modal-body p-4 text-start">
-            <p class="fs-6 mb-0">Are you sure you want to change the status of order <strong>#{{ data.order.orderId }}</strong> to <strong>{{ data.status }}</strong>?</p>
-          </div>
-          <div class="modal-footer p-3 gap-2">
-            <button type="button" class="btn btn-secondary px-4" (click)="cancelConfirm()" style="border-radius: var(--border-radius-md);">Cancel</button>
-            <button type="button" class="btn btn-primary px-4" (click)="executeConfirm()" style="border-radius: var(--border-radius-md);">Confirm</button>
-          </div>
+  <div class="modal-backdrop fade show" style="z-index: 1040; backdrop-filter: blur(4px);"></div>
+  <div class="modal d-block fade show" tabindex="-1" style="z-index: 1050; background: rgba(15, 23, 42, 0.4);"
+    (click)="cancelConfirm()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: var(--border-radius-lg); overflow: hidden;">
+        <div class="modal-header p-4">
+          <h5 class="modal-title fw-bold text-dark">Confirm Action</h5>
+          <button type="button" class="btn-close" (click)="cancelConfirm()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4 text-start">
+          <p class="fs-6 mb-0">Are you sure you want to change the status of order <strong>#{{ data.order.orderId
+              }}</strong> to <strong>{{ data.status }}</strong>?</p>
+        </div>
+        <div class="modal-footer p-3 gap-2">
+          <button type="button" class="btn btn-secondary px-4" (click)="cancelConfirm()"
+            style="border-radius: var(--border-radius-md);">Cancel</button>
+          <button type="button" class="btn btn-primary px-4" (click)="executeConfirm()"
+            style="border-radius: var(--border-radius-md);">Confirm</button>
         </div>
       </div>
     </div>
+  </div>
   }
 
 </div>

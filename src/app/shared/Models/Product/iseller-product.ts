@@ -8,4 +8,5 @@ export interface ISellerProduct {
   averageRating: number;
   reviewCount: number;
   categories: string[];
+  createdAt: string;
 }

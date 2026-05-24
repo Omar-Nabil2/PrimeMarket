@@ -54,6 +54,14 @@
             }
           </button>
         </li>
+        <li>
+          <button type="button" class="dropdown-item d-flex justify-content-between align-items-center" (click)="onSort('createdon')">
+            <span>Date</span>
+            @if(currentFilter().sortColumn?.toLowerCase() === 'createdon') {
+              <i class="ti text-danger fw-bold" [class.ti-chevron-up]="currentFilter().sortDirection === 'ASC'" [class.ti-chevron-down]="currentFilter().sortDirection === 'DESC'"></i>
+            }
+          </button>
+        </li>
       </ul>
     </div>
   </div>

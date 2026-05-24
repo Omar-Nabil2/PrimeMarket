@@ -24,6 +24,7 @@ interface ProductWithStock extends ISellerProduct {
 @Component({
   selector: 'app-inventory',
   imports: [RouterLink, NgClass, ReactiveFormsModule, DecimalPipe],
+  providers: [ProductService],
   templateUrl: './inventory.html',
   styleUrl: './inventory.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,7 +52,10 @@ export class Inventory implements OnInit {
 
   sortLabel = computed<string>(() => {
     const filter = this.currentFilter();
-    if (!filter.sortColumn) return 'Sort By';
+    if (!filter.sortColumn) return 'Newest';
+    if (filter.sortColumn.toLowerCase() === 'createdat' || filter.sortColumn.toLowerCase() === 'createdon') {
+      return 'Date';
+    }
     return filter.sortColumn.charAt(0).toUpperCase() + filter.sortColumn.slice(1);
   });
 

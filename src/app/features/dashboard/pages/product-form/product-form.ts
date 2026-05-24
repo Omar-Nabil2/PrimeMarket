@@ -20,7 +20,6 @@ import { CategoryService } from '../../../../shared/Services/category-service';
 import { ToastService } from '../../../../shared/Services/toast-service';
 import { ICategory } from '../../../../shared/Models/Category/icategory';
 
-
 @Component({
   selector: 'app-product-form',
   imports: [ReactiveFormsModule, NgClass, RouterLink],
@@ -52,7 +51,6 @@ export class ProductForm implements OnInit {
   primaryImageFile: File | null = null;
   extraImageFiles: File[] = [];
   extraImagePreviews: string[] = [];
-  // upload state
   isUploadingImages = false;
   uploadingPrimary = false;
   uploadingExtras: boolean[] = [];
@@ -95,9 +93,6 @@ export class ProductForm implements OnInit {
 
     this.productService.getProductById(id).subscribe(product => {
       if (product) {
-        // Ensure categoryIds is an array of numeric IDs. The product's
-        // categories payload may contain names, ids, or objects depending
-        // on the API shape; map them to IDs using the loaded categories.
         const rawCats = product.categories ?? [];
         const mappedCategoryIds: number[] = [];
 
@@ -113,8 +108,6 @@ export class ProductForm implements OnInit {
           }
         }
 
-        // If categories weren't loaded yet and we couldn't map by name/slug,
-        // fetch categories and remap once available.
         if (mappedCategoryIds.length === 0 && rawCats.some((x: any) => typeof x === 'string') && this.categories.length === 0) {
           this.categoryService.getAll().subscribe(cats => {
             this.categories = cats ?? [];
@@ -126,7 +119,7 @@ export class ProductForm implements OnInit {
                 if (found) remapped.push(found.id);
               } else if (c && typeof c === 'object' && 'id' in c) {
                 const idVal = (c as any).id;
-                if (typeof idVal === 'number') remapped.push(idVal);
+                if (typeof idVal === 'number') mappedCategoryIds.push(idVal);
               }
             }
             this.form.patchValue({ categoryIds: remapped });
@@ -146,7 +139,6 @@ export class ProductForm implements OnInit {
           this.primaryImagePreview = product.thumbnail ?? product.primaryImageUrl;
         }
 
-        // Parse existing images if provided by API. Support multiple possible shapes.
         this.existingImages = [];
         const rawImgs = product.images ?? product.imageDtos ?? product.imageUrls ?? [];
         for (const img of rawImgs) {
@@ -161,7 +153,6 @@ export class ProductForm implements OnInit {
           }
         }
 
-        // Capture initial primary id so we can decide whether set-primary must be called on save
         const initial = this.existingImages.find(i => i.isPrimary && i.id != null);
         this.initialPrimaryImageId = initial ? (initial.id as number) : null;
         this.desiredPrimaryImageId = this.initialPrimaryImageId;
@@ -228,10 +219,7 @@ export class ProductForm implements OnInit {
     this.cdr.markForCheck();
   }
 
-  // Upload an extra image immediately and set it as primary (edit mode only)
   uploadExtraAndSetPrimary(index: number): void {
-    // Instead of uploading immediately, mark this extra file as the primary selection.
-    // It will be uploaded and set as primary when the user presses "Save".
     if (!this.isEditMode) {
       this.toast.info('Save product first to upload images.');
       return;
@@ -241,27 +229,22 @@ export class ProductForm implements OnInit {
     const preview = this.extraImagePreviews[index];
     if (!file) return;
 
-    // Move selected extra into the primary slot so it will be uploaded on save
     this.extraImageFiles.splice(index, 1);
     this.extraImagePreviews.splice(index, 1);
     this.primaryImageFile = file;
     this.primaryImagePreview = preview;
-    // Indicate primary selection will change on save
     this.desiredPrimaryImageId = null;
     this.primarySelectionChanged = true;
     this.cdr.markForCheck();
   }
 
-  // Upload the currently selected primary file (from file chooser) immediately and set primary
   uploadPrimaryFileAndSetPrimary(): void {
-    // Mark the selected primary file to be uploaded and set as primary when the user saves the product.
     if (!this.isEditMode) {
       this.toast.info('Save product first to upload images.');
       return;
     }
     if (!this.primaryImageFile) return;
 
-    // Indicate that the primary selection has changed and will be applied on Save
     this.desiredPrimaryImageId = null;
     this.primarySelectionChanged = true;
     this.cdr.markForCheck();
@@ -327,14 +310,12 @@ export class ProductForm implements OnInit {
 
     this.productService.updateProduct(this.productId!, body).subscribe({
       next: () => {
-        // After successful update, upload any changed images (edit mode only)
         this.handleImageUploads().subscribe({
           next: () => {
             this.isSaving = false;
             this.router.navigate(['/dashboard/products']);
           },
           error: () => {
-            // Image upload errors already handled by ToastService; still navigate
             this.isSaving = false;
             this.router.navigate(['/dashboard/products']);
           },
@@ -343,12 +324,10 @@ export class ProductForm implements OnInit {
       error: (err: any) => {
         this.isSaving = false;
 
-        // If backend returned validation errors in ProblemDetails format
         const validation = err?.error?.errors || err?.error?.Errors || null;
         if (validation && typeof validation === 'object') {
           Object.keys(validation).forEach(key => {
             const messages = validation[key] as string[];
-            // Map server property name to form control name (Name -> name, CategoryIds -> categoryIds)
             const controlName = key.charAt(0).toLowerCase() + key.slice(1);
             const control = this.form.get(controlName);
             if (control) {
@@ -364,18 +343,15 @@ export class ProductForm implements OnInit {
   }
 
   private handleImageUploads() {
-    // Only used in edit mode. If no files to upload, return observable of null.
     if (!this.isEditMode) return of(null as any);
 
     const uploads: Array<any> = [];
     this.isUploadingImages = true;
 
-    // Upload primary image first and set as primary
     if (this.primaryImageFile) {
       this.uploadingPrimary = true;
       const primary$ = this.productService.addImage(this.productId!, this.primaryImageFile, { silent: true }).pipe(
         switchMap((res: any) => {
-          // Try to infer returned image id
           const imageId = res?.id ?? res?.imageId ?? res?.value?.id ?? null;
           if (imageId) return this.productService.setPrimaryImage(this.productId!, imageId, { silent: true });
           return of(null);
@@ -389,7 +365,6 @@ export class ProductForm implements OnInit {
       uploads.push(primary$);
     }
 
-    // Upload extra images (do not set primary)
     if (this.extraImageFiles.length > 0) {
       const extraUploads = this.extraImageFiles.map((f, idx) =>
         this.productService.addImage(this.productId!, f, { silent: true }).pipe(
@@ -400,12 +375,9 @@ export class ProductForm implements OnInit {
           })
         )
       );
-      // mark all extras as uploading
       this.uploadingExtras = this.extraImageFiles.map(() => true);
-      // Run extra uploads in parallel
       uploads.push(forkJoin(extraUploads));
     }
-    // If user changed primary selection for an existing image, enqueue set-primary call
     if (this.primarySelectionChanged && this.desiredPrimaryImageId != null && this.desiredPrimaryImageId !== this.initialPrimaryImageId) {
       uploads.push(this.productService.setPrimaryImage(this.productId!, this.desiredPrimaryImageId, { silent: true }).pipe(catchError(err => of(null))));
     }
@@ -415,34 +387,27 @@ export class ProductForm implements OnInit {
       return of(null as any);
     }
 
-    // Run primary upload (if any) and extras. Use forkJoin to wait for all.
     return forkJoin(uploads as any[]).pipe(
       catchError(err => of(null)),
       finalize(() => {
         this.isUploadingImages = false;
         this.uploadingExtras = [];
         this.uploadingPrimary = false;
-        // reset primary change tracking; if desiredPrimaryImageId is null (new upload), preserve initial id
         this.initialPrimaryImageId = this.desiredPrimaryImageId ?? this.initialPrimaryImageId;
         this.primarySelectionChanged = false;
         this.cdr.markForCheck();
-        // Show a single toast after batch operations
-        this.toast.success('Images updated');
       })
     );
   }
 
-  // Open delete confirmation modal
   deleteConfirmTarget: { id: number | null; url: string; isPrimary: boolean; isProcessing?: boolean } | null = null;
   showDeleteConfirm = false;
 
   requestSetPrimary(image: { id: number | null; url: string; isPrimary: boolean; isProcessing?: boolean }): void {
-    // Deprecated immediate server call. Use selectPrimaryLocally instead.
     this.selectPrimaryLocally(image);
   }
 
   selectPrimaryLocally(image: { id: number | null; url: string; isPrimary: boolean; isProcessing?: boolean }): void {
-    // Update UI only; actual server set-primary will be executed when the product is saved
     this.existingImages.forEach(i => i.isPrimary = (i === image));
     this.primaryImagePreview = image.url;
     this.desiredPrimaryImageId = image.id ?? null;
@@ -451,7 +416,6 @@ export class ProductForm implements OnInit {
   }
 
   confirmDeleteExisting(image: { id: number | null; url: string; isPrimary: boolean; isProcessing?: boolean }): void {
-    // Show modal confirmation
     this.deleteConfirmTarget = image;
     this.showDeleteConfirm = true;
     this.cdr.markForCheck();
@@ -468,7 +432,6 @@ export class ProductForm implements OnInit {
     if (!image) return;
     this.showDeleteConfirm = false;
     if (!this.productId || !image.id) {
-      // local removal
       this.existingImages = this.existingImages.filter(i => i.url !== image.url);
       this.deleteConfirmTarget = null;
       this.cdr.markForCheck();
@@ -483,20 +446,21 @@ export class ProductForm implements OnInit {
       next: () => {
         this.existingImages = this.existingImages.filter(i => i.id !== image.id);
         if (image.isPrimary) this.primaryImagePreview = null;
-      },
-      error: () => {
-        // no extra toast
-      },
-      complete: () => {
         this.deleteConfirmTarget = null;
         this.cdr.markForCheck();
       },
+      error: (err: any) => {
+        image.isProcessing = false;
+        const errorMessage = err?.error?.message || 'Not Allow To Delete The Primary Image For The Product';
+        this.toast.error(errorMessage);
+        this.deleteConfirmTarget = null;
+        this.cdr.markForCheck();
+      }
     });
   }
 
   deleteExistingImage(image: { id: number | null; url: string; isPrimary: boolean; isProcessing?: boolean }): void {
     if (!this.productId || !image.id) {
-      // If no id (url-only), just remove locally
       this.existingImages = this.existingImages.filter(i => i.url !== image.url);
       this.cdr.markForCheck();
       return;
@@ -505,7 +469,6 @@ export class ProductForm implements OnInit {
     const confirmDel = window.confirm('Delete this image?');
     if (!confirmDel) return;
 
-    // silent delete: update UI inline and avoid toast spam
     this.productService.deleteImage(this.productId, image.id, { silent: true }).subscribe({
       next: () => {
         this.existingImages = this.existingImages.filter(i => i.id !== image.id);

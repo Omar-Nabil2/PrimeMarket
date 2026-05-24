@@ -1,0 +1,212 @@
+<div class="user-info-container">
+  <div class="user-info-header">
+    <h1>Account Information</h1>
+    <p>Manage your personal information and security settings</p>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoadingUserInfo" class="loading-state">
+    <div class="spinner"></div>
+    <p>Loading your information...</p>
+  </div>
+
+  <!-- User Info Content -->
+  <div *ngIf="!isLoadingUserInfo && userInfo" class="user-info-content">
+    <!-- User Profile Card -->
+    <div class="info-card">
+      <div class="card-header">
+        <h2>Personal Information</h2>
+        <button *ngIf="!isEditing" (click)="toggleEditMode()" class="edit-btn">
+          <i class="ti ti-edit"></i> Edit
+        </button>
+      </div>
+      <div class="card-body">
+        <!-- Edit Mode Form -->
+        <form *ngIf="isEditing" [formGroup]="editForm" (ngSubmit)="onSaveUserInfo()" class="edit-form">
+          <!-- First Name -->
+          <div class="form-group">
+            <label for="firstName" class="form-label">First Name</label>
+            <div class="input-group">
+              <i class="ti ti-user"></i>
+              <input
+                id="firstName"
+                type="text"
+                formControlName="firstName"
+                placeholder="Enter your first name"
+                class="form-input"
+                [class.is-invalid]="firstName?.invalid && firstName?.touched"
+              />
+            </div>
+            <div *ngIf="firstName?.invalid && firstName?.touched" class="error-message">
+              <span *ngIf="firstName?.hasError('required')">First name is required</span>
+              <span *ngIf="firstName?.hasError('minlength')">First name must be at least 2 characters</span>
+            </div>
+          </div>
+
+          <!-- Last Name -->
+          <div class="form-group">
+            <label for="lastName" class="form-label">Last Name</label>
+            <div class="input-group">
+              <i class="ti ti-user"></i>
+              <input
+                id="lastName"
+                type="text"
+                formControlName="lastName"
+                placeholder="Enter your last name"
+                class="form-input"
+                [class.is-invalid]="lastName?.invalid && lastName?.touched"
+              />
+            </div>
+            <div *ngIf="lastName?.invalid && lastName?.touched" class="error-message">
+              <span *ngIf="lastName?.hasError('required')">Last name is required</span>
+              <span *ngIf="lastName?.hasError('minlength')">Last name must be at least 2 characters</span>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="submit" class="save-btn" [disabled]="editForm.invalid || isSavingInfo">
+              <span *ngIf="!isSavingInfo">Save Changes</span>
+              <span *ngIf="isSavingInfo">
+                <i class="ti ti-loader-2"></i> Saving...
+              </span>
+            </button>
+            <button type="button" (click)="toggleEditMode()" class="cancel-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+
+        <!-- View Mode -->
+        <div *ngIf="!isEditing">
+          <!-- First Name -->
+          <div class="info-row">
+            <label>First Name</label>
+            <p>{{ userInfo.firstName }}</p>
+          </div>
+
+          <!-- Last Name -->
+          <div class="info-row">
+            <label>Last Name</label>
+            <p>{{ userInfo.lastName }}</p>
+          </div>
+
+          <!-- Email -->
+          <div class="info-row">
+            <label>Email Address</label>
+            <p>{{ userInfo.email }}</p>
+          </div>
+
+          <!-- Phone Number -->
+          <div *ngIf="userInfo.phoneNumber" class="info-row">
+            <label>Phone Number</label>
+            <p>{{ userInfo.phoneNumber }}</p>
+          </div>
+
+          <!-- Account Created -->
+          <div *ngIf="userInfo.createdAt" class="info-row">
+            <label>Account Created</label>
+            <p>{{ userInfo.createdAt | date: 'MMM dd, yyyy' }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Change Password Card -->
+    <div class="info-card">
+      <div class="card-header">
+        <h2>Security</h2>
+      </div>
+      <div class="card-body">
+        <!-- Toggle Change Password Form -->
+        <button *ngIf="!showChangePasswordForm" (click)="toggleChangePasswordForm()" class="toggle-form-btn">
+          <i class="ti ti-edit"></i> Change Password
+        </button>
+
+        <!-- Change Password Form -->
+        <form *ngIf="showChangePasswordForm" [formGroup]="changePasswordForm" (ngSubmit)="onChangePassword()" class="change-password-form">
+          <!-- Current Password -->
+          <div class="form-group">
+            <label for="currentPassword" class="form-label">Current Password</label>
+            <div class="input-group">
+              <i class="ti ti-lock"></i>
+              <input
+                id="currentPassword"
+                type="password"
+                formControlName="currentPassword"
+                placeholder="Enter your current password"
+                class="form-input"
+                [class.is-invalid]="currentPassword?.invalid && currentPassword?.touched"
+              />
+            </div>
+            <div *ngIf="currentPassword?.invalid && currentPassword?.touched" class="error-message">
+              <span *ngIf="currentPassword?.hasError('required')">Current password is required</span>
+              <span *ngIf="currentPassword?.hasError('minlength')">Password must be at least 6 characters</span>
+            </div>
+          </div>
+
+          <!-- New Password -->
+          <div class="form-group">
+            <label for="newPassword" class="form-label">New Password</label>
+            <div class="input-group">
+              <i class="ti ti-lock"></i>
+              <input
+                id="newPassword"
+                type="password"
+                formControlName="newPassword"
+                placeholder="Enter your new password"
+                class="form-input"
+                [class.is-invalid]="newPassword?.invalid && newPassword?.touched"
+              />
+            </div>
+            <div *ngIf="newPassword?.invalid && newPassword?.touched" class="error-message">
+              <span *ngIf="newPassword?.hasError('required')">New password is required</span>
+              <span *ngIf="newPassword?.hasError('minlength')">Password must be at least 6 characters</span>
+            </div>
+          </div>
+
+          <!-- Confirm Password -->
+          <div class="form-group">
+            <label for="confirmPassword" class="form-label">Confirm New Password</label>
+            <div class="input-group">
+              <i class="ti ti-lock"></i>
+              <input
+                id="confirmPassword"
+                type="password"
+                formControlName="confirmPassword"
+                placeholder="Confirm your new password"
+                class="form-input"
+                [class.is-invalid]="confirmPassword?.invalid && confirmPassword?.touched"
+              />
+            </div>
+            <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="error-message">
+              <span *ngIf="confirmPassword?.hasError('required')">Confirm password is required</span>
+              <span *ngIf="confirmPassword?.hasError('passwordMismatch')">Passwords do not match</span>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="submit" class="save-btn" [disabled]="changePasswordForm.invalid || isChangingPassword">
+              <span *ngIf="!isChangingPassword">Save New Password</span>
+              <span *ngIf="isChangingPassword">
+                <i class="ti ti-loader-2"></i> Saving...
+              </span>
+            </button>
+            <button type="button" (click)="toggleChangePasswordForm()" class="cancel-btn">
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!isLoadingUserInfo && !userInfo" class="error-state">
+    <div class="error-icon">
+      <i class="ti ti-alert-circle"></i>
+    </div>
+    <p>Failed to load user information. Please try again later.</p>
+  </div>
+</div>

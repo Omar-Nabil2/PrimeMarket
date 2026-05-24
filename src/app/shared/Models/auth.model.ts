@@ -51,6 +51,29 @@ export interface ResetPasswordResponse {
   message: string;
 }
 
+export interface UserInfoRequest {
+  userId: string;
+}
+
+export interface UserInfo {
+  id: string;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phoneNumber?: string;
+  profileImage?: string;
+  createdAt?: string;
+}
+
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}
+
 export interface AuthState {
   isAuthenticated: boolean;
   user: AuthResponse | null;

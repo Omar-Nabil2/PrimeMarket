@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, AuthState } from '../Models/auth.model';
+import { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, UserInfo, ChangePasswordRequest, ChangePasswordResponse, AuthState } from '../Models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -146,6 +146,66 @@ export class AuthService {
         if (error.error?.Errors && Array.isArray(error.error.Errors)) {
           // Get the user-friendly error message (usually at index 1)
           errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Password reset failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Get current user information
+   */
+  getUserInfo(): Observable<UserInfo> {
+    return this.http.get<UserInfo>(`${this.baseUrl}/api/Account/Info`).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Failed to fetch user information';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || errorMessage;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Change user password
+   */
+  changePassword(data: ChangePasswordRequest): Observable<ChangePasswordResponse> {
+    return this.http.put<ChangePasswordResponse>(`${this.baseUrl}/api/Account/Change-Password`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Failed to change password';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || errorMessage;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Update user information (firstName, lastName)
+   */
+  updateUserInfo(data: { firstName: string; lastName: string }): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/Account/Info`, data).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Failed to update user information';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || errorMessage;
         } else if (error.error?.message) {
           errorMessage = error.error.message;
         } else if (error.error?.title) {

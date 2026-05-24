@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../shared/Services/auth.service';
+import { ToastService } from '../../../../shared/Services/toast-service';
 
 @Component({
   selector: 'app-login',
@@ -13,12 +14,11 @@ import { AuthService } from '../../../../shared/Services/auth.service';
 export class Login implements OnInit {
   loginForm!: FormGroup;
   isLoading = false;
-  errorMessage = '';
-  successMessage = '';
 
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
+    private toastService: ToastService,
     private router: Router
   ) {
     this.initializeForm();
@@ -40,22 +40,18 @@ export class Login implements OnInit {
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
-      this.errorMessage = 'Please fill in all fields correctly';
+      this.toastService.error('Please fill in all fields correctly');
       return;
     }
 
     this.isLoading = true;
-    this.errorMessage = '';
-    this.successMessage = '';
 
     const { email, password } = this.loginForm.value;
-    console.log(email, password);
 
     this.authService.login(email, password).subscribe({
       next: (response) => {
         this.isLoading = false;
-        this.successMessage = 'Login successful! Redirecting...';
-        console.log(response);
+        this.toastService.success('Login successful! Redirecting...');
 
         setTimeout(() => {
           this.router.navigate(['/']);
@@ -63,9 +59,8 @@ export class Login implements OnInit {
       },
       error: (error) => {
         this.isLoading = false;
-        this.errorMessage = error.message || 'Login failed. Please try again.';
-        console.log(error);
-
+        const errorMessage = error.message || 'Login failed. Please try again.';
+        this.toastService.error(errorMessage);
       }
     });
   }

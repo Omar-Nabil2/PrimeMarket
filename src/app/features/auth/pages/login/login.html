@@ -6,17 +6,6 @@
       <p>Sign in to your account</p>
     </div>
 
-    <!-- Alert Messages -->
-    <div *ngIf="errorMessage" class="alert alert-danger">
-      <i class="ti ti-alert-circle"></i>
-      {{ errorMessage }}
-    </div>
-
-    <div *ngIf="successMessage" class="alert alert-success">
-      <i class="ti ti-check"></i>
-      {{ successMessage }}
-    </div>
-
     <!-- Login Form -->
     <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="login-form">
       <!-- Email Field -->
@@ -65,19 +54,16 @@
           <input type="checkbox" />
           <span>Remember me</span>
         </label>
-        <a href="#" class="forgot-password">Forgot password?</a>
+        <a routerLink="/auth/forget-password" class="forgot-password">Forgot password?</a>
       </div>
 
       <!-- Submit Button -->
       <button
         type="submit"
         class="login-button"
-        [disabled]="isLoading || loginForm.invalid"
+        [disabled]="loginForm.invalid"
       >
-        <span *ngIf="!isLoading">Sign In</span>
-        <span *ngIf="isLoading">
-          <i class="ti ti-loader-2"></i> Signing in...
-        </span>
+        <span>Sign In</span>
       </button>
     </form>
 

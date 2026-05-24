@@ -3,7 +3,7 @@ import { RouterLink } from '@angular/router';
 import { AsyncPipe, DecimalPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
 import { StatsCard } from '../../components/stats-card/stats-card';
-import { DashboardService } from '../../../../shared/Services/dashboard-service';
+import { ProductService } from '../../../../shared/Services/product-service';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -13,10 +13,10 @@ import { DashboardService } from '../../../../shared/Services/dashboard-service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DashboardHome implements OnInit {
-  private dashboardService = inject(DashboardService);
+  private productService = inject(ProductService);
 
-  products$ = this.dashboardService.products;
-  loading$ = this.dashboardService.loading;
+  products$ = this.productService.products;
+  loading$ = this.productService.loading;
 
   totalProducts$ = this.products$.pipe(map(p => p?.items.length ?? 0));
   inStock$ = this.products$.pipe(
@@ -35,6 +35,6 @@ export class DashboardHome implements OnInit {
   );
 
   ngOnInit(): void {
-    this.dashboardService.loadSellerProducts({ pageNumber: 1, pageSize: 100 }).subscribe();
+    this.productService.loadSellerProducts({ pageNumber: 1, pageSize: 100 }).subscribe();
   }
 }

@@ -13,7 +13,7 @@ import {
 } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgClass } from '@angular/common';
-import { DashboardService } from '../../../../shared/Services/dashboard-service';
+import { ProductService } from '../../../../shared/Services/product-service';
 import { forkJoin, of } from 'rxjs';
 import { switchMap, catchError, finalize } from 'rxjs/operators';
 import { CategoryService } from '../../../../shared/Services/category-service';
@@ -32,7 +32,7 @@ export class ProductForm implements OnInit {
   private fb = inject(FormBuilder);
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private dashboardService = inject(DashboardService);
+  private productService = inject(ProductService);
   private categoryService = inject(CategoryService);
   private toast = inject(ToastService);
   private cdr = inject(ChangeDetectorRef);
@@ -93,7 +93,7 @@ export class ProductForm implements OnInit {
     this.isLoading = true;
     this.cdr.markForCheck();
 
-    this.dashboardService.getProductById(id).subscribe(product => {
+    this.productService.getProductById(id).subscribe(product => {
       if (product) {
         // Ensure categoryIds is an array of numeric IDs. The product's
         // categories payload may contain names, ids, or objects depending
@@ -304,7 +304,7 @@ export class ProductForm implements OnInit {
     formData.append('PrimaryImage', this.primaryImageFile!);
     this.extraImageFiles.forEach(f => formData.append('ExtraImages', f));
 
-    this.dashboardService.createProduct(formData).subscribe({
+    this.productService.createProduct(formData).subscribe({
       next: () => {
         this.isSaving = false;
         this.router.navigate(['/dashboard/products']);
@@ -325,7 +325,7 @@ export class ProductForm implements OnInit {
       categoryIds: v.categoryIds,
     };
 
-    this.dashboardService.updateProduct(this.productId!, body).subscribe({
+    this.productService.updateProduct(this.productId!, body).subscribe({
       next: () => {
         // After successful update, upload any changed images (edit mode only)
         this.handleImageUploads().subscribe({
@@ -373,11 +373,11 @@ export class ProductForm implements OnInit {
     // Upload primary image first and set as primary
     if (this.primaryImageFile) {
       this.uploadingPrimary = true;
-      const primary$ = this.dashboardService.addImage(this.productId!, this.primaryImageFile, { silent: true }).pipe(
+      const primary$ = this.productService.addImage(this.productId!, this.primaryImageFile, { silent: true }).pipe(
         switchMap((res: any) => {
           // Try to infer returned image id
           const imageId = res?.id ?? res?.imageId ?? res?.value?.id ?? null;
-          if (imageId) return this.dashboardService.setPrimaryImage(this.productId!, imageId, { silent: true });
+          if (imageId) return this.productService.setPrimaryImage(this.productId!, imageId, { silent: true });
           return of(null);
         }),
         catchError(err => of(null)),
@@ -392,7 +392,7 @@ export class ProductForm implements OnInit {
     // Upload extra images (do not set primary)
     if (this.extraImageFiles.length > 0) {
       const extraUploads = this.extraImageFiles.map((f, idx) =>
-        this.dashboardService.addImage(this.productId!, f, { silent: true }).pipe(
+        this.productService.addImage(this.productId!, f, { silent: true }).pipe(
           catchError(err => of(null)),
           finalize(() => {
             this.uploadingExtras[idx] = false;
@@ -407,7 +407,7 @@ export class ProductForm implements OnInit {
     }
     // If user changed primary selection for an existing image, enqueue set-primary call
     if (this.primarySelectionChanged && this.desiredPrimaryImageId != null && this.desiredPrimaryImageId !== this.initialPrimaryImageId) {
-      uploads.push(this.dashboardService.setPrimaryImage(this.productId!, this.desiredPrimaryImageId, { silent: true }).pipe(catchError(err => of(null))));
+      uploads.push(this.productService.setPrimaryImage(this.productId!, this.desiredPrimaryImageId, { silent: true }).pipe(catchError(err => of(null))));
     }
 
     if (uploads.length === 0) {
@@ -479,7 +479,7 @@ export class ProductForm implements OnInit {
     image.isProcessing = true;
     this.cdr.markForCheck();
 
-    this.dashboardService.deleteImage(this.productId, image.id, { silent: true }).subscribe({
+    this.productService.deleteImage(this.productId, image.id, { silent: true }).subscribe({
       next: () => {
         this.existingImages = this.existingImages.filter(i => i.id !== image.id);
         if (image.isPrimary) this.primaryImagePreview = null;
@@ -506,7 +506,7 @@ export class ProductForm implements OnInit {
     if (!confirmDel) return;
 
     // silent delete: update UI inline and avoid toast spam
-    this.dashboardService.deleteImage(this.productId, image.id, { silent: true }).subscribe({
+    this.productService.deleteImage(this.productId, image.id, { silent: true }).subscribe({
       next: () => {
         this.existingImages = this.existingImages.filter(i => i.id !== image.id);
         if (image.isPrimary) this.primaryImagePreview = null;

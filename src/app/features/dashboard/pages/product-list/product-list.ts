@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { AsyncPipe, DecimalPipe, NgClass } from '@angular/common';
-import { DashboardService } from '../../../../shared/Services/dashboard-service';
+import { ProductService } from '../../../../shared/Services/product-service';
 import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
 import { FormsModule } from '@angular/forms';
 
@@ -13,11 +13,11 @@ import { FormsModule } from '@angular/forms';
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ProductList implements OnInit {
-  private dashboardService = inject(DashboardService);
+  private productService = inject(ProductService);
 
-  result$ = this.dashboardService.result$;
-  loading$ = this.dashboardService.loading;
-  currentFilter$ = this.dashboardService.filter;
+  result$ = this.productService.result$;
+  loading$ = this.productService.loading;
+  currentFilter$ = this.productService.filter;
 
   searchTerm: string = '';
   deletingId: number | null = null;
@@ -25,22 +25,22 @@ export class ProductList implements OnInit {
   ngOnInit(): void {}
 
   onSearch(): void {
-    this.dashboardService.search(this.searchTerm);
+    this.productService.search(this.searchTerm);
   }
 
   onSort(column: string): void {
-    this.dashboardService.sort(column);
+    this.productService.sort(column);
   }
 
   onPageChange(page: number): void {
-    this.dashboardService.setPage(page);
+    this.productService.setPage(page);
   }
 
   onDelete(product: ISellerProduct): void {
     if (!confirm(`Delete "${product.name}"?`)) return;
 
     this.deletingId = product.id;
-    this.dashboardService.deleteProduct(product.id).subscribe({
+    this.productService.deleteProduct(product.id).subscribe({
       next: () => (this.deletingId = null),
       error: () => (this.deletingId = null),
     });

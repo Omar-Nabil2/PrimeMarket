@@ -10,7 +10,7 @@ import { ToastService } from './toast-service';
 @Injectable({
   providedIn: 'root',
 })
-export class DashboardService {
+export class ProductService {
   private http = inject(HttpClient);
   private toast = inject(ToastService);
   private baseUrl = `${environment.apiUrl}/api/Products`;

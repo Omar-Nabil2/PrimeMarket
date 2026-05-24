@@ -12,7 +12,7 @@ import { DecimalPipe, NgClass } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InventoryService, IStockSummary } from '../../../../shared/Services/inventory-service';
 import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
-import { DashboardService } from '../../../../shared/Services/dashboard-service';
+import { ProductService } from '../../../../shared/Services/product-service';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { IRequestFilter } from '../../../../shared/Models/Common/irequest-filter';
 
@@ -29,13 +29,13 @@ interface ProductWithStock extends ISellerProduct {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Inventory implements OnInit {
-  private dashboardService = inject(DashboardService);
+  private productService = inject(ProductService);
   private inventoryService = inject(InventoryService);
   private route = inject(ActivatedRoute);
   private fb = inject(FormBuilder);
 
-  apiResult = toSignal(this.dashboardService.result$);
-  private currentFilterSignal = toSignal(this.dashboardService.filter);
+  apiResult = toSignal(this.productService.result$);
+  private currentFilterSignal = toSignal(this.productService.filter);
 
   products = signal<ProductWithStock[]>([]);
   isLoading = signal<boolean>(true);
@@ -89,7 +89,7 @@ export class Inventory implements OnInit {
 
   onSearch(event: Event): void {
     const value = (event.target as HTMLInputElement).value;
-    this.dashboardService.search(value);
+    this.productService.search(value);
   }
 
   toggleSortDropdown(): void {
@@ -97,14 +97,14 @@ export class Inventory implements OnInit {
   }
 
   onSort(column: string): void {
-    this.dashboardService.sort(column);
+    this.productService.sort(column);
     this.isSortDropdownOpen.set(false);
   }
 
   onPageChange(page: number): void {
     const res = this.apiResult();
     if (res && page >= 1 && page <= (res.totalPages || 1)) {
-      this.dashboardService.setPage(page);
+      this.productService.setPage(page);
     }
   }
 

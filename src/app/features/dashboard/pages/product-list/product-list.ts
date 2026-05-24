@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { AsyncPipe, DecimalPipe, NgClass } from '@angular/common';
+import { AsyncPipe, DecimalPipe, NgClass, DatePipe } from '@angular/common';
 import { ProductService } from '../../../../shared/Services/product-service';
 import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-product-list',
-  imports: [RouterLink, AsyncPipe, DecimalPipe, NgClass, FormsModule],
+  imports: [RouterLink, AsyncPipe, DecimalPipe, NgClass, FormsModule, DatePipe],
   templateUrl: './product-list.html',
   styleUrl: './product-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

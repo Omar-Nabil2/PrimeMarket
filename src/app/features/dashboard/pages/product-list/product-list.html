@@ -89,6 +89,18 @@
                       </span>
                     </div>
                   </th>
+                <th (click)="onSort('createdOn')" class="sortable-header" style="cursor: pointer; user-select: none;">
+                    <div class="d-flex align-items-center gap-1">
+                      Created At
+                      <span class="sort-icons text-muted">
+                        @if (activeFilter.sortColumn?.toLowerCase() === 'createdon') {
+                          <i class="ti" [ngClass]="activeFilter.sortDirection === 'ASC' ? 'ti-chevron-up text-danger fw-bold' : 'ti-chevron-down text-danger fw-bold'"></i>
+                        } @else {
+                          <i class="ti ti-selector opacity-50"></i>
+                        }
+                      </span>
+                    </div>
+                  </th>
                   <th>Status</th>
                   <th>Actions</th>
                 </tr>
@@ -139,6 +151,12 @@
                         <span>{{ product.averageRating.toFixed(1) }}</span>
                         <span class="review-count">({{ product.reviewCount }})</span>
                       </div>
+                    </td>
+
+                    <td>
+                      <span class="date-cell text-muted small">
+                        {{ product.createdAt| date:'dd MMM yyyy' }}
+                      </span>
                     </td>
 
                     <td>

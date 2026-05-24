@@ -4,6 +4,7 @@ import { AsyncPipe, DecimalPipe, NgClass, DatePipe } from '@angular/common';
 import { ProductService } from '../../../../shared/Services/product-service';
 import { ISellerProduct } from '../../../../shared/Models/Product/iseller-product';
 import { FormsModule } from '@angular/forms';
+import { ToastService } from '../../../../shared/Services/toast-service';
 
 @Component({
   selector: 'app-product-list',
@@ -14,6 +15,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class ProductList implements OnInit {
   private productService = inject(ProductService);
+  private toast = inject(ToastService);
 
   result$ = this.productService.result$;
   loading$ = this.productService.loading;
@@ -21,6 +23,7 @@ export class ProductList implements OnInit {
 
   searchTerm: string = '';
   deletingId: number | null = null;
+  confirmDeleteData: ISellerProduct | null = null;
 
   ngOnInit(): void {}
 
@@ -36,13 +39,30 @@ export class ProductList implements OnInit {
     this.productService.setPage(page);
   }
 
-  onDelete(product: ISellerProduct): void {
-    if (!confirm(`Delete "${product.name}"?`)) return;
+  openDeleteModal(product: ISellerProduct): void {
+    this.confirmDeleteData = product;
+  }
 
+  cancelDelete(): void {
+    this.confirmDeleteData = null;
+  }
+
+  executeDelete(): void {
+    const product = this.confirmDeleteData;
+    if (!product) return;
+
+    this.confirmDeleteData = null;
     this.deletingId = product.id;
+
     this.productService.deleteProduct(product.id).subscribe({
-      next: () => (this.deletingId = null),
-      error: () => (this.deletingId = null),
+      next: () => {
+        this.deletingId = null;
+        this.toast.success(`Product "${product.name}" deleted successfully`);
+      },
+      error: (err) => {
+        this.deletingId = null;
+        this.toast.handleError(err).subscribe();
+      },
     });
   }
 }

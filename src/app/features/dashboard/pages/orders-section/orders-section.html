@@ -130,19 +130,25 @@
         @for (order of data.items; track order.orderId) {
           
           <div class="order-card-premium mb-4" [ngClass]="order.status">
-            <!-- Top Status Accent Line is drawn automatically by CSS -->
             <div class="card-state-accent"></div>
 
-            <!-- Card Header details -->
             <div class="card-header-main">
               
-              <!-- Order reference block -->
               <div class="order-meta-info">
                 <div class="order-id-badge">#{{ order.orderId }}</div>
                 <div class="order-date-text">{{ order.orderDate | date:'mediumDate' }}</div>
+                <div class="payment-method-badge d-flex align-items-center gap-1" 
+                     [ngStyle]="{'background': order.paymentMethod?.toLowerCase() === 'cod' || order.paymentMethod?.toLowerCase() === 'cash' ? '#f8fafc' : '#f0fdf4', 
+                                 'color': order.paymentMethod?.toLowerCase() === 'cod' || order.paymentMethod?.toLowerCase() === 'cash' ? '#64748b' : '#16a34a',
+                                 'border': '1px solid',
+                                 'border-color': order.paymentMethod?.toLowerCase() === 'cod' || order.paymentMethod?.toLowerCase() === 'cash' ? '#e2e8f0' : '#bbf7d0',
+                                 'padding': '2px 8px', 'border-radius': '6px', 'font-size': '12px', 'font-weight': '500'}">
+                  <i class="ti" [class.ti-cash]="order.paymentMethod?.toLowerCase() === 'cod' || order.paymentMethod?.toLowerCase() === 'cash'" 
+                               [class.ti-credit-card]="order.paymentMethod?.toLowerCase() !== 'cod' && order.paymentMethod?.toLowerCase() !== 'cash'"></i>
+                  {{ order.paymentMethod || 'N/A' }}
+                </div>
               </div>
 
-              <!-- Customer profile block -->
               <div class="customer-profile-block">
                 <div class="avatar-initials">{{ getCustomerInitials(order.customerName) }}</div>
                 <div class="customer-meta-txt">
@@ -151,7 +157,6 @@
                 </div>
               </div>
 
-              <!-- Status horizontal progress timeline tracker -->
               @if (order.status !== 'Cancelled') {
                 <div class="order-status-timeline">
                   <div class="timeline-track">
@@ -186,7 +191,6 @@
                 </div>
               }
 
-              <!-- Total price and status badge -->
               <div class="order-value-actions">
                 <div class="order-amount-display">
                   <span>EGP</span>{{ order.totalAmount | number:'1.2-2' }}
@@ -198,7 +202,6 @@
 
             </div>
 
-            <!-- Row with micro product tags/chips -->
             <div class="quick-items-row">
               @for (it of order.items; track it.productId) {
                 <div class="item-micro-chip">
@@ -213,7 +216,6 @@
               }
             </div>
 
-            <!-- Footer block with premium controls -->
             <div class="card-footer-actions">
               <div class="action-buttons-group">
                 @if (order.status === 'Pending') {
@@ -247,12 +249,10 @@
               </button>
             </div>
 
-            <!-- Collapsible drawer panel -->
             @if (expanded()[order.orderId]) {
               <div class="order-card-details-drawer">
                 <div class="drawer-grid">
                   
-                  <!-- Left Grid column: Items breakdown -->
                   <div>
                     <h6 class="detail-section-title"><i class="ti ti-package"></i> Items Breakdown</h6>
                     <div class="drawer-product-list">
@@ -278,7 +278,6 @@
                     </div>
                   </div>
 
-                  <!-- Right Grid column: Client & Summary details -->
                   <div>
                     <h6 class="detail-section-title"><i class="ti ti-info-circle"></i> Customer & Invoice Summary</h6>
                     <div class="customer-summary-panel">
@@ -299,6 +298,15 @@
                       </div>
 
                       <div class="panel-row">
+                        <span class="panel-row-lbl">Payment Method</span>
+                        <span class="panel-row-val fw-semibold d-flex align-items-center gap-1">
+                          <i class="ti" [class.ti-cash]="order.paymentMethod?.toLowerCase() === 'cod' || order.paymentMethod?.toLowerCase() === 'cash'" 
+                                       [class.ti-credit-card]="order.paymentMethod?.toLowerCase() !== 'cod' && order.paymentMethod?.toLowerCase() !== 'cash'"></i>
+                          {{ order.paymentMethod || 'N/A' }}
+                        </span>
+                      </div>
+
+                      <div class="panel-row">
                         <span class="panel-row-lbl">Receipt Value</span>
                         <span class="panel-row-val text-success fw-bold">EGP {{ order.totalAmount | number:'1.2-2' }}</span>
                       </div>
@@ -315,7 +323,6 @@
         }
       </div>
 
-      <!-- Elegant Premium Pagination Bar -->
       <div class="pagination-container-premium">
         <div class="pagination-stats-lbl">
           Showing <strong>{{ (data.pageNumber - 1) * data.pageSize + 1 }}</strong> to <strong>{{ ((data.pageNumber - 1) * data.pageSize + (data.items.length)) }}</strong> orders
@@ -341,7 +348,6 @@
     }
   }
 
-  <!-- Professional Confirmation Modal -->
   @if (confirmData(); as data) {
     <div class="modal-backdrop fade show" style="z-index: 1040; backdrop-filter: blur(4px);"></div>
     <div class="modal d-block fade show" tabindex="-1" style="z-index: 1050; background: rgba(15, 23, 42, 0.4);" (click)="cancelConfirm()">

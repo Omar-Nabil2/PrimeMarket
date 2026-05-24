@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
-import { DecimalPipe, NgClass, DatePipe } from '@angular/common';
+import { DecimalPipe, NgClass, DatePipe, NgStyle } from '@angular/common'; // تم إضافة NgStyle للـ Badges الديناميكية
 import { OrderService } from '../../../../shared/Services/order-service';
 import { IPaginatedResul } from '../../../../shared/Models/Common/ipaginated-result';
 import { ISellerOrder, OrderStatus } from '../../../../shared/Models/Orders/iseller-order';
@@ -8,7 +8,7 @@ import { ToastService } from '../../../../shared/Services/toast-service';
 
 @Component({
   selector: 'app-orders',
-  imports: [NgClass, DecimalPipe, DatePipe],
+  imports: [NgClass, DecimalPipe, DatePipe, NgStyle],
   templateUrl: './orders-section.html',
   styleUrl: './orders-section.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -20,13 +20,9 @@ export class Orders implements OnInit {
   orders = signal<IPaginatedResul<ISellerOrder> | null>(null);
   loading = signal(false);
 
-  // server-driven filter (search, sort, pagination)
   filter = signal<IRequestFilter>({ pageNumber: 1, pageSize: 5, searchValue: '', sortColumn: 'createdon', sortDirection: 'DESC' });
-
-  // client-side status filter (backend doesn't expose status filter)
   statusFilter = signal<'All' | OrderStatus>('All');
 
-  // UI signals
   searchTerm = signal('');
   private searchTimer: any = null;
   expanded = signal<Record<number, boolean>>({});
@@ -60,8 +56,6 @@ export class Orders implements OnInit {
     }
     return name.slice(0, 2).toUpperCase();
   }
-
-
 
   ngOnInit(): void {
     this.loadOrders();
@@ -131,7 +125,6 @@ export class Orders implements OnInit {
     
     this.ordersService.updateOrderStatus(data.order.orderId, data.status).subscribe({
       next: () => {
-        // update local snapshot
         const pag = this.orders();
         if (pag) {
           const updatedItems = pag.items.map(o => (o.orderId === data.order.orderId ? { ...o, status: data.status } : o));
@@ -163,6 +156,7 @@ export class Orders implements OnInit {
 
   get totalPages() { return this.orders()?.totalPages ?? 1; }
   get currentPage() { return this.orders()?.pageNumber ?? 1; }
+  
   pageNumbers(max = 7) {
     const total = this.totalPages;
     const current = this.currentPage;

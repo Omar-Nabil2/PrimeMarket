@@ -13,8 +13,9 @@ export interface ISellerOrder {
   orderId: number;
   customerName: string;
   customerEmail: string;
-  orderDate: string; // ISO date string
+  orderDate: string;
   status: OrderStatus;
   totalAmount: number;
+  paymentMethod: string;
   items: ISellerOrderItem[];
 }

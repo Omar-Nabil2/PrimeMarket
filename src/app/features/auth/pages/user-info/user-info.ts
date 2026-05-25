@@ -22,7 +22,9 @@ export class UserInfoComponent implements OnInit, OnDestroy {
   isEditing = false;
   isSavingInfo = false;
   isChangingPassword = false;
+  isUploadingImage = false;
   showChangePasswordForm = false;
+  profileImagePreview: string | null = null;
   private destroy$ = new Subject<void>();
 
   constructor(
@@ -73,6 +75,7 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     this.authService.getUserInfo().pipe(takeUntil(this.destroy$)).subscribe({
       next: (info) => {
         this.userInfo = info;
+        this.profileImagePreview = info.profilePictureUrl || null;
         this.editForm.patchValue({
           firstName: info.firstName,
           lastName: info.lastName
@@ -129,6 +132,62 @@ export class UserInfoComponent implements OnInit, OnDestroy {
     });
   }
 
+  onProfileImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        this.toastService.error('Please select a valid image file');
+        return;
+      }
+
+      // Validate file size (max 5MB)
+      const maxSize = 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        this.toastService.error('Image size must be less than 5MB');
+        return;
+      }
+
+      // Create preview
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        this.profileImagePreview = e.target?.result as string;
+        this.cdr.detectChanges();
+      };
+      reader.readAsDataURL(file);
+
+      // Upload image
+      this.uploadProfileImage(file);
+    }
+  }
+
+  private uploadProfileImage(file: File): void {
+    this.isUploadingImage = true;
+
+    this.authService.uploadProfileImage(file).pipe(takeUntil(this.destroy$)).subscribe({
+      next: (response) => {
+        this.isUploadingImage = false;
+        this.toastService.success(response?.message || 'Profile image uploaded successfully!');
+        // Update user info to get the new image URL
+        this.loadUserInfo();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        this.isUploadingImage = false;
+        const errorMessage = error?.message || 'Failed to upload profile image';
+        this.toastService.error(errorMessage);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  removeProfileImage(): void {
+    this.profileImagePreview = null;
+    this.cdr.detectChanges();
+  }
+
   toggleChangePasswordForm(): void {
     this.showChangePasswordForm = !this.showChangePasswordForm;
     if (!this.showChangePasswordForm) {
@@ -180,5 +239,9 @@ export class UserInfoComponent implements OnInit, OnDestroy {
 
   get confirmPassword() {
     return this.changePasswordForm.get('confirmPassword');
+  }
+
+  goToHome(): void {
+    this.router.navigate(['/']);
   }
 }

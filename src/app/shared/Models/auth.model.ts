@@ -5,6 +5,7 @@ export interface AuthResponse {
   lastName: string;
   token: string;
   expiresIn: number;
+  profilePictureUrl?: string;
 }
 
 export interface LoginRequest {
@@ -51,8 +52,12 @@ export interface ResetPasswordResponse {
   message: string;
 }
 
-export interface UserInfoRequest {
-  userId: string;
+export interface UserProfileResponse {
+  email: string;
+  userName: string;
+  firstName: string;
+  lastName: string;
+  profilePictureUrl?: string;
 }
 
 export interface UserInfo {
@@ -61,7 +66,7 @@ export interface UserInfo {
   firstName: string;
   lastName: string;
   phoneNumber?: string;
-  profileImage?: string;
+  profilePictureUrl?: string;
   createdAt?: string;
 }
 
@@ -72,6 +77,11 @@ export interface ChangePasswordRequest {
 
 export interface ChangePasswordResponse {
   message: string;
+}
+
+export interface ProfileImageResponse {
+  message: string;
+  profilePictureUrl?: string;
 }
 
 export interface AuthState {

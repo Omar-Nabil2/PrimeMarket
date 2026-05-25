@@ -1,4 +1,171 @@
 <div class="admin-container">
-  <h2>Categories Management</h2>
-  <p>Manage all product categories on your platform.</p>
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h2>Categories Management</h2>
+      <p>Manage all product categories on your platform</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddCategoryForm()">
+      <i class="ti ti-plus"></i> Add New Category
+    </button>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search categories by name..."
+      />
+    </div>
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">Total Categories</span>
+        <span class="stat-value">{{ categories.length }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Categories Table -->
+  <div class="table-container">
+    <div *ngIf="isLoading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading categories...</p>
+    </div>
+
+    <div *ngIf="!isLoading && filteredCategories.length === 0" class="empty-state">
+      <i class="ti ti-inbox"></i>
+      <h3>No categories found</h3>
+      <p>{{ searchTerm ? 'Try adjusting your search filters' : 'No categories in the system yet' }}</p>
+    </div>
+
+    <table *ngIf="!isLoading && filteredCategories.length > 0" class="categories-table">
+      <thead>
+        <tr>
+          <th>Category Name</th>
+          <th>ID</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let category of filteredCategories">
+          <td>
+            <p class="category-name">{{ category.name }}</p>
+          </td>
+          <td>{{ category.id }}</td>
+          <td class="actions-cell">
+            <button class="action-btn edit-btn" (click)="openEditCategoryForm(category)" title="Edit category">
+              <i class="ti ti-edit"></i>
+            </button>
+            <button class="action-btn delete-btn" (click)="deleteCategory(category)" title="Delete category">
+              <i class="ti ti-trash"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div *ngIf="showAddCategoryForm" class="modal-overlay" (click)="closeAddCategoryForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Add New Category</h3>
+        <button class="close-btn" (click)="closeAddCategoryForm()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="addCategoryForm" class="modal-body">
+        <div class="form-group">
+          <label>Category Name *</label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Enter category name"
+            class="form-control"
+          />
+          <span class="error" *ngIf="addCategoryForm.get('name')?.invalid && addCategoryForm.get('name')?.touched">
+            Category name is required (min 2 characters)
+          </span>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeAddCategoryForm()" [disabled]="isSubmitting">Cancel</button>
+        <button class="btn btn-primary" (click)="submitAddCategoryForm()" [disabled]="isSubmitting || addCategoryForm.invalid">
+          <span *ngIf="!isSubmitting">Create Category</span>
+          <span *ngIf="isSubmitting">Creating...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Category Modal -->
+  <div *ngIf="showEditCategoryForm && selectedCategory" class="modal-overlay" (click)="closeEditCategoryForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Edit Category</h3>
+        <button class="close-btn" (click)="closeEditCategoryForm()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="editCategoryForm" class="modal-body">
+        <div class="form-group">
+          <label>Category Name *</label>
+          <input
+            type="text"
+            formControlName="name"
+            placeholder="Enter category name"
+            class="form-control"
+          />
+          <span class="error" *ngIf="editCategoryForm.get('name')?.invalid && editCategoryForm.get('name')?.touched">
+            Category name is required (min 2 characters)
+          </span>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeEditCategoryForm()" [disabled]="isSubmitting">Cancel</button>
+        <button class="btn btn-primary" (click)="submitEditCategoryForm()" [disabled]="isSubmitting || editCategoryForm.invalid">
+          <span *ngIf="!isSubmitting">Update Category</span>
+          <span *ngIf="isSubmitting">Updating...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Delete Confirmation Modal -->
+  <div *ngIf="showDeleteModal && categoryToDelete" class="modal-overlay" (click)="closeDeleteModal()">
+    <div class="modal-content modal-delete" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Confirm Deletion</h3>
+        <button class="close-btn" (click)="closeDeleteModal()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body delete-content">
+        <div class="delete-icon">
+          <i class="ti ti-alert-triangle"></i>
+        </div>
+        <p class="delete-message">
+          Are you sure you want to delete <strong>"{{ categoryToDelete.name }}"</strong>?
+        </p>
+        <p class="delete-warning">This action cannot be undone.</p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeDeleteModal()" [disabled]="isSubmitting">Cancel</button>
+        <button class="btn btn-danger" (click)="confirmDelete()" [disabled]="isSubmitting">
+          <span *ngIf="!isSubmitting"><i class="ti ti-trash"></i> Delete Category</span>
+          <span *ngIf="isSubmitting">Deleting...</span>
+        </button>
+      </div>
+    </div>
+  </div>
 </div>

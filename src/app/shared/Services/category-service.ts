@@ -12,7 +12,7 @@ import { IProcuctCard } from '../Models/Product/iproduct-card';
   providedIn: 'root',
 })
 export class CategoryService {
-  private http = inject(HttpClient); 
+  private http = inject(HttpClient);
   private baseUrl = environment.apiUrl;
   private toast = inject(ToastService);
 
@@ -38,5 +38,20 @@ export class CategoryService {
     return this.http.get<IProcuctCard[]>(
       `${this.baseUrl}/api/Products/category/${categoryId}`
     );
+  }
+
+  // Create new category
+  createCategory(data: { name: string }): Observable<ICategory> {
+    return this.http.post<ICategory>(`${this.baseUrl}/api/Categories`, data);
+  }
+
+  // Update category
+  updateCategory(id: number, data: { name: string }): Observable<ICategory> {
+    return this.http.put<ICategory>(`${this.baseUrl}/api/Categories/${id}`, data);
+  }
+
+  // Delete category
+  deleteCategory(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/api/Categories/${id}`);
   }
 }

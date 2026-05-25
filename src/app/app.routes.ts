@@ -29,6 +29,11 @@ export const routes: Routes = [
       import('./features/dashboard/dashboard.routes').then(m => m.DASHBOARD_ROUTES),
   },
   {
+    path: 'admin-dashboard',
+    loadChildren: () =>
+      import('./features/admin-dashboard/admin-dashboard.routes').then(m => m.ADMIN_DASHBOARD_ROUTES),
+  },
+  {
     path:'**',
     component: Notfound
   }

@@ -6,6 +6,7 @@ export interface AuthResponse {
   token: string;
   expiresIn: number;
   profilePictureUrl?: string;
+  roles?: string[];
 }
 
 export interface LoginRequest {

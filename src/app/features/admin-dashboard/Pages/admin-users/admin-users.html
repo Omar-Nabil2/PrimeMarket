@@ -1,0 +1,333 @@
+<div class="admin-container">
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <h2>Users Management</h2>
+      <p>Manage all users on your platform</p>
+    </div>
+    <button class="btn btn-primary" (click)="openAddUserForm()">
+      <i class="ti ti-user-plus"></i> Add New User
+    </button>
+  </div>
+
+  <!-- Search Section -->
+  <div class="search-section">
+    <div class="search-box">
+      <i class="ti ti-search"></i>
+      <input
+        type="text"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        placeholder="Search users by email, name, or username..."
+      />
+    </div>
+    <div class="stats">
+      <div class="stat-item">
+        <span class="stat-label">Total Users</span>
+        <span class="stat-value">{{ users.length }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Active</span>
+        <span class="stat-value">{{ users.filter(u => !u.isDisabled).length }}</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-label">Inactive</span>
+        <span class="stat-value">{{ users.filter(u => u.isDisabled).length }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Users Table -->
+  <div class="table-container">
+    <div *ngIf="isLoading" class="loading">
+      <div class="spinner"></div>
+      <p>Loading users...</p>
+    </div>
+
+    <div *ngIf="!isLoading && filteredUsers.length === 0" class="empty-state">
+      <i class="ti ti-inbox"></i>
+      <h3>No users found</h3>
+      <p>{{ searchTerm ? 'Try adjusting your search filters' : 'No users in the system yet' }}</p>
+    </div>
+
+    <table *ngIf="!isLoading && filteredUsers.length > 0" class="users-table">
+      <thead>
+        <tr>
+          <th>User</th>
+          <th>Email</th>
+          <th>Roles</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of filteredUsers" [class.inactive]="user.isDisabled">
+          <td class="user-cell">
+            <div class="user-info">
+              <div>
+                <p class="user-name">{{ getFullName(user) }}</p>
+                <p class="user-id">ID: {{ user.id }}</p>
+              </div>
+            </div>
+          </td>
+          <td>{{ user.email }}</td>
+          <td>
+            <div class="roles-container">
+              <span *ngFor="let role of user.roles" class="role-badge" [class]="'role-' + role.toLowerCase()">
+                {{ role }}
+              </span>
+            </div>
+          </td>
+          <td>
+            <span [class.status-badge]="true" [class.active]="!user.isDisabled" [class.inactive]="user.isDisabled">
+              {{ !user.isDisabled ? 'Active' : 'Inactive' }}
+            </span>
+          </td>
+          <td class="actions-cell">
+            <button class="action-btn view-btn" (click)="viewUserDetails(user)" title="View details">
+              <i class="ti ti-eye"></i>
+            </button>
+            <button class="action-btn edit-btn" (click)="openEditUserForm(user)" title="Edit user">
+              <i class="ti ti-edit"></i>
+            </button>
+            <button
+              class="action-btn toggle-btn"
+              (click)="toggleUserStatus(user)"
+              [title]="!user.isDisabled ? 'Deactivate user' : 'Activate user'"
+            >
+              <i [class]="!user.isDisabled ? 'ti ti-ban' : 'ti ti-check'"></i>
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Add User Modal -->
+  <div *ngIf="showAddUserForm" class="modal-overlay" (click)="closeAddUserForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Add New User</h3>
+        <button class="close-btn" (click)="closeAddUserForm()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="addUserForm" class="modal-body">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input
+            type="text"
+            formControlName="firstName"
+            placeholder="Enter first name"
+            class="form-control"
+          />
+          <span class="error" *ngIf="addUserForm.get('firstName')?.invalid && addUserForm.get('firstName')?.touched">
+            First name is required (min 2 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Last Name *</label>
+          <input
+            type="text"
+            formControlName="lastName"
+            placeholder="Enter last name"
+            class="form-control"
+          />
+          <span class="error" *ngIf="addUserForm.get('lastName')?.invalid && addUserForm.get('lastName')?.touched">
+            Last name is required (min 2 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Email *</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter email address"
+            class="form-control"
+          />
+          <span class="error" *ngIf="addUserForm.get('email')?.invalid && addUserForm.get('email')?.touched">
+            Valid email is required
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Password *</label>
+          <input
+            type="password"
+            formControlName="password"
+            placeholder="Enter password (min 6 characters)"
+            class="form-control"
+          />
+          <span class="error" *ngIf="addUserForm.get('password')?.invalid && addUserForm.get('password')?.touched">
+            Password is required (min 6 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Roles *</label>
+          <select formControlName="roles" class="form-control" multiple>
+            <option value="Customer">Customer</option>
+            <option value="Seller">Seller</option>
+            <option value="Admin">Admin</option>
+          </select>
+          <span class="error" *ngIf="addUserForm.get('roles')?.invalid && addUserForm.get('roles')?.touched">
+            At least one role is required
+          </span>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeAddUserForm()" [disabled]="isSubmitting">Cancel</button>
+        <button class="btn btn-primary" (click)="submitAddUserForm()" [disabled]="isSubmitting || addUserForm.invalid">
+          <span *ngIf="!isSubmitting">Create User</span>
+          <span *ngIf="isSubmitting">Creating...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit User Modal -->
+  <div *ngIf="showEditUserForm && selectedUser" class="modal-overlay" (click)="closeEditUserForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>Edit User</h3>
+        <button class="close-btn" (click)="closeEditUserForm()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <form [formGroup]="editUserForm" class="modal-body">
+        <div class="form-group">
+          <label>First Name *</label>
+          <input
+            type="text"
+            formControlName="firstName"
+            placeholder="Enter first name"
+            class="form-control"
+          />
+          <span class="error" *ngIf="editUserForm.get('firstName')?.invalid && editUserForm.get('firstName')?.touched">
+            First name is required (min 2 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Last Name *</label>
+          <input
+            type="text"
+            formControlName="lastName"
+            placeholder="Enter last name"
+            class="form-control"
+          />
+          <span class="error" *ngIf="editUserForm.get('lastName')?.invalid && editUserForm.get('lastName')?.touched">
+            Last name is required (min 2 characters)
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Email *</label>
+          <input
+            type="email"
+            formControlName="email"
+            placeholder="Enter email address"
+            class="form-control"
+          />
+          <span class="error" *ngIf="editUserForm.get('email')?.invalid && editUserForm.get('email')?.touched">
+            Valid email is required
+          </span>
+        </div>
+
+        <div class="form-group">
+          <label>Roles *</label>
+          <select formControlName="roles" class="form-control" multiple>
+            <option value="Customer">Customer</option>
+            <option value="Seller">Seller</option>
+            <option value="Admin">Admin</option>
+          </select>
+          <span class="error" *ngIf="editUserForm.get('roles')?.invalid && editUserForm.get('roles')?.touched">
+            At least one role is required
+          </span>
+        </div>
+      </form>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeEditUserForm()" [disabled]="isSubmitting">Cancel</button>
+        <button class="btn btn-primary" (click)="submitEditUserForm()" [disabled]="isSubmitting || editUserForm.invalid">
+          <span *ngIf="!isSubmitting">Update User</span>
+          <span *ngIf="isSubmitting">Updating...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- View User Details Modal -->
+  <div *ngIf="showUserDetails && selectedUser" class="modal-overlay" (click)="closeUserDetails()">
+    <div class="modal-content modal-lg" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3>User Details</h3>
+        <button class="close-btn" (click)="closeUserDetails()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+
+      <div class="modal-body">
+        <div class="user-detail-info">
+          <div class="detail-info">
+            <div class="detail-row">
+              <span class="detail-label">Full Name</span>
+              <span class="detail-value">{{ getFullName(selectedUser) }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Email</span>
+              <span class="detail-value">{{ selectedUser.email }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Username</span>
+              <span class="detail-value">{{ selectedUser.userName || '-' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">User ID</span>
+              <span class="detail-value">{{ selectedUser.id }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Joined Date</span>
+              <span class="detail-value">{{ selectedUser.createdAt | date: 'MMM d, yyyy HH:mm' }}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Roles</span>
+              <span class="detail-value">
+                <span *ngFor="let role of selectedUser.roles" class="role-badge" [class]="'role-' + role.toLowerCase()">
+                  {{ role }}
+                </span>
+              </span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">Status</span>
+              <span
+                [class.status-badge]="true"
+                [class.active]="!selectedUser.isDisabled"
+                [class.inactive]="selectedUser.isDisabled"
+              >
+                {{ !selectedUser.isDisabled ? 'Active' : 'Inactive' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="closeUserDetails()">Close</button>
+        <button class="btn btn-warning" (click)="openEditUserForm(selectedUser)">
+          <i class="ti ti-edit"></i> Edit User
+        </button>
+        <button class="btn btn-info" (click)="toggleUserStatus(selectedUser)">
+          <i [class]="!selectedUser.isDisabled ? 'ti ti-ban' : 'ti ti-check'"></i>
+          {{ !selectedUser.isDisabled ? 'Deactivate' : 'Activate' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+

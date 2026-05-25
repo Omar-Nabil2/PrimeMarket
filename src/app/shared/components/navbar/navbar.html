@@ -11,6 +11,9 @@
         @if (isAuthenticated) {
           <a routerLink="/dashboard">Seller Dashboard</a>
         }
+        @if (isAdmin) {
+          <a routerLink="/admin-dashboard" style="color: #e74c3c; font-weight: 600;"><i class="ti ti-shield-admin" style="margin-right: 4px;"></i>Admin Dashboard</a>
+        }
       </nav>
     </div>
     <div class="contact">

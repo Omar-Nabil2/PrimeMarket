@@ -8,12 +8,12 @@ export const routes: Routes = [
     path: '',
     component: Mainlayout,
     children: [
-      { path:'', loadChildren: () => import('./features/home/home.routes').then(m => m.HOME_ROUTES)},
-      { path: 'products', loadChildren: () => import('./features/Product-Details/productDetails.routes').then(m => m.PRODUCT_DETAILS_ROUTES) },
-      { path: 'wishlist',loadChildren: () => import('./features/WishList/wishlist.route').then( w => w.WISHLIST_ROUTES)},
-      { path: 'cart', loadChildren: () => import('./features/Cart/Cart.routes').then(m => m.CART_ROUTES) },
-      { path: 'checkout', loadChildren: () => import('./features/Checkout/Checkout.routes').then(m => m.CHECKOUT_ROUTES) },
-      { path: 'order-confirmation', loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) }
+      { path:'',loadChildren: () => import('./features/home/home.routes').then(m => m.HOME_ROUTES)},
+      { path: 'products', data: { breadcrumb: 'Products' },loadChildren: () => import('./features/Product-Details/productDetails.routes').then(m => m.PRODUCT_DETAILS_ROUTES) },
+      { path: 'wishlist',data: { breadcrumb: 'wishlist' },loadChildren: () => import('./features/WishList/wishlist.route').then( w => w.WISHLIST_ROUTES)},
+      { path: 'cart', data: { breadcrumb: 'cart' },loadChildren: () => import('./features/Cart/Cart.routes').then(m => m.CART_ROUTES) },
+      { path: 'checkout', data: { breadcrumb: 'checkout' },loadChildren: () => import('./features/Checkout/Checkout.routes').then(m => m.CHECKOUT_ROUTES) },
+      { path: 'order-confirmation',data: { breadcrumb: 'order-confirmation' }, loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) }
     ]
   },
   {

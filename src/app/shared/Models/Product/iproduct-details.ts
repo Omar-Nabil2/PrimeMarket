@@ -1,7 +1,7 @@
 import { IProductReview } from "./iproduct-review";
 
 export interface IProductDetails {
-id: number;
+  id: number;
   name: string;
   description: string;
   price: number;
@@ -9,7 +9,7 @@ id: number;
   sellerName: string;
   primaryImageUrl: string;
   imageUrls: string[];
-  categoryName: string;
+  categories: string[];
   averageRating: number;
   reviewCount: number;
   reviews: IProductReview[];

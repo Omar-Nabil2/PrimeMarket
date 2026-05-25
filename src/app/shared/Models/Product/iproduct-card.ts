@@ -4,7 +4,7 @@ id: number;
   price: number;
   inStock: boolean;
   primaryImageUrl: string;
-  categoryName: string;
+  categories: string[];
   averageRating: number;
   reviewCount: number;
 }

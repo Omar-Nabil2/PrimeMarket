@@ -1,5 +1,10 @@
 <div class="user-info-container">
   <div class="user-info-header">
+    <div class="header-top">
+      <button (click)="goToHome()" class="back-home-btn">
+        <i class="ti ti-arrow-left"></i> Back to Home
+      </button>
+    </div>
     <h1>Account Information</h1>
     <p>Manage your personal information and security settings</p>
   </div>
@@ -21,6 +26,39 @@
         </button>
       </div>
       <div class="card-body">
+        <!-- Profile Image Section -->
+        <div class="profile-image-section">
+          <div class="profile-image-container">
+            <div *ngIf="profileImagePreview" class="profile-image">
+              <img [src]="profileImagePreview" alt="Profile Picture" />
+              <div class="image-overlay">
+                <label for="profileImageInput" class="upload-label">
+                  <i class="ti ti-camera"></i> Change Photo
+                </label>
+              </div>
+            </div>
+            <div *ngIf="!profileImagePreview" class="profile-image-placeholder">
+              <i class="ti ti-user-circle"></i>
+              <label for="profileImageInput" class="upload-label">
+                <i class="ti ti-plus"></i> Add Photo
+              </label>
+            </div>
+            <input
+              #profileImageInput
+              id="profileImageInput"
+              type="file"
+              accept="image/*"
+              style="display: none;"
+              (change)="onProfileImageSelected($event)"
+              [disabled]="isUploadingImage"
+            />
+          </div>
+          <div *ngIf="isUploadingImage" class="upload-progress">
+            <div class="spinner-small"></div>
+            <p>Uploading image...</p>
+          </div>
+        </div>
+
         <!-- Edit Mode Form -->
         <form *ngIf="isEditing" [formGroup]="editForm" (ngSubmit)="onSaveUserInfo()" class="edit-form">
           <!-- First Name -->

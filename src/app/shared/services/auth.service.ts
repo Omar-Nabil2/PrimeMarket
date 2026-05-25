@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, UserInfo, ChangePasswordRequest, ChangePasswordResponse, AuthState } from '../Models/auth.model';
+import { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, UserInfo, ChangePasswordRequest, ChangePasswordResponse, ProfileImageResponse, AuthState } from '../Models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -204,6 +204,29 @@ export class AuthService {
       catchError((error: HttpErrorResponse) => {
         // Extract error message from backend response
         let errorMessage = 'Failed to update user information';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || errorMessage;
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Upload profile image
+   */
+  uploadProfileImage(file: File): Observable<ProfileImageResponse> {
+    const formData = new FormData();
+    formData.append('Image', file);
+
+    return this.http.post<ProfileImageResponse>(`${this.baseUrl}/api/Account/Profile-Image`, formData).pipe(
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Failed to upload profile image';
         if (error.error?.Errors && Array.isArray(error.error.Errors)) {
           errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || errorMessage;
         } else if (error.error?.message) {

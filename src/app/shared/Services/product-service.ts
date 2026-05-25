@@ -6,6 +6,7 @@ import { IRequestFilter } from '../Models/Common/irequest-filter';
 import { IPaginatedResul } from '../Models/Common/ipaginated-result';
 import { ISellerProduct } from '../Models/Product/iseller-product';
 import { ToastService } from './toast-service';
+import { IAdminProduct } from '../Models/Product/iadmin-product';
 
 @Injectable({
   providedIn: 'root',
@@ -39,6 +40,13 @@ export class ProductService {
     return this.http
       .get<IPaginatedResul<ISellerProduct>>(`${this.baseUrl}/seller`, { params })
       .pipe(catchError(err => this.toast.handleError(err)));
+  }
+
+  getAdminProducts(filter: IRequestFilter): Observable<IPaginatedResul<IAdminProduct>> {
+    const params = new HttpParams({ fromObject: { ...filter } as any });
+    return this.http.get<IPaginatedResul<IAdminProduct>>(
+      `${this.baseUrl}/admin`, { params }
+    );
   }
 
   search(value: string): void {

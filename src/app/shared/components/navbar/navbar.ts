@@ -28,6 +28,7 @@ export class Navbar implements OnInit {
   cartCount$: Observable<number> = inject(CartService).count$;
   isAuthenticated = false;
   currentUser: AuthResponse | null = null;
+  isAdmin = false;
   categories: ICategory[] = [];
 
   ngOnInit(): void {
@@ -44,7 +45,7 @@ export class Navbar implements OnInit {
   onSearch(value: string): void {
     this.searchInput$.next(value);
   }
- 
+
   constructor(
     public authService: AuthService,
     private router: Router,
@@ -54,12 +55,14 @@ export class Navbar implements OnInit {
       debounceTime(400),
       distinctUntilChanged()
     ).subscribe(value => this.homeService.search(value));
-    
+
     // Use effect to reactively update the component when auth state changes
     effect(() => {
       const state = this.authService.authState();
       this.isAuthenticated = state.isAuthenticated;
       this.currentUser = state.user;
+      // Check if user is admin
+      this.isAdmin = this.authService.isAdmin();
     });
   }
 

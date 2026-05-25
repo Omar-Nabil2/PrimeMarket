@@ -1,0 +1,79 @@
+<div class="dashboard-wrapper">
+
+  <!-- Sidebar -->
+  <aside class="sidebar" [class.collapsed]="isCollapsed">
+    <div class="sidebar-header">
+      @if (!isCollapsed) {
+        <span class="sidebar-brand">Admin Panel</span>
+      }
+      <button class="collapse-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+        <i class="ti" [class.ti-layout-sidebar-left-collapse]="!isCollapsed"
+                      [class.ti-layout-sidebar-right-collapse]="isCollapsed"></i>
+      </button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <a routerLink="/admin-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-dashboard"></i>
+        @if (!isCollapsed) { <span>Overview</span> }
+      </a>
+
+      <a routerLink="/admin-dashboard/users" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-users"></i>
+        @if (!isCollapsed) { <span>Users</span> }
+      </a>
+
+      <a routerLink="/admin-dashboard/products" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-package"></i>
+        @if (!isCollapsed) { <span>Products</span> }
+      </a>
+
+      <a routerLink="/admin-dashboard/orders" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-receipt"></i>
+        @if (!isCollapsed) { <span>Orders</span> }
+      </a>
+
+      <a routerLink="/admin-dashboard/categories" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-tags"></i>
+        @if (!isCollapsed) { <span>Categories</span> }
+      </a>
+
+      <a routerLink="/admin-dashboard/promo-code" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-discount"></i>
+        @if (!isCollapsed) { <span>Promo Codes</span> }
+      </a>
+
+      <div class="nav-divider"></div>
+
+      <a routerLink="/" class="nav-item">
+        <i class="ti ti-home"></i>
+        @if (!isCollapsed) { <span>Back to Store</span> }
+      </a>
+
+      <button class="nav-item nav-item--btn" (click)="logout()">
+        <i class="ti ti-logout"></i>
+        @if (!isCollapsed) { <span>Logout</span> }
+      </button>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="dashboard-content" [class.expanded]="isCollapsed">
+    <header class="dashboard-topbar">
+      <div class="topbar-left">
+        <h6 class="topbar-title mb-0">{{ pageTitle }}</h6>
+      </div>
+      <div class="topbar-right">
+        <span class="admin-name">
+          <i class="ti ti-user-circle me-1"></i>
+          {{ adminName() }}
+        </span>
+      </div>
+    </header>
+
+    <main class="dashboard-main">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+
+</div>

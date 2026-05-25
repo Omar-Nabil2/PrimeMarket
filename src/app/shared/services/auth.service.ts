@@ -315,4 +315,51 @@ export class AuthService {
       return true;
     }
   }
+
+  /**
+   * Decode JWT token and extract payload
+   */
+  private decodeToken(token: string): any {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  /**
+   * Get roles from JWT token
+   */
+  getRoles(): string[] {
+    const token = this.getToken();
+    if (!token) return [];
+
+    const payload = this.decodeToken(token);
+    if (!payload) return [];
+
+    // Handle both single role and array of roles from JWT
+    if (payload.roles && Array.isArray(payload.roles)) {
+      return payload.roles;
+    } else if (payload.roles && typeof payload.roles === 'string') {
+      return [payload.roles];
+    }
+
+    return [];
+  }
+
+  /**
+   * Check if user has a specific role
+   */
+  hasRole(role: string): boolean {
+    const roles = this.getRoles();
+    return roles.includes(role);
+  }
+
+  /**
+   * Check if user is admin
+   */
+  isAdmin(): boolean {
+    return this.hasRole('Admin');
+  }
 }

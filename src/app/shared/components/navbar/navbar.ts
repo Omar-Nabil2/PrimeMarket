@@ -39,12 +39,18 @@ export class Navbar implements OnInit {
 
   onCategoryChange(value: string): void {
     const id = value ? Number(value) : null;
+    if (id) {
+      this.router.navigate(['/']);
+    }
     this.homeService.filterByCategory(id);
   }
 
   onSearch(value: string): void {
-    this.searchInput$.next(value);
+  this.searchInput$.next(value);
+  if (value) {
+    this.router.navigate(['/']);
   }
+}
 
   constructor(
     public authService: AuthService,

@@ -1,5 +1,22 @@
 <app-navbar></app-navbar>
 
+@if (breadcrumbTrail.length > 0) {
+  <div class="sub-bar">
+    <span>{{ breadcrumbTrail[breadcrumbTrail.length - 1].label }}</span>
+    <nav class="breadcrumb-nav">
+      <a routerLink="/">Home</a>
+      @for (crumb of breadcrumbTrail; track crumb.path) {
+        <span>›</span>
+        @if (!$last) {
+          <a [routerLink]="crumb.path">{{ crumb.label }}</a>
+        } @else {
+          <span>{{ crumb.label }}</span>
+        }
+      }
+    </nav>
+  </div>
+}
+
 <main>
   <router-outlet></router-outlet>
 </main>

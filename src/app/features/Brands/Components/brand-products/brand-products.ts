@@ -5,7 +5,7 @@ import { CurrencyPipe, DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-brand-products',
-  imports: [RouterLink, DecimalPipe, CurrencyPipe ],
+  imports: [RouterLink, DecimalPipe ],
   templateUrl: './brand-products.html',
   styleUrl: './brand-products.css',
   changeDetection: ChangeDetectionStrategy.OnPush

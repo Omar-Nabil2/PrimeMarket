@@ -2,12 +2,11 @@ import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@a
 import { IBrandService } from '../../../../shared/Services/ibrand-service';
 import { IBrandCard } from '../../../../shared/Models/Brands/ibrand-card';
 import { BrandCard } from '../../Components/brand-card/brand-card';
-import { BrandDetails } from '../brand-details/brand-details';
 import { BrandFilter } from "../../Components/brand-filter/brand-filter";
 
 @Component({
   selector: 'app-brand-list',
-  imports: [BrandCard, BrandDetails, BrandFilter],
+  imports: [BrandCard,  BrandFilter],
   templateUrl: './brand-list.html',
   styleUrl: './brand-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush

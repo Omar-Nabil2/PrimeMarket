@@ -30,10 +30,16 @@ export class Navbar implements OnInit {
   currentUser: AuthResponse | null = null;
   isAdmin = false;
   categories: ICategory[] = [];
+  isSidebarOpen = false;
+
+
 
   ngOnInit(): void {
-    this.wishlistService.loadWishlist().subscribe();
-    this.cartService.loadCart().subscribe();
+    if (this.isAuthenticated) {
+      this.wishlistService.loadWishlist().subscribe();
+       this.cartService.loadCart().subscribe();
+    }
+    
     this.categoryService.getCategories().subscribe(cats => this.categories = cats);
   }
 
@@ -45,12 +51,20 @@ export class Navbar implements OnInit {
     this.homeService.filterByCategory(id);
   }
 
-  onSearch(value: string): void {
-  this.searchInput$.next(value);
-  if (value) {
-    this.router.navigate(['/']);
+  toggleSidebar(): void {
+    this.isSidebarOpen = !this.isSidebarOpen;
   }
-}
+
+  closeSidebar(): void {
+    this.isSidebarOpen = false;
+  }
+
+  onSearch(value: string): void {
+    this.searchInput$.next(value);
+    if (value) {
+      this.router.navigate(['/']);
+    }
+  }
 
   constructor(
     public authService: AuthService,
@@ -67,8 +81,12 @@ export class Navbar implements OnInit {
       const state = this.authService.authState();
       this.isAuthenticated = state.isAuthenticated;
       this.currentUser = state.user;
-      // Check if user is admin
       this.isAdmin = this.authService.isAdmin();
+
+      if (state.isAuthenticated) {
+        this.wishlistService.loadWishlist().subscribe();
+        this.cartService.loadCart().subscribe();
+      }
     });
   }
 
@@ -87,4 +105,5 @@ export class Navbar implements OnInit {
     input.value = '';
     this.homeService.search('');
   }
+  
 }

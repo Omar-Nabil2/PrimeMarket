@@ -1,12 +1,10 @@
 <header>
   <div class="top-bar">
     <div class="top-bar-left">
-      <i class="ti ti-menu-2" style="font-size: 20px; cursor: pointer;"></i>
+      <i class="ti ti-menu-2" style="font-size: 20px; cursor: pointer;" (click)="toggleSidebar()"></i>
       <nav class="top-nav">
         <a routerLink="/">Home</a>
         <a routerLink="/brands">Brands</a>
-        <a href="#">Pages <i class="ti ti-chevron-down"></i></a>
-        <a href="#">Blog <i class="ti ti-chevron-down"></i></a>
         @if (isAuthenticated) {
           <a routerLink="/dashboard">Seller Dashboard</a>
         }
@@ -16,7 +14,7 @@
       </nav>
     </div>
     <div class="contact">
-      <i class="ti ti-phone"></i> +123 (456) (7890)
+      <i class="ti ti-phone"></i> +20 1553846559
     </div>
   </div>
 
@@ -107,4 +105,26 @@
       }
     </div>
   </div>
+  @if (isSidebarOpen) {
+  <div class="sidebar-overlay" (click)="closeSidebar()"></div>
+}
+
+<div class="sidebar" [class.open]="isSidebarOpen">
+  <div class="sidebar-header">
+    <span>Menu</span>
+    <i class="ti ti-x" (click)="closeSidebar()"></i>
+  </div>
+
+  <nav class="sidebar-nav">
+    <a routerLink="/auth/account" (click)="closeSidebar()">
+      <i class="ti ti-user"></i> Profile
+    </a>
+    <a routerLink="/orders" (click)="closeSidebar()">
+      <i class="ti ti-package"></i> My Orders
+    </a>
+    <a routerLink="/become-seller" (click)="closeSidebar()">
+      <i class="ti ti-building-store"></i> Register Your Brand
+    </a>
+  </nav>
+</div>
 </header>

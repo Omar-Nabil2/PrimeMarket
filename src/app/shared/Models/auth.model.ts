@@ -4,9 +4,15 @@ export interface AuthResponse {
   firstName: string;
   lastName: string;
   token: string;
+  refreshToken: string;
   expiresIn: number;
   profilePictureUrl?: string;
   roles?: string[];
+}
+
+export interface RefreshTokenRequest {
+  token: string;
+  refreshToken: string;
 }
 
 export interface LoginRequest {

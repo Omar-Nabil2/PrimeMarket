@@ -3,7 +3,7 @@ import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { tap, catchError } from 'rxjs/operators';
 import { environment } from '../../../environments/environment';
-import { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, UserInfo, ChangePasswordRequest, ChangePasswordResponse, ProfileImageResponse, AuthState } from '../Models/auth.model';
+import { AuthResponse, RefreshTokenRequest, RegisterRequest, RegisterResponse, ConfirmEmailRequest, ConfirmEmailResponse, ForgetPasswordRequest, ForgetPasswordResponse, ResetPasswordRequest, ResetPasswordResponse, UserInfo, ChangePasswordRequest, ChangePasswordResponse, ProfileImageResponse, AuthState } from '../Models/auth.model';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class AuthService {
   private readonly apiUrl = `${this.baseUrl}/api/auth`;
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
-
+  private readonly refreshTokenKey = 'refresh_token';
   // Signals for reactive state management
   authState = signal<AuthState>({
     isAuthenticated: this.isTokenValid(),
@@ -30,15 +30,18 @@ export class AuthService {
    */
   private initializeAuthState(): void {
     const token = this.getToken();
+    const refreshToken = this.getRefreshToken();
     const user = this.getSavedUser();
+
     if (token && user && !this.isTokenExpired(token)) {
-      this.authState.set({
-        isAuthenticated: true,
-        user,
-        token
+      this.authState.set({ isAuthenticated: true, user, token });
+    } else if (token && refreshToken) {
+      // only refresh if we actually have both tokens
+      this.refreshToken().subscribe({
+        error: () => this.logout()
       });
     } else {
-      this.logout();
+      this.authState.set({ isAuthenticated: false, user: null, token: null });
     }
   }
 
@@ -48,7 +51,7 @@ export class AuthService {
   login(email: string, password: string): Observable<AuthResponse> {
     return this.http.post<AuthResponse>(this.apiUrl, { email, password }).pipe(
       tap((response: AuthResponse) => {
-        this.setToken(response.token);
+        this.setTokens(response.token, response.refreshToken);
         this.setUser(response);
         this.authState.set({
           isAuthenticated: true,
@@ -239,17 +242,34 @@ export class AuthService {
     );
   }
 
+  refreshToken(): Observable<AuthResponse> {
+    const token = this.getToken();
+    const refreshToken = this.getRefreshToken();
+    return this.http.post<AuthResponse>(`${this.apiUrl}/new-refresh`, { token, refreshToken }).pipe(
+      tap((response) => {
+        this.setTokens(response.token, response.refreshToken);
+        this.setUser(response);
+        this.authState.update(s => ({ ...s, token: response.token }));
+      })
+    );
+  }
+
+
   /**
    * Logout user
    */
   logout(): void {
+    const token = this.getToken();
+    const refreshToken = this.getRefreshToken();
+
+    if (token && refreshToken) {
+      this.http.post(`${this.apiUrl}/revoke-refresh-token`, { token, refreshToken }).subscribe();
+    }
+
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.userKey);
-    this.authState.set({
-      isAuthenticated: false,
-      user: null,
-      token: null
-    });
+    this.authState.set({ isAuthenticated: false, user: null, token: null });
   }
 
   /**
@@ -259,11 +279,16 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  getRefreshToken(): string | null {
+    return localStorage.getItem(this.refreshTokenKey);
+  }
+
   /**
    * Set token in storage
    */
-  private setToken(token: string): void {
+  private setTokens(token: string, refreshToken: string): void {
     localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.refreshTokenKey, refreshToken);
   }
 
   /**

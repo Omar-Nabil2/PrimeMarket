@@ -1,5 +1,4 @@
-import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../shared/Services/auth.service';
@@ -7,12 +6,12 @@ import { ToastService } from '../../../../shared/Services/toast-service';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [ReactiveFormsModule, RouterLink],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login implements OnInit {
-  loginForm!: FormGroup;
+export class Login {
+  loginForm: FormGroup;
   isLoading = false;
 
   constructor(
@@ -21,55 +20,38 @@ export class Login implements OnInit {
     private toastService: ToastService,
     private router: Router
   ) {
-    this.initializeForm();
-  }
-
-  ngOnInit(): void {
-    // If already logged in, redirect to home
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/']);
     }
-  }
 
-  private initializeForm(): void {
-    this.loginForm = this.fb.group({
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
-    });
+   this.loginForm = this.fb.group({
+    email: ['', [Validators.required, Validators.email]],
+    password: ['', [Validators.required, Validators.minLength(6)]],
+    rememberMe: [false]
+  });
   }
 
   onSubmit(): void {
     if (this.loginForm.invalid) {
-      this.toastService.error('Please fill in all fields correctly');
+      this.loginForm.markAllAsTouched();
       return;
     }
 
     this.isLoading = true;
-
     const { email, password } = this.loginForm.value;
 
     this.authService.login(email, password).subscribe({
-      next: (response) => {
-        this.isLoading = false;
-        this.toastService.success('Login successful! Redirecting...');
-
-        setTimeout(() => {
-          this.router.navigate(['/']);
-        }, 1500);
+      next: () => {
+        this.toastService.success('Login successful!');
+        this.router.navigate(['/']);
       },
       error: (error) => {
         this.isLoading = false;
-        const errorMessage = error.message || 'Login failed. Please try again.';
-        this.toastService.error(errorMessage);
+        this.toastService.error(error.message || 'Login failed. Please try again.');
       }
     });
   }
 
-  get email() {
-    return this.loginForm.get('email');
-  }
-
-  get password() {
-    return this.loginForm.get('password');
-  }
+  get email() { return this.loginForm.get('email'); }
+  get password() { return this.loginForm.get('password'); }
 }

@@ -1,44 +1,42 @@
-// src/app/core/auth.interceptor.ts  ← wherever your teammate put it
-import { Injectable } from '@angular/core';
-import {
-  HttpInterceptor,
-  HttpRequest,
-  HttpHandler,
-  HttpEvent
-} from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { HttpInterceptorFn, HttpRequest, HttpHandlerFn, HttpErrorResponse } from '@angular/common/http';
+import { inject } from '@angular/core';
+import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../Services/auth.service';
+import { Router } from '@angular/router';
 
-@Injectable()
-export class AuthInterceptor implements HttpInterceptor {
-  constructor(private authService: AuthService) {}
+export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
+  const authService = inject(AuthService);
+  const router = inject(Router);
 
-  intercept(
-    req: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
-    const publicUrls = [
-      '/api/Products/all',
-      // '/api/Products/',
-      '/api/Auth'
-    ];
+  const publicUrls = [
+    '/api/Products',
+    '/api/Auth',
+    '/api/Categories',
+    '/api/Brands'
+  ];
 
-    const isPublic = publicUrls.some(url => req.url.includes(url));
+  const isPublic = publicUrls.some(url => req.url.includes(url));
+  if (isPublic) return next(req);
 
-    if (isPublic) {
-      return next.handle(req);
-    }
+  const token = authService.getToken();
+  const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
 
-    const token = this.authService.getToken();
-
-    if (token) {
-      req = req.clone({
-        setHeaders: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-    }
-
-    return next.handle(req);
-  }
-}
+  return next(authReq).pipe(
+    catchError((error: HttpErrorResponse) => {
+      if (error.status === 401 && authService.getRefreshToken()) {
+        return authService.refreshToken().pipe(
+          switchMap((response) => {
+            const retryReq = req.clone({ setHeaders: { Authorization: `Bearer ${response.token}` } });
+            return next(retryReq);
+          }),
+          catchError((refreshError) => {
+            authService.logout();
+            router.navigate(['/auth']);
+            return throwError(() => refreshError);
+          })
+        );
+      }
+      return throwError(() => error);
+    })
+  );
+};

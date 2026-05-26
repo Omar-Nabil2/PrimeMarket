@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { Mainlayout } from './layouts/main-layout/mainlayout/mainlayout';
 import { Authlayout } from './layouts/auth-layout/authlayout/authlayout';
 import { Notfound } from './shared/components/notfound/notfound';
+import { becomeSellerGuard } from './features/SellerRequest/BecomeSeller.guard';
 
 export const routes: Routes = [
   {
@@ -15,7 +16,7 @@ export const routes: Routes = [
       { path: 'checkout', data: { breadcrumb: 'checkout' },loadChildren: () => import('./features/Checkout/Checkout.routes').then(m => m.CHECKOUT_ROUTES) },
       { path: 'order-confirmation',data: { breadcrumb: 'order-confirmation' }, loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) },
       { path: 'brands', data: { breadcrumb: 'Brands' }, loadChildren: () => import('./features/Brands/Brands.routes').then(m => m.BRAND_ROUTES) },
-      { path: 'become-seller', data: { breadcrumb: 'Register Brand' }, loadChildren: () => import('./features/SellerRequest/SellerRequest.routes').then(m => m.BECOME_SELLER_ROUTES) },
+      { path: 'become-seller',canActivate:[becomeSellerGuard] ,data: { breadcrumb: 'Register Brand' }, loadChildren: () => import('./features/SellerRequest/SellerRequest.routes').then(m => m.BECOME_SELLER_ROUTES) },
     ]
   },
   {

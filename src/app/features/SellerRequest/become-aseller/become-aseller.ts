@@ -52,7 +52,9 @@ export class BecomeASeller {
     this.nextStep();
   }
 
-  onLocationSelected(location: ILocationData): void {
+  showSuccessDialog = signal(false);
+
+ onLocationSelected(location: ILocationData): void {
     this.isSubmitting.set(true);
     const { brandName, description } = this.brandInfoForm.value;
 
@@ -67,8 +69,8 @@ export class BecomeASeller {
       longitude: location.longitude
     }).subscribe({
       next: () => {
-        this.toastService.success('Brand registered! Awaiting admin verification.');
-        this.router.navigate(['/']);
+        this.isSubmitting.set(false);
+        this.showSuccessDialog.set(true);
       },
       error: () => {
         this.isSubmitting.set(false);
@@ -76,4 +78,9 @@ export class BecomeASeller {
       }
     });
   }
+
+  goHome(): void {
+    this.router.navigate(['/']);
+  }
+   
 }

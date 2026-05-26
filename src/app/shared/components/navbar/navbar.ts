@@ -84,8 +84,10 @@ export class Navbar implements OnInit {
       this.isAdmin = this.authService.isAdmin();
 
       if (state.isAuthenticated) {
-        this.wishlistService.loadWishlist().subscribe();
-        this.cartService.loadCart().subscribe();
+        setTimeout(() => {
+          this.wishlistService.loadWishlist().subscribe();
+          this.cartService.loadCart().subscribe();
+        }, 0);
       }
     });
   }

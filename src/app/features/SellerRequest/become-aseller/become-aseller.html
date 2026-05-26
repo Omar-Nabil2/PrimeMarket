@@ -8,21 +8,24 @@
     <app-step-indicator [currentStep]="currentStep()" />
 
     @if (currentStep() === 1) {
-      <app-brand-info
-        [form]="brandInfoForm"
-        (next)="nextStep()" />
+      <app-brand-info [form]="brandInfoForm" (next)="nextStep()" />
     }
-
     @if (currentStep() === 2) {
-      <app-logo-upload
-        (next)="onLogoSelected($event)"
-        (prev)="prevStep()" />
+      <app-logo-upload (next)="onLogoSelected($event)" (prev)="prevStep()" />
     }
-
     @if (currentStep() === 3) {
-      <app-map-location
-        (locationSelected)="onLocationSelected($event)"
-        (prev)="prevStep()" />
+      <app-map-location (locationSelected)="onLocationSelected($event)" (prev)="prevStep()" />
     }
   </div>
 </div>
+
+@if (showSuccessDialog()) {
+  <div class="dialog-overlay">
+    <div class="dialog">
+      <div class="dialog-icon">🎉</div>
+      <h2>Application Submitted!</h2>
+      <p>Thank you for registering your brand on PrimeMarket. We've received your application and will review it as soon as possible. You'll be notified once your brand is verified.</p>
+      <button class="dialog-btn" (click)="goHome()">Back to Home</button>
+    </div>
+  </div>
+}

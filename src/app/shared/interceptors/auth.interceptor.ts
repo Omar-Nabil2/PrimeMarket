@@ -14,8 +14,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
     '/api/Categories'
   ];
 
- const isBrandsPublic = req.url.toLowerCase().includes('/api/brands') && req.method === 'GET';
- const isPublic = isBrandsPublic || publicUrls.some(url => req.url.toLowerCase().includes(url.toLowerCase()));
+ const isPublic = publicUrls.some(url => req.url.toLowerCase().includes(url.toLowerCase()));
 
   if (isPublic) return next(req);
 

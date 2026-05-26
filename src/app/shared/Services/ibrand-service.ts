@@ -33,4 +33,7 @@ export class IBrandService {
 
     return this.http.post<void>(`${this.apiUrl}/register`, formData);
   }
+  getStatus(): Observable<void> {
+    return this.http.get<void>(`${this.apiUrl}/status`);
+  }
 }

@@ -45,6 +45,23 @@
                 </div>
               }
             </div>
+            <div class="form-group">
+              <label class="form-label">Brand Name <span class="required">*</span></label>
+              <input
+                type="text"
+                class="form-control"
+                [ngClass]="{ 'is-invalid': isInvalid('brandName') }"
+                formControlName="brandName"
+                placeholder="e.g. Sony Samsung Apple..."
+              />
+              @if (isInvalid('brandName')) {
+                <div class="invalid-feedback">
+                  @if (form.get('brandName')?.hasError('required')) { Brand Name is required. }
+                  @if (form.get('brandName')?.hasError('minlength')) { At least 2 characters. }
+                  @if (form.get('brandName')?.hasError('server')) { {{ form.get('brandName')?.getError('server') }} }
+                </div>
+              }
+            </div>
 
             <div class="form-group">
               <label class="form-label">Description</label>

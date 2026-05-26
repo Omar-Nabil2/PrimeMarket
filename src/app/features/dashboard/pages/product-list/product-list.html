@@ -65,6 +65,7 @@
                       </span>
                     </div>
                   </th>
+                  <th>Brand</th>
                   <th (click)="onSort('stock')" class="sortable-header" style="cursor: pointer; user-select: none;">
                     <div class="d-flex align-items-center gap-1">
                       Stock
@@ -137,6 +138,9 @@
 
                     <td>
                       <span class="price-cell">EGP {{ product.price | number:'1.2-2' }}</span>
+                    </td>
+                    <td>
+                      <span class="brand-cell category-tag">{{ product.brandName }}</span>
                     </td>
 
                     <td>

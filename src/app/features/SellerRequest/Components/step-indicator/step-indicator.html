@@ -1,0 +1,17 @@
+<div class="step-indicator">
+  @for (step of steps; track $index) {
+    <div class="step" [class.active]="$index + 1 === currentStep()" [class.completed]="$index + 1 < currentStep()">
+      <div class="step-circle">
+        @if ($index + 1 < currentStep()) {
+          <i class="ti ti-check"></i>
+        } @else {
+          <span>{{ $index + 1 }}</span>
+        }
+      </div>
+      <span class="step-label">{{ step }}</span>
+    </div>
+    @if ($index < steps.length - 1) {
+      <div class="step-line" [class.completed]="$index + 1 < currentStep()"></div>
+    }
+  }
+</div>

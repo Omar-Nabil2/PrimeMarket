@@ -2,6 +2,7 @@ export interface ISellerProduct {
   id: number;
   name: string;
   price: number;
+  brandName: string;
   stock: number;
   isActive: boolean;
   primaryImageUrl: string | null;

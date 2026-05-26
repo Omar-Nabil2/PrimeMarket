@@ -73,6 +73,7 @@ export class ProductForm implements OnInit {
   private buildForm(): void {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(3)]],
+      brandName: ['', [Validators.required, Validators.minLength(2)]],
       description: [''],
       price: [null, [Validators.required, Validators.min(0.01)]],
       stock: [null, [Validators.required, Validators.min(0)]],
@@ -129,6 +130,7 @@ export class ProductForm implements OnInit {
 
         this.form.patchValue({
           name: product.name,
+          brandName: product.brandName ?? '',
           description: product.description ?? '',
           price: product.price,
           stock: product.stock ?? 0,
@@ -276,6 +278,7 @@ export class ProductForm implements OnInit {
     const v = this.form.value;
 
     formData.append('Name', v.name);
+    formData.append('BrandName', v.brandName);
     formData.append('Description', v.description ?? '');
     formData.append('Price', v.price.toString());
     formData.append('Stock', v.stock.toString());
@@ -303,6 +306,7 @@ export class ProductForm implements OnInit {
     const v = this.form.value;
     const body = {
       name: v.name,
+      brandName: v.brandName,
       description: v.description ?? '',
       price: v.price,
       categoryIds: v.categoryIds,

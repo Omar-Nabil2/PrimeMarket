@@ -124,6 +124,12 @@
   color: #e74c3c;
   white-space: nowrap;
 }
+.brand-cell {
+  font-weight: 500;
+  color: #b933e2;
+  white-space: nowrap;
+  background: #f3e5f5;
+}
 
 .stock-cell {
   font-weight: 600;

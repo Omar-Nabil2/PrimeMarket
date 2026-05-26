@@ -8,7 +8,7 @@ import { ToastService } from '../../../../shared/Services/toast-service';
 
 @Component({
   selector: 'app-orders',
-  imports: [NgClass, DecimalPipe, DatePipe, NgStyle],
+  imports: [NgClass, DecimalPipe, DatePipe],
   templateUrl: './orders-section.html',
   styleUrl: './orders-section.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

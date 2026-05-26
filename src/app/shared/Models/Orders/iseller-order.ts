@@ -1,3 +1,5 @@
+import { IOrderAddress } from "./iorder-address";
+
 export type OrderStatus = 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled';
 
 export interface ISellerOrderItem {
@@ -17,5 +19,6 @@ export interface ISellerOrder {
   status: OrderStatus;
   totalAmount: number;
   paymentMethod: string;
+  address: IOrderAddress;
   items: ISellerOrderItem[];
 }

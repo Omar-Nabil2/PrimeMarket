@@ -28,36 +28,27 @@ export class AdminProducts implements OnInit {
   private productService = inject(ProductService);
   private toast = inject(ToastService);
 
-  // Local state management for admin products
   private adminFilter$ = new BehaviorSubject<IRequestFilter>({
     pageNumber: 1,
     pageSize: 10,
     sortDirection: 'ASC',
   });
 
-  // Observable result stream - reacts to filter changes
   result$: Observable<IPaginatedResul<IAdminProduct>> = this.adminFilter$.pipe(
     switchMap(filter => this.productService.getAdminProducts(filter))
   );
 
-  // Loading state
   private adminLoading$ = new BehaviorSubject<boolean>(false);
   loading$ = this.adminLoading$.asObservable();
 
-  // Current filter for template binding
   currentFilter$ = this.adminFilter$.asObservable();
 
-  // Component state
   searchTerm: string = '';
   deletingId: number | null = null;
   confirmDeleteData: IAdminProduct | null = null;
 
   ngOnInit(): void {}
 
-  /**
-   * Handle search input changes
-   * Resets to page 1 and updates filter
-   */
   onSearch(): void {
     this.adminFilter$.next({
       ...this.adminFilter$.value,
@@ -66,10 +57,6 @@ export class AdminProducts implements OnInit {
     });
   }
 
-  /**
-   * Handle column header click for sorting
-   * Toggles sort direction if same column clicked
-   */
   onSort(column: string): void {
     const current = this.adminFilter$.value;
     const sameColumn = current.sortColumn === column;
@@ -81,9 +68,6 @@ export class AdminProducts implements OnInit {
     });
   }
 
-  /**
-   * Handle pagination
-   */
   onPageChange(page: number): void {
     this.adminFilter$.next({
       ...this.adminFilter$.value,
@@ -91,9 +75,6 @@ export class AdminProducts implements OnInit {
     });
   }
 
-  /**
-   * Reset all filters to default state
-   */
   resetFilters(): void {
     this.searchTerm = '';
     this.adminFilter$.next({
@@ -103,23 +84,14 @@ export class AdminProducts implements OnInit {
     });
   }
 
-  /**
-   * Open delete confirmation modal
-   */
   openDeleteModal(product: IAdminProduct): void {
     this.confirmDeleteData = product;
   }
 
-  /**
-   * Cancel delete action
-   */
   cancelDelete(): void {
     this.confirmDeleteData = null;
   }
 
-  /**
-   * Execute delete action
-   */
   executeDelete(): void {
     const product = this.confirmDeleteData;
     if (!product) return;

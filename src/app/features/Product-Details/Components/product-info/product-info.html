@@ -14,19 +14,26 @@
 </div>
 
   <div class="meta">
-    <div class="meta-row">
-      <span class="meta-label">Brand</span>
-      <span class="meta-value">: {{ product.sellerName }}</span>
-    </div>
-    <div class="meta-row">
-      <span class="meta-label">Availability</span>
-      <span class="meta-value">:
-        <span [class]="product.stock > 0 ? 'in-stock' : 'out-of-stock'">
-          {{ product.stock > 0 ? 'In Stock (' + product.stock + ' left)' : 'Out of Stock' }}
-        </span>
-      </span>
-    </div>
+  <div class="meta-row">
+    <span class="meta-label">Brand</span>
+    <input class="meta-input" [value]="product.brandName ?? 'N/A'" disabled />
   </div>
+  <div class="meta-row">
+    <span class="meta-label">Shop</span>
+    <input class="meta-input" [value]="product.shopName" disabled />
+    <a [routerLink]="['/brands', product.shopId]" class="view-shop-btn">
+      View Shop <i class="ti ti-arrow-right"></i>
+    </a>
+  </div>
+  <div class="meta-row">
+    <span class="meta-label">Availability</span>
+    <span class="meta-value">:
+      <span [class]="product.stock > 0 ? 'in-stock' : 'out-of-stock'">
+        {{ product.stock > 0 ? 'In Stock (' + product.stock + ' left)' : 'Out of Stock' }}
+      </span>
+    </span>
+  </div>
+</div>
 
   <div class="price">{{ product.price | currency:'EGP' }}</div>
 

@@ -1,0 +1,33 @@
+/* brand-list.css */
+.brand-list-page {
+  padding: 32px 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.page-header {
+  margin-bottom: 24px;
+}
+
+.page-header h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 4px;
+}
+
+.page-header p {
+  color: #888;
+  font-size: 14px;
+}
+
+.brands-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.loading, .empty {
+  text-align: center;
+  padding: 60px;
+  color: #888;
+}

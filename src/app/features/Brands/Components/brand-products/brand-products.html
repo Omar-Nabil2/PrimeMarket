@@ -1,0 +1,26 @@
+<div class="brand-products">
+  <h3><i class="ti ti-package"></i> Products ({{ products().length }})</h3>
+
+  <div class="products-grid">
+    @for (product of products(); track product.id) {
+      <div class="product-card" [routerLink]="['/products', product.id]">
+        <div class="product-image">
+          <img [src]="product.primaryImageUrl || 'https://placehold.co/300x300?text=No+Image'" [alt]="product.name" />
+          @if (!product.isActive || product.stock === 0) {
+            <span class="out-of-stock">Out of Stock</span>
+          }
+        </div>
+        <div class="product-info">
+          @if (product.brandName) {
+            <span class="brand-tag">{{ product.brandName }}</span>
+          }
+          <h4>{{ product.name }}</h4>
+          <div class="product-meta">
+            <span class="rating"><i class="ti ti-star-filled"></i> {{ product.averageRating | number:'1.1-1' }} ({{ product.reviewCount }})</span>
+          </div>
+          <p class="price">EGP {{ product.price | number:'1.2-2' }}</p>
+        </div>
+      </div>
+    }
+  </div>
+</div>

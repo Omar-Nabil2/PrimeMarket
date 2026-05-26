@@ -1,0 +1,20 @@
+<!-- brand-filter.html -->
+<div class="filter-bar">
+  <div class="search-wrapper">
+    <i class="ti ti-search"></i>
+    <input type="text" placeholder="Search brands..." (input)="onSearch($any($event.target).value)" />
+  </div>
+
+  <select (change)="onCityChange($any($event.target).value)">
+    <option value="">All Cities</option>
+    @for (city of cities(); track city) {
+      <option [value]="city">{{ city }}</option>
+    }
+  </select>
+
+  <select (change)="onVerifiedChange($any($event.target).value)">
+    <option value="">All Brands</option>
+    <option value="true">Verified Only</option>
+    <option value="false">Unverified</option>
+  </select>
+</div>

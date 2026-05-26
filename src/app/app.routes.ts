@@ -13,7 +13,8 @@ export const routes: Routes = [
       { path: 'wishlist',data: { breadcrumb: 'wishlist' },loadChildren: () => import('./features/WishList/wishlist.route').then( w => w.WISHLIST_ROUTES)},
       { path: 'cart', data: { breadcrumb: 'cart' },loadChildren: () => import('./features/Cart/Cart.routes').then(m => m.CART_ROUTES) },
       { path: 'checkout', data: { breadcrumb: 'checkout' },loadChildren: () => import('./features/Checkout/Checkout.routes').then(m => m.CHECKOUT_ROUTES) },
-      { path: 'order-confirmation',data: { breadcrumb: 'order-confirmation' }, loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) }
+      { path: 'order-confirmation',data: { breadcrumb: 'order-confirmation' }, loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) },
+      { path: 'brands', data: { breadcrumb: 'Brands' }, loadChildren: () => import('./features/Brands/Brands.routes').then(m => m.BRAND_ROUTES) },
     ]
   },
   {

@@ -1,0 +1,38 @@
+<div class="brand-hero">
+  <div class="hero-logo">
+    <img [src]="brand().logoUrl || 'https://placehold.co/200x200?text=No+Logo'" [alt]="brand().brandName" />
+  </div>
+
+  <div class="hero-info">
+    <div class="name-row">
+      <h1>{{ brand().brandName }}</h1>
+      @if (brand().isVerified) {
+        <span class="verified-badge">
+          <i class="ti ti-rosette-discount-check"></i> Verified
+        </span>
+      }
+    </div>
+
+    <p class="seller"><i class="ti ti-user"></i> Sold by {{ brand().sellerName }}</p>
+    <p class="location"><i class="ti ti-map-pin"></i> {{ brand().city }}, {{ brand().country }}</p>
+
+    <div class="stats">
+      <div class="stat">
+        <span class="stat-value">{{ brand().averageRating | number:'1.1-1' }}</span>
+        <span class="stat-label"><i class="ti ti-star-filled"></i> Rating</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ brand().totalReviews }}</span>
+        <span class="stat-label"><i class="ti ti-message"></i> Reviews</span>
+      </div>
+      <div class="stat">
+        <span class="stat-value">{{ brand().products.length }}</span>
+        <span class="stat-label"><i class="ti ti-package"></i> Products</span>
+      </div>
+    </div>
+
+    @if (brand().description) {
+      <p class="description">{{ brand().description }}</p>
+    }
+  </div>
+</div>

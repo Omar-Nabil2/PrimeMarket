@@ -1,0 +1,11 @@
+<div class="brand-details-page">
+  @if (isLoading()) {
+    <div class="loading">Loading brand...</div>
+  } @else if (error()) {
+    <div class="error">{{ error() }}</div>
+  } @else if (brand()) {
+    <app-brand-hero [brand]="brand()!" />
+    <app-brand-location [brand]="brand()!" />
+    <app-brand-products [products]="brand()!.products" />
+  }
+</div>

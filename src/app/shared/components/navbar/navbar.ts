@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit,  effect } from '@angular/core';
 import { RouterLink,  Router } from "@angular/router";
 import { HomeService } from '../../../features/home/Services/home-service';
-import { debounceTime, distinctUntilChanged, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Observable, startWith, Subject } from 'rxjs';
 import { WishListService } from '../../Services/wish-list-service';
 import { CartService } from '../../Services/cart-service';
 import { AuthService } from '../../Services/auth.service';
@@ -24,8 +24,8 @@ export class Navbar implements OnInit {
 
   private wishlistService = inject(WishListService);
   private cartService = inject(CartService)
-  wishlistCount$: Observable<number> = this.wishlistService.count$;
-  cartCount$: Observable<number> = inject(CartService).count$;
+  wishlistCount$: Observable<number> = this.wishlistService.count$.pipe(startWith(0));
+  cartCount$: Observable<number> = inject(CartService).count$.pipe(startWith(0));
   isAuthenticated = false;
   currentUser: AuthResponse | null = null;
   isAdmin = false;

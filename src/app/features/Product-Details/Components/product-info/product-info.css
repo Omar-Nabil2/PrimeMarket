@@ -149,3 +149,39 @@
   color: #e74c3c;
   border-color: #e74c3c;
 }
+
+.meta-input {
+  border: 1px solid #eee;
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 14px;
+  color: #555;
+  background: #f8f8f8;
+  cursor: not-allowed;
+  flex: 1;
+}
+
+.view-shop-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  background: #e74c3c;
+  color: white;
+  border-radius: 6px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.view-shop-btn:hover {
+  background: #c0392b;
+  color: white;
+}
+.meta-tag {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a1a;
+  flex: 1;
+}

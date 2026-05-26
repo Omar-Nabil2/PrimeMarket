@@ -138,17 +138,6 @@
         <div class="order-meta-info">
           <div class="order-id-badge">#{{ order.orderId }}</div>
           <div class="order-date-text">{{ order.orderDate | date:'mediumDate' }}</div>
-          <div class="payment-method-badge d-flex align-items-center gap-1"
-            [ngStyle]="{'background': order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash' ? '#f8fafc' : '#f0fdf4', 
-                                 'color': order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash' ? '#64748b' : '#16a34a',
-                                 'border': '1px solid',
-                                 'border-color': order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash' ? '#e2e8f0' : '#bbf7d0',
-                                 'padding': '2px 8px', 'border-radius': '6px', 'font-size': '12px', 'font-weight': '500'}">
-            <i class="ti"
-              [class.ti-cash]="order.paymentMethod.toLowerCase() === 'cod' || order.paymentMethod.toLowerCase() === 'cash'"
-              [class.ti-credit-card]="order.paymentMethod.toLowerCase() !== 'cod' && order.paymentMethod.toLowerCase() !== 'cash'"></i>
-            {{ order.paymentMethod || 'N/A' }}
-          </div>
         </div>
 
         <div class="customer-profile-block">
@@ -297,6 +286,11 @@
               <div class="panel-row">
                 <span class="panel-row-lbl">Email Address</span>
                 <span class="panel-row-val">{{ order.customerEmail }}</span>
+              </div>
+
+              <div class="panel-row">
+                <span class="panel-row-lbl">Address</span>
+                <span class="panel-row-val">{{ order.address.country + ", " + order.address.city + ", " + order.address.street }}</span>
               </div>
 
               <div class="panel-row">

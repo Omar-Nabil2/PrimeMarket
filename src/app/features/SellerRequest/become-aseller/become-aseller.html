@@ -1,0 +1,28 @@
+<div class="become-seller-page">
+  <div class="page-header">
+    <h1>Register Your Brand</h1>
+    <p>Complete the steps below to register your brand on PrimeMarket</p>
+  </div>
+
+  <div class="stepper-card">
+    <app-step-indicator [currentStep]="currentStep()" />
+
+    @if (currentStep() === 1) {
+      <app-brand-info
+        [form]="brandInfoForm"
+        (next)="nextStep()" />
+    }
+
+    @if (currentStep() === 2) {
+      <app-logo-upload
+        (next)="onLogoSelected($event)"
+        (prev)="prevStep()" />
+    }
+
+    @if (currentStep() === 3) {
+      <app-map-location
+        (locationSelected)="onLocationSelected($event)"
+        (prev)="prevStep()" />
+    }
+  </div>
+</div>

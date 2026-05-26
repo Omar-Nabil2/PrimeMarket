@@ -1,0 +1,39 @@
+<div class="step-content">
+  <h2>Store Location</h2>
+  <p>Click on the map or use your current location</p>
+
+  <button class="btn-locate" (click)="useCurrentLocation()" [disabled]="isLoading()">
+    <i class="ti ti-current-location"></i> Use My Current Location
+  </button>
+
+  <div id="seller-map"></div>
+
+  @if (isLoading()) {
+    <div class="locating">
+      <i class="ti ti-loader"></i> Fetching address...
+    </div>
+  }
+
+  @if (error()) {
+    <span class="error">{{ error() }}</span>
+  }
+
+  @if (selectedLocation()) {
+    <div class="location-info">
+      <i class="ti ti-map-pin"></i>
+      <div>
+        <p>{{ selectedLocation()!.street }}</p>
+        <p>{{ selectedLocation()!.city }}, {{ selectedLocation()!.country }}</p>
+      </div>
+    </div>
+  }
+
+  <div class="step-actions">
+    <button class="btn-prev" (click)="prev.emit()">
+      <i class="ti ti-arrow-left"></i> Back
+    </button>
+    <button class="btn-submit" (click)="onSubmit()" [disabled]="!selectedLocation() || isLoading()">
+      Submit <i class="ti ti-check"></i>
+    </button>
+  </div>
+</div>

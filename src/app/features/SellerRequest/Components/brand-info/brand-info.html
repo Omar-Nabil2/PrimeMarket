@@ -1,0 +1,25 @@
+<div class="step-content">
+  <h2>Brand Information</h2>
+  <p>Tell us about your brand</p>
+
+  <div [formGroup]="form()" class="form-body">
+    <div class="form-group">
+      <label>Brand Name <span class="required">*</span></label>
+      <input type="text" formControlName="brandName" placeholder="Enter your brand name" />
+      @if (form().get('brandName')?.invalid && form().get('brandName')?.touched) {
+        <span class="error">Brand name is required</span>
+      }
+    </div>
+
+    <div class="form-group">
+      <label>Description</label>
+      <textarea formControlName="description" placeholder="Describe your brand..." rows="4"></textarea>
+    </div>
+  </div>
+
+  <div class="step-actions">
+    <button class="btn-next" (click)="next.emit()" [disabled]="form().get('brandName')?.invalid">
+      Next <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+</div>

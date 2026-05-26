@@ -10,12 +10,13 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
   const publicUrls = [
     '/api/Products',
-    '/api/Auth',
-    '/api/Categories',
-    '/api/Brands'
+    '/api/auth',
+    '/api/Categories'
   ];
 
-  const isPublic = publicUrls.some(url => req.url.includes(url));
+ const isBrandsPublic = req.url.toLowerCase().includes('/api/brands') && req.method === 'GET';
+ const isPublic = isBrandsPublic || publicUrls.some(url => req.url.toLowerCase().includes(url.toLowerCase()));
+
   if (isPublic) return next(req);
 
   const token = authService.getToken();
@@ -23,7 +24,7 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401 && authService.getRefreshToken()) {
+      if (error.status === 401 && authService.getRefreshToken() && !req.url.includes('new-refresh')) {
         return authService.refreshToken().pipe(
           switchMap((response) => {
             const retryReq = req.clone({ setHeaders: { Authorization: `Bearer ${response.token}` } });

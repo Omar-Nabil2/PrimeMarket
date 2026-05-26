@@ -1,0 +1,35 @@
+<div class="step-content">
+  <h2>Brand Logo</h2>
+  <p>Upload your brand logo (max 5MB)</p>
+
+  <div class="upload-area" [class.has-preview]="previewUrl()">
+    @if (previewUrl()) {
+      <div class="preview">
+        <img [src]="previewUrl()" alt="Logo preview" />
+        <button class="clear-btn" (click)="clearFile()">
+          <i class="ti ti-x"></i>
+        </button>
+      </div>
+    } @else {
+      <label for="logo-upload" class="upload-label">
+        <i class="ti ti-cloud-upload"></i>
+        <span>Click to upload or drag & drop</span>
+        <span class="upload-hint">PNG, JPG, WEBP up to 5MB</span>
+      </label>
+      <input id="logo-upload" type="file" accept="image/*" (change)="onFileSelected($event)" hidden />
+    }
+  </div>
+
+  @if (error()) {
+    <span class="error">{{ error() }}</span>
+  }
+
+  <div class="step-actions">
+    <button class="btn-prev" (click)="prev.emit()">
+      <i class="ti ti-arrow-left"></i> Back
+    </button>
+    <button class="btn-next" (click)="onNext()" [disabled]="!selectedFile()">
+      Next <i class="ti ti-arrow-right"></i>
+    </button>
+  </div>
+</div>

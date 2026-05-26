@@ -1,0 +1,32 @@
+<div class="brand-card">
+  <div class="brand-logo">
+    <img [src]="brand().logoUrl || 'https://placehold.co/200x200?text=No+Logo'" [alt]="brand().brandName" />
+    @if (brand().isVerified) {
+      <span class="verified-badge"><i class="ti ti-rosette-discount-check"></i> Verified</span>
+    }
+  </div>
+
+  <div class="brand-info">
+    <h3>{{ brand().brandName }}</h3>
+    <p class="location"><i class="ti ti-map-pin"></i> {{ brand().city }}, {{ brand().country }}</p>
+
+    <div class="brand-meta">
+      <span class="rating">
+        <i class="ti ti-star-filled"></i> {{ brand().averageRating | number:'1.1-1' }}
+      </span>
+      <span class="products">
+        <i class="ti ti-package"></i> {{ brand().totalProducts }} Products
+      </span>
+    </div>
+
+    @if (brand().description) {
+      <p class="description">{{ brand().description }}</p>
+    }
+  </div>
+
+  <div class="brand-footer">
+    <a [routerLink]="['/brands', brand().id]" class="view-btn">
+      View Store <i class="ti ti-arrow-right"></i>
+    </a>
+  </div>
+</div>

@@ -1,0 +1,25 @@
+<!-- brand-list.html -->
+<div class="brand-list-page">
+  <div class="page-header">
+    <h2>Our Brands</h2>
+    <p>{{ filteredBrands().length }} brands available</p>
+  </div>
+
+  <app-brand-filter
+    [cities]="cities()"
+    (searchChange)="searchTerm.set($event)"
+    (cityChange)="selectedCity.set($event)"
+    (verifiedChange)="verifiedOnly.set($event)" />
+
+  @if (isLoading()) {
+    <div class="loading">Loading brands...</div>
+  } @else if (filteredBrands().length === 0) {
+    <div class="empty">No brands found.</div>
+  } @else {
+    <div class="brands-grid">
+      @for (brand of filteredBrands(); track brand.id) {
+        <app-brand-card [brand]="brand" />
+      }
+    </div>
+  }
+</div>

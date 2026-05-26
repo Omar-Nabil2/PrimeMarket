@@ -6,7 +6,9 @@ export interface IProductDetails {
   description: string;
   price: number;
   stock: number;
-  sellerName: string;
+  brandName: string | null;
+  shopName: string;
+  shopId: number;
   primaryImageUrl: string;
   imageUrls: string[];
   categories: string[];

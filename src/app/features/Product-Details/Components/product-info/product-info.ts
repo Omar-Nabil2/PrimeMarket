@@ -1,10 +1,11 @@
 import { CommonModule, CurrencyPipe, NgClass } from '@angular/common';
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
 import { IProductDetails } from '../../../../shared/Models/Product/iproduct-details';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-product-info',
-  imports: [NgClass, CurrencyPipe],
+  imports: [NgClass, CurrencyPipe, RouterLink],
   templateUrl: './product-info.html',
   styleUrl: './product-info.css',
   changeDetection:ChangeDetectionStrategy.OnPush

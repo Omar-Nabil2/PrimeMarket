@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { IPaginatedResul } from '../Models/Common/ipaginated-result';
 import { IRequestFilter } from '../Models/Common/irequest-filter';
 import { ISellerOrder, OrderStatus } from '../Models/Orders/iseller-order';
+import { IAdminOrder, AdminOrderStatus } from '../Models/Orders/iadmin-order';
 
 @Injectable({
   providedIn: 'root',
@@ -24,5 +25,14 @@ export class OrderService {
 
   updateOrderStatus(orderId: number, status: OrderStatus) {
     return this.http.put<void>(`${this.baseUrl}/seller/${orderId}/status`, { status });
+  }
+
+  getAdminOrders(filter: IRequestFilter): Observable<IPaginatedResul<IAdminOrder>> {
+    const params = new HttpParams({ fromObject: { ...filter } as any });
+    return this.http.get<IPaginatedResul<IAdminOrder>>(`${this.baseUrl}/admin`, { params });
+  }
+
+  getAdminOrderById(orderId: number): Observable<IAdminOrder> {
+    return this.http.get<IAdminOrder>(`${this.baseUrl}/admin/${orderId}`);
   }
 }

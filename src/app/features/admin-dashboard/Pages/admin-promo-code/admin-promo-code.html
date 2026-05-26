@@ -1,4 +1,289 @@
-<div class="admin-container">
-  <h2>Promo Codes Management</h2>
-  <p>Manage all promotional codes on your platform.</p>
+<div class="promo-page">
+
+  <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+    <div>
+      <h5 class="page-title mb-0">Promo Codes Management</h5>
+      <div class="page-subtitle">Create and manage promotional codes for your platform</div>
+    </div>
+    <button class="btn-create-new" (click)="openForm()" type="button">
+      <i class="ti ti-plus"></i> Create Promo Code
+    </button>
+  </div>
+
+  <div class="stats-banner-row">
+    <div class="stat-card-glass total">
+      <div class="stat-icon-wrapper">
+        <i class="ti ti-ticket"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().total }}</span>
+        <span class="stat-label">Total Codes</span>
+      </div>
+    </div>
+
+    <div class="stat-card-glass active">
+      <div class="stat-icon-wrapper">
+        <i class="ti ti-circle-check-filled"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().active }}</span>
+        <span class="stat-label">Active Codes</span>
+      </div>
+    </div>
+
+    <div class="stat-card-glass expired">
+      <div class="stat-icon-wrapper">
+        <i class="ti ti-clock-off"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().expired }}</span>
+        <span class="stat-label">Expired Codes</span>
+      </div>
+    </div>
+
+    <div class="stat-card-glass usage">
+      <div class="stat-icon-wrapper">
+        <i class="ti ti-chart-bar"></i>
+      </div>
+      <div class="stat-info">
+        <span class="stat-value">{{ stats().totalUsed }}</span>
+        <span class="stat-label">Total Used</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="custom-toolbar">
+    <div class="search-wrapper">
+      <i class="ti ti-search search-icon-inside"></i>
+      <input class="premium-search-input" placeholder="Search by promo code..." [value]="searchTerm()"
+        (input)="onSearchChange($any($event.target).value)" />
+      @if (searchTerm()) {
+      <button class="clear-search-btn" (click)="onSearchChange('')" type="button">Clear</button>
+      }
+    </div>
+
+    <div class="filters-actions-wrapper">
+      <div class="sliding-status-tabs">
+        <button (click)="setStatusFilter('all')" [class.active]="statusFilter() === 'all'" class="status-pill-btn">
+          <i class="ti ti-border-all"></i> All
+        </button>
+        <button (click)="setStatusFilter('active')" [class.active]="statusFilter() === 'active'"
+          class="status-pill-btn">
+          <i class="ti ti-circle-check-filled"></i> Active
+        </button>
+        <button (click)="setStatusFilter('expired')" [class.active]="statusFilter() === 'expired'"
+          class="status-pill-btn">
+          <i class="ti ti-clock-off"></i> Expired
+        </button>
+      </div>
+    </div>
+  </div>
+
+  @if (loading()) {
+  <div class="skeleton-list">
+    @for (item of [1, 2, 3]; track $index) {
+    <div class="skeleton-card">
+      <div class="skeleton-pulse skeleton-bar-lg"></div>
+      <div class="skeleton-pulse skeleton-bar-md"></div>
+      <div class="skeleton-pulse skeleton-bar-sm"></div>
+    </div>
+    }
+  </div>
+  }
+
+  @if (filteredCodes(); as codes) {
+  @if (codes.length === 0) {
+  <div class="empty-state-card">
+    <div class="empty-state-icon-circle">
+      <i class="ti ti-ticket-off"></i>
+    </div>
+    <h5 class="empty-state-title">No promo codes found</h5>
+    <p class="empty-state-desc">Create your first promotional code to get started or adjust your filters.</p>
+    <button class="btn-empty-create" (click)="openForm()" type="button">
+      <i class="ti ti-plus"></i> Create Code
+    </button>
+  </div>
+  } @else {
+
+  <div class="promos-grid">
+    @for (promo of codes; track promo.id) {
+    <div class="promo-card" [ngClass]="{ expired: isExpired(promo.expiresAt), inactive: !promo.isActive }">
+      <div class="card-header">
+        <div class="code-badge">{{ promo.code }}</div>
+        <div class="card-actions">
+          <button class="action-btn edit" (click)="openForm(promo)" title="Edit" type="button">
+            <i class="ti ti-pencil"></i>
+          </button>
+          <button class="action-btn delete" (click)="deletePromo(promo.id)" title="Delete" type="button">
+            <i class="ti ti-trash"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="card-body">
+        <div class="info-row">
+          <span class="info-label">Discount Type:</span>
+          <span class="info-value">{{ getDiscountTypeLabel(promo.discountType) }}</span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Discount Value:</span>
+          <span class="info-value">
+            @if (promo.discountType === 0) {
+            {{ promo.discountValue }}%
+            } @else {
+            EGP {{ promo.discountValue | number:'1.2-2' }}
+            }
+          </span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Usage Limit:</span>
+          <span class="info-value">{{ (promo.usedCount || 0) }}/{{ promo.usageLimit }}</span>
+        </div>
+
+        <div class="usage-progress">
+          <div class="progress-bar" [style.width.%]="getUsagePercentage(promo)"></div>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Expires:</span>
+          <span class="info-value" [ngClass]="{ 'text-danger': isExpired(promo.expiresAt) }">
+            {{ promo.expiresAt | date:'short' }}
+          </span>
+        </div>
+
+        <div class="info-row">
+          <span class="info-label">Status:</span>
+          <span class="status-text" [ngClass]="{ active: isActive(promo), expired: isExpired(promo.expiresAt) }">
+            @if (isExpired(promo.expiresAt)) {
+            Expired
+            } @else if (promo.isActive) {
+            Active
+            } @else {
+            Inactive
+            }
+          </span>
+        </div>
+      </div>
+    </div>
+    }
+  </div>
+
+  }
+  }
+
+  @if (showForm()) {
+  <div class="modal-backdrop fade show"></div>
+  <div class="modal d-block fade show" tabindex="-1" (click)="closeForm()">
+    <div class="modal-dialog modal-dialog-centered" (click)="$event.stopPropagation()">
+      <div class="modal-content border-0 shadow-lg">
+        <div class="modal-header p-4">
+          <h5 class="modal-title fw-bold text-dark">
+            @if (editingId()) {
+            Edit Promo Code
+            } @else {
+            Create New Promo Code
+            }
+          </h5>
+          <button type="button" class="btn-close" (click)="closeForm()" aria-label="Close"></button>
+        </div>
+        <div class="modal-body p-4">
+          <form [formGroup]="form" (ngSubmit)="submitForm()">
+            <div class="form-group mb-3">
+              <label class="form-label">Code <span class="required">*</span></label>
+              <input type="text" class="form-control" formControlName="code" placeholder="Enter promo code"
+                [class.is-invalid]="form.get('code')?.invalid && form.get('code')?.touched" />
+              @if (form.get('code')?.invalid && form.get('code')?.touched) {
+              <div class="invalid-feedback">
+                @if (form.get('code')?.errors?.['required']) {
+                Code is required
+                } @else if (form.get('code')?.errors?.['minlength']) {
+                Code must be at least 2 characters
+                } @else if (form.get('code')?.errors?.['maxlength']) {
+                Code cannot exceed 50 characters
+                }
+              </div>
+              }
+            </div>
+
+            <div class="form-row">
+              <div class="form-group mb-3">
+                <label class="form-label">Discount Type <span class="required">*</span></label>
+                <select class="form-control" formControlName="discountType">
+                  @for (opt of discountTypeOptions; track opt.value) {
+                  <option [value]="opt.value">{{ opt.label }}</option>
+                  }
+                </select>
+              </div>
+
+              <div class="form-group mb-3">
+                <label class="form-label">
+                  Discount Value
+                  @if (form.get('discountType')?.value === 0) {
+                  (%)
+                  } @else {
+                  (EGP)
+                  }
+                  <span class="required">*</span>
+                </label>
+                <input type="number" class="form-control" formControlName="discountValue"
+                  placeholder="Enter discount value" step="0.01" min="0"
+                  [class.is-invalid]="form.get('discountValue')?.invalid && form.get('discountValue')?.touched" />
+                @if (form.get('discountValue')?.invalid && form.get('discountValue')?.touched) {
+                <div class="invalid-feedback">Discount value must be greater than 0</div>
+                }
+              </div>
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label">Usage Limit <span class="required">*</span></label>
+              <input type="number" class="form-control" formControlName="usageLimit"
+                placeholder="Enter maximum number of uses" min="1"
+                [class.is-invalid]="form.get('usageLimit')?.invalid && form.get('usageLimit')?.touched" />
+              @if (form.get('usageLimit')?.invalid && form.get('usageLimit')?.touched) {
+              <div class="invalid-feedback">Usage limit must be at least 1</div>
+              }
+            </div>
+
+            <div class="form-group mb-3">
+              <label class="form-label">Expiration Date <span class="required">*</span></label>
+              <input type="datetime-local" class="form-control" formControlName="expiresAt"
+                [class.is-invalid]="form.get('expiresAt')?.invalid && form.get('expiresAt')?.touched" />
+              @if (form.get('expiresAt')?.invalid && form.get('expiresAt')?.touched) {
+              <div class="invalid-feedback">Expiration date is required</div>
+              }
+            </div>
+
+            <div class="form-group mb-3">
+              <div class="form-check">
+                <input type="checkbox" class="form-check-input" id="isActive" formControlName="isActive" />
+                <label class="form-check-label" for="isActive">
+                  Active
+                </label>
+              </div>
+            </div>
+
+            <div class="modal-footer p-0 pt-3 gap-2">
+              <button type="button" class="btn btn-secondary px-4" (click)="closeForm()">Cancel</button>
+              <button type="submit" class="btn btn-primary px-4" [disabled]="formSubmitting()">
+                @if (formSubmitting()) {
+                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                Saving...
+                } @else {
+                @if (editingId()) {
+                Update Code
+                } @else {
+                Create Code
+                }
+                }
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  }
+
 </div>

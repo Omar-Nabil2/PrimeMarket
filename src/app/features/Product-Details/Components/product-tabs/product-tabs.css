@@ -112,3 +112,58 @@
   line-height: 1.7;
   margin: 0;
 }
+.review-form {
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.review-form h4 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #1a1a2e;
+}
+
+.rating-select {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 1rem;
+}
+
+.review-form textarea {
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.review-form textarea:focus {
+  border-color: #e74c3c;
+}
+
+.submit-review-btn {
+  margin-top: 0.75rem;
+  background: #e74c3c;
+  color: white;
+  border: none;
+  padding: 0.65rem 1.75rem;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.submit-review-btn:hover:not(:disabled) {
+  background: #c0392b;
+}
+
+.submit-review-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}

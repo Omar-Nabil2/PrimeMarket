@@ -16,6 +16,29 @@
     }
 
     @if (activeTab === 'reviews') {
+      <div class="review-form">
+        <h4>Write a Review</h4>
+        <div class="rating-select">
+          @for (s of stars; track $index) {
+            <i class="ti"
+              [ngClass]="$index < selectedRating() ? 'ti-star-filled' : 'ti-star'"
+              [style.color]="$index < selectedRating() ? '#f59e0b' : '#ddd'"
+              [style.cursor]="'pointer'"
+              [style.font-size]="'1.5rem'"
+              (click)="setRating($index + 1)">
+            </i>
+          }
+        </div>
+        <textarea
+          [value]="comment()"
+          (input)="comment.set($any($event.target).value)"
+          placeholder="Share your thoughts about this product..."
+          rows="4">
+        </textarea>
+        <button class="submit-review-btn" (click)="submitReview()" [disabled]="isSubmitting()">
+          {{ isSubmitting() ? 'Submitting...' : 'Submit Review' }}
+        </button>
+      </div>
       @if (reviews.length === 0) {
         <p class="no-reviews">No reviews yet.</p>
       } @else {

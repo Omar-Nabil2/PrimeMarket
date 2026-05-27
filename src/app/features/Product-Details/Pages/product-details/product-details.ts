@@ -38,4 +38,8 @@ export class ProductDetails implements OnInit {
   addToWishlist(): void {
     this.wishlistService.addToWishlist(this.productId).subscribe();
   }
+
+  refreshProduct(): void {
+    this.product$ = this.productService.getProductDetails(this.productId);
+  }
 }

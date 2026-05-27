@@ -15,4 +15,7 @@ export class ProductDetailService {
     return this.httpClinet.get<IProductDetails>(`${this.BaseUrl}/api/Products/details/${id}`);
   }
 
+  addReview(productId: number, rating: number, comment: string): Observable<void> {
+    return this.httpClinet.post<void>(`${this.BaseUrl}/api/Reviews/${productId}`, { rating, comment });
+  }
 }

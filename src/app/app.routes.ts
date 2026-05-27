@@ -17,6 +17,7 @@ export const routes: Routes = [
       { path: 'order-confirmation',data: { breadcrumb: 'order-confirmation' }, loadChildren: () => import('./features/order-confirmation/orderConfirmation.routes').then(m => m.ORDER_CONFIRMATION_ROUTES) },
       { path: 'brands', data: { breadcrumb: 'Brands' }, loadChildren: () => import('./features/Brands/Brands.routes').then(m => m.BRAND_ROUTES) },
       { path: 'become-seller',canActivate:[becomeSellerGuard] ,data: { breadcrumb: 'Register Brand' }, loadChildren: () => import('./features/SellerRequest/SellerRequest.routes').then(m => m.BECOME_SELLER_ROUTES) },
+      { path: 'account', loadComponent: () => import('./features/auth/pages/user-info/user-info').then(m => m.UserInfoComponent) }
     ]
   },
   {

@@ -43,6 +43,11 @@
         @if (!isCollapsed) { <span>Promo Codes</span> }
       </a>
 
+      <a routerLink="/admin-dashboard/seller-requests" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+        <i class="ti ti-building"></i>
+        @if (!isCollapsed) { <span>Seller Requests</span> }
+      </a>
+
       <div class="nav-divider"></div>
 
       <a routerLink="/" class="nav-item">

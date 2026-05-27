@@ -1,0 +1,150 @@
+<div class="seller-requests-page container py-4">
+
+  <div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h5 class="page-title mb-1 fw-bold">Seller Requests</h5>
+      <p class="page-subtitle text-muted mb-0">Review and manage seller approval requests</p>
+    </div>
+  </div>
+
+  @if (loading$ | async) {
+    <div class="d-flex justify-content-center py-5">
+      <div class="spinner-border text-danger" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  } @else {
+    @if (requests$ | async; as requests) {
+      @if (requests.length === 0) {
+        <div class="empty-state text-center py-5">
+          <i class="ti ti-inbox-off" style="font-size:56px; color:#ccc;"></i>
+          <h6 class="mt-3 text-muted">No seller requests</h6>
+          <p class="text-muted small">All pending seller requests have been processed</p>
+        </div>
+      } @else {
+        <div class="requests-grid">
+          @for (request of requests; track request.brandId) {
+            <div class="request-card">
+              <div class="card-header">
+                <div class="brand-logo-container">
+                  <img
+                    [src]="request.logo"
+                    [alt]="request.brandName"
+                    class="brand-logo"
+                    onerror="this.src='https://via.placeholder.com/150';" />
+                </div>
+                <div class="brand-info flex-grow-1">
+                  <h6 class="brand-name mb-1">{{ request.brandName }}</h6>
+                  <p class="seller-id text-muted small mb-0">
+                    Seller ID: {{ request.sellerId }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="card-body">
+                <div class="info-section">
+                  <label class="info-label">Description</label>
+                  <p class="info-value">{{ request.description }}</p>
+                </div>
+
+                <div class="info-section">
+                  <label class="info-label">Location</label>
+                  <p class="info-value">
+                    <i class="ti ti-map-pin me-1"></i>{{ request.location }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="card-footer">
+                <button
+                  class="btn btn-sm btn-outline-danger me-2"
+                  (click)="openConfirmModal('reject', request)"
+                  [disabled]="(processingIds$ | async)?.has(request.brandId)">
+                  <i class="ti ti-x me-1"></i>
+                  @if ((processingIds$ | async)?.has(request.brandId)) {
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                  }
+                  Reject
+                </button>
+                <button
+                  class="btn btn-sm btn-danger"
+                  (click)="openConfirmModal('approve', request)"
+                  [disabled]="(processingIds$ | async)?.has(request.brandId)">
+                  <i class="ti ti-check me-1"></i>
+                  @if ((processingIds$ | async)?.has(request.brandId)) {
+                    <span class="spinner-border spinner-border-sm me-1"></span>
+                  }
+                  Approve
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      }
+    }
+  }
+
+  <!-- Confirmation Modal -->
+  @if (confirmAction) {
+    <div class="modal-backdrop show"></div>
+    <div class="modal show d-block" tabindex="-1" role="dialog" style="display: block;">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header border-bottom-0">
+            <h5 class="modal-title">
+              @if (confirmAction.type === 'approve') {
+                <i class="ti ti-check-circle text-danger me-2"></i>Approve Seller Request
+              } @else {
+                <i class="ti ti-x-circle text-danger me-2"></i>Reject Seller Request
+              }
+            </h5>
+            <button
+              type="button"
+              class="btn-close"
+              (click)="cancelAction()"
+              aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <p class="mb-2">
+              Are you sure you want to
+              <strong>{{ confirmAction.type === 'approve' ? 'approve' : 'reject' }}</strong>
+              this seller request?
+            </p>
+            <div class="brand-details-modal p-3 rounded bg-light">
+              <p class="mb-1">
+                <strong>Brand:</strong> {{ confirmAction.request.brandName }}
+              </p>
+              <p class="mb-0">
+                <strong>Seller ID:</strong> {{ confirmAction.request.sellerId }}
+              </p>
+            </div>
+          </div>
+          <div class="modal-footer border-top-0">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelAction()"
+              [disabled]="(processingIds$ | async)?.has(confirmAction.request.brandId)">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn"
+              [ngClass]="
+                confirmAction.type === 'approve'
+                  ? 'btn-danger'
+                  : 'btn-outline-danger'
+              "
+              (click)="executeAction()"
+              [disabled]="(processingIds$ | async)?.has(confirmAction.request.brandId)">
+              @if ((processingIds$ | async)?.has(confirmAction.request.brandId)) {
+                <span class="spinner-border spinner-border-sm me-2"></span>
+              }
+              {{ confirmAction.type === 'approve' ? 'Approve' : 'Reject' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>

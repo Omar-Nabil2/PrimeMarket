@@ -21,6 +21,8 @@
       <app-product-tabs
         [description]="product.description"
         [reviews]="product.reviews"
+        [productId]="product.id"
+        (reviewAdded)="refreshProduct()"
       />
     </div>
 

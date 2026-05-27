@@ -5,6 +5,7 @@ import { IBrandCard } from '../Models/Brands/ibrand-card';
 import { Observable } from 'rxjs';
 import { IBrandDetails } from '../Models/Brands/ibrand-details';
 import { IBecomeSelerRequest } from '../Models/Brands/ibecome-seler-request';
+import { ISellerRequest } from '../Models/Brands/iseller-request';
 
 @Injectable({
   providedIn: 'root',
@@ -35,5 +36,17 @@ export class IBrandService {
   }
   getStatus(): Observable<void> {
     return this.http.get<void>(`${this.apiUrl}/status`);
+  }
+
+  getSellerRequests(): Observable<ISellerRequest[]> {
+    return this.http.get<ISellerRequest[]>(`${this.apiUrl}/seller-requests`);
+  }
+
+  approveSeller(brandId: number): Observable<void> {
+    return this.http.put<void>(`${this.apiUrl}/${brandId}/approve`, {});
+  }
+
+  rejectSeller(brandId: number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/${brandId}/reject`);
   }
 }

@@ -6,6 +6,7 @@ import { AdminProducts } from './Pages/admin-products/admin-products';
 import { AdminOrders } from './Pages/admin-orders/admin-orders';
 import { AdminCategories } from './Pages/admin-categories/admin-categories';
 import { AdminPromoCode } from './Pages/admin-promo-code/admin-promo-code';
+import { AdminSellerRequests } from './Pages/admin-seller-requests/admin-seller-requests';
 
 export const ADMIN_DASHBOARD_ROUTES: Routes = [
   {
@@ -35,6 +36,10 @@ export const ADMIN_DASHBOARD_ROUTES: Routes = [
       {
         path: 'promo-code',
         component: AdminPromoCode
+      },
+      {
+        path: 'seller-requests',
+        component: AdminSellerRequests
       }
     ]
   }

@@ -1,6 +1,5 @@
 import { IOrderAddress } from "./iorder-address";
-
-export type OrderStatus = 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled';
+import { OrderStatus } from "./order-status";
 
 export interface ISellerOrderItem {
   productId: number;

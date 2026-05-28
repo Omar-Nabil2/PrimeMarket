@@ -13,7 +13,6 @@ import { ISellerRequest } from '../../../../shared/Models/Brands/iseller-request
     CommonModule,
     AsyncPipe,
     FormsModule,
-    DatePipe,
   ],
   templateUrl: './admin-seller-requests.html',
   styleUrl: './admin-seller-requests.css',

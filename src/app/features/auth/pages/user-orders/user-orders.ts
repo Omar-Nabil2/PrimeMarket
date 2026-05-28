@@ -1,24 +1,22 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal, computed } from '@angular/core';
-import { DecimalPipe, NgClass, DatePipe, NgStyle } from '@angular/common';
+import { DatePipe, DecimalPipe, NgClass } from '@angular/common';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { OrderService } from '../../../../shared/Services/order-service';
-import { IPaginatedResul } from '../../../../shared/Models/Common/ipaginated-result';
-import { ISellerOrder } from '../../../../shared/Models/Orders/iseller-order';
-import { IRequestFilter } from '../../../../shared/Models/Common/irequest-filter';
 import { ToastService } from '../../../../shared/Services/toast-service';
+import { IRequestFilter } from '../../../../shared/Models/Common/irequest-filter';
+import { ICustomerOrder } from '../../../../shared/Models/Orders/icustomer-order';
 import { OrderStatus } from '../../../../shared/Models/Orders/order-status';
 
 @Component({
-  selector: 'app-orders',
-  imports: [NgClass, DecimalPipe, DatePipe],
-  templateUrl: './orders-section.html',
-  styleUrl: './orders-section.css',
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-user-orders',
+  imports:  [NgClass, DecimalPipe, DatePipe],
+  templateUrl: './user-orders.html',
+  styleUrl: './user-orders.css',
 })
-export class Orders implements OnInit {
+export class UserOrders implements OnInit {
   private ordersService = inject(OrderService);
   private toast = inject(ToastService);
 
-  allOrders = signal<ISellerOrder[]>([]);
+  allOrders = signal<ICustomerOrder[]>([]);
   loading = signal(false);
 
   pageSize = signal(5);
@@ -27,7 +25,7 @@ export class Orders implements OnInit {
   searchTerm = signal('');
   
   expanded = signal<Record<number, boolean>>({});
-  confirmData = signal<{ order: ISellerOrder, status: OrderStatus } | null>(null);
+  confirmData = signal<{ order: ICustomerOrder, status: OrderStatus } | null>(null);
 
   filteredItems = computed(() => {
     let items = this.allOrders();
@@ -40,8 +38,7 @@ export class Orders implements OnInit {
     const search = this.searchTerm().trim().toLowerCase();
     if (search) {
       items = items.filter(i => 
-        i.orderId.toString().includes(search) || 
-        (i.customerName && i.customerName.toLowerCase().includes(search))
+        i.orderId.toString().includes(search)
       );
     }
 
@@ -95,7 +92,7 @@ export class Orders implements OnInit {
     this.loading.set(true);
     const serverFilter: IRequestFilter = { pageNumber: 1, pageSize: 1000, searchValue: '', sortColumn: 'createdon', sortDirection: 'DESC' };
     
-    this.ordersService.getSellerOrders(serverFilter).subscribe({
+    this.ordersService.getCustomerOrders(serverFilter).subscribe({
       next: res => {
         this.allOrders.set(res?.items ?? []);
         this.loading.set(false);
@@ -129,7 +126,7 @@ export class Orders implements OnInit {
     this.currentPage.set(1);
   }
 
-  updateStatus(order: ISellerOrder, status: OrderStatus) {
+  updateStatus(order: ICustomerOrder, status: OrderStatus) {
     this.confirmData.set({ order, status });
   }
 

@@ -4,8 +4,10 @@ import { environment } from '../../../environments/environment';
 import { Observable } from 'rxjs';
 import { IPaginatedResul } from '../Models/Common/ipaginated-result';
 import { IRequestFilter } from '../Models/Common/irequest-filter';
-import { ISellerOrder, OrderStatus } from '../Models/Orders/iseller-order';
-import { IAdminOrder, AdminOrderStatus } from '../Models/Orders/iadmin-order';
+import { ISellerOrder } from '../Models/Orders/iseller-order';
+import { IAdminOrder } from '../Models/Orders/iadmin-order';
+import { OrderStatus } from '../Models/Orders/order-status';
+import { ICustomerOrder } from '../Models/Orders/icustomer-order';
 
 @Injectable({
   providedIn: 'root',
@@ -24,12 +26,17 @@ export class OrderService {
   }
 
   updateOrderStatus(orderId: number, status: OrderStatus) {
-    return this.http.put<void>(`${this.baseUrl}/seller/${orderId}/status`, { status });
+    return this.http.put<void>(`${this.baseUrl}/${orderId}/status`, { status });
   }
 
   getAdminOrders(filter: IRequestFilter): Observable<IPaginatedResul<IAdminOrder>> {
     const params = new HttpParams({ fromObject: { ...filter } as any });
     return this.http.get<IPaginatedResul<IAdminOrder>>(`${this.baseUrl}/admin`, { params });
+  }
+
+  getCustomerOrders(filter: IRequestFilter): Observable<IPaginatedResul<ICustomerOrder>> {
+    const params = new HttpParams({ fromObject: { ...filter } as any });
+    return this.http.get<IPaginatedResul<ICustomerOrder>>(`${this.baseUrl}`, { params });
   }
 
   getAdminOrderById(orderId: number): Observable<IAdminOrder> {

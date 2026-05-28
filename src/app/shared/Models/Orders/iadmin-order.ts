@@ -1,4 +1,4 @@
-export type AdminOrderStatus = 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled';
+import { OrderStatus } from "./order-status";
 
 export interface IAdminOrderItem {
   productId: number;
@@ -15,7 +15,7 @@ export interface IAdminOrder {
   customerUserName: string;
   customerEmail: string;
   orderDate: string;
-  status: AdminOrderStatus;
+  status: OrderStatus;
   totalAmount: number;
   paymentMethod: string;
   items: IAdminOrderItem[];

@@ -5,6 +5,7 @@ import { EmailConfirmation } from './pages/email-confirmation/email-confirmation
 import { ForgetPassword } from './pages/forget-password/forget-password';
 import { ResetPassword } from './pages/reset-password/reset-password';
 import { UserInfoComponent } from './pages/user-info/user-info';
+import { UserOrders } from './pages/user-orders/user-orders';
 
 
 export const AUTH_ROUTES: Routes = [
@@ -13,5 +14,6 @@ export const AUTH_ROUTES: Routes = [
   { path: 'emailConfirmation', component: EmailConfirmation },
   { path: 'forget-password', component: ForgetPassword },
   { path: 'ForgetPassword', component: ResetPassword },
-  { path: 'account', component: UserInfoComponent }
+  { path: 'account', component: UserInfoComponent },
+  { path: 'orders', component: UserOrders }
 ];

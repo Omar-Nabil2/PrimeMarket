@@ -9,7 +9,6 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
   const router = inject(Router);
 
   const publicUrls = [
-    '/api/Products',
     '/api/auth',
     '/api/Categories'
   ];

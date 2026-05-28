@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { DecimalPipe, DatePipe } from '@angular/common';
 import { OrderService } from '../../../../shared/Services/order-service';
 import { IPaginatedResul } from '../../../../shared/Models/Common/ipaginated-result';
-import { IAdminOrder, AdminOrderStatus } from '../../../../shared/Models/Orders/iadmin-order';
+import { IAdminOrder } from '../../../../shared/Models/Orders/iadmin-order';
 import { IRequestFilter } from '../../../../shared/Models/Common/irequest-filter';
 import { ToastService } from '../../../../shared/Services/toast-service';
+import { OrderStatus } from '../../../../shared/Models/Orders/order-status';
 
 @Component({
   selector: 'app-admin-orders',
@@ -23,7 +24,7 @@ export class AdminOrders implements OnInit {
 
   pageSize = signal(10);
   currentPage = signal(1);
-  statusFilter = signal<'All' | AdminOrderStatus>('All');
+  statusFilter = signal<'All' | OrderStatus>('All');
   searchTerm = signal('');
   filterType = signal<'user' | 'seller' | 'all'>('all');
 
@@ -147,7 +148,7 @@ export class AdminOrders implements OnInit {
     this.currentPage.set(1);
   }
 
-  setStatusFilter(status: 'All' | AdminOrderStatus) {
+  setStatusFilter(status: 'All' | OrderStatus) {
     this.statusFilter.set(status);
     this.currentPage.set(1);
   }

@@ -43,8 +43,10 @@
       </div>
       <select (change)="onCategoryChange($any($event.target).value)">
         <option value="">All Categories</option>
-        @for (cat of categories; track cat.id) {
-          <option [value]="cat.id">{{ cat.name }}</option>
+        @if (categories$ | async; as categories) {
+          @for (cat of categories; track cat.id) {
+            <option [value]="cat.id">{{ cat.name }}</option>
+          }
         }
       </select>
       <button><i class="ti ti-search"></i></button>

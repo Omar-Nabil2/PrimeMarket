@@ -3,6 +3,7 @@ import { Mainlayout } from './layouts/main-layout/mainlayout/mainlayout';
 import { Authlayout } from './layouts/auth-layout/authlayout/authlayout';
 import { Notfound } from './shared/components/notfound/notfound';
 import { becomeSellerGuard } from './features/SellerRequest/BecomeSeller.guard';
+import { adminDashboardGuard } from './features/admin-dashboard/admin-dashboard.guard';
 
 export const routes: Routes = [
   {
@@ -35,6 +36,7 @@ export const routes: Routes = [
   },
   {
     path: 'admin-dashboard',
+    canActivate: [adminDashboardGuard],
     loadChildren: () =>
       import('./features/admin-dashboard/admin-dashboard.routes').then(m => m.ADMIN_DASHBOARD_ROUTES),
   },

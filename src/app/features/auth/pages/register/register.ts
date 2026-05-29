@@ -1,9 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../../shared/Services/auth.service';
 import { ToastService } from '../../../../shared/Services/toast-service';
+import { CredentialResponse } from 'google-one-tap';
 
 @Component({
   selector: 'app-register',
@@ -19,7 +20,8 @@ export class Register implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private toastService: ToastService,
-    private router: Router
+    private router: Router,
+    private ngZone: NgZone
   ) {
     this.initializeForm();
   }
@@ -29,6 +31,38 @@ export class Register implements OnInit {
     if (this.authService.isAuthenticated()) {
       this.router.navigate(['/']);
     }
+
+    // @ts-ignore
+    window.onGoogleLibraryLoad = () => this.initGoogleSignUp();
+
+    // @ts-ignore
+    if (window.google?.accounts?.id) {
+      this.initGoogleSignUp();
+    }
+  }
+
+  private initGoogleSignUp(): void {
+    const buttonDiv = document.getElementById('googleButtonDiv');
+
+    if (!buttonDiv) {
+      return;
+    }
+
+    // @ts-ignore
+    google.accounts.id.initialize({
+      client_id: '900527108026-oru43meenil4paj5pdfiqq8bgh25cn1o.apps.googleusercontent.com',
+      callback: this.handleGoogleCredentialResponse.bind(this),
+      auto_select: false,
+      cancel_on_tap_outside: true
+    });
+
+    // @ts-ignore
+    google.accounts.id.renderButton(buttonDiv as HTMLElement, {
+      theme: 'outline',
+      size: 'large',
+      width: 320,
+      text: 'signup_with'
+    });
   }
 
   private initializeForm(): void {
@@ -75,6 +109,28 @@ export class Register implements OnInit {
         this.isLoading = false;
         const errorMessage = error?.message || error?.error?.Errors?.[1] || error?.error?.Errors?.[0] || 'Registration failed. Please try again.';
         this.toastService.error(errorMessage);
+      }
+    });
+  }
+
+  handleGoogleCredentialResponse(response: CredentialResponse): void {
+    if (!response || !response.credential) {
+      this.toastService.error('No Google credential returned');
+      return;
+    }
+
+    this.isLoading = true;
+    this.authService.registerWithGoogle(response.credential).subscribe({
+      next: () => {
+        this.isLoading = false;
+        this.toastService.success('Registration successful!');
+        this.ngZone.run(() => {
+          this.router.navigate(['/']);
+        });
+      },
+      error: (error) => {
+        this.isLoading = false;
+        this.toastService.error(error?.message || 'Google registration failed');
       }
     });
   }

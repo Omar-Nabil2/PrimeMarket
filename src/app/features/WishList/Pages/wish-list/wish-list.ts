@@ -20,7 +20,6 @@ export class WishList {
   }
 
   remove(productId: number): void {
-    console.log(productId)
     this.wishlistService.removeFromWishlist(productId).subscribe();
   }
 

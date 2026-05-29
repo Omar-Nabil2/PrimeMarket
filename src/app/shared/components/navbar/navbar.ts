@@ -29,7 +29,7 @@ export class Navbar implements OnInit {
   isAuthenticated = false;
   currentUser: AuthResponse | null = null;
   isAdmin = false;
-  categories: ICategory[] = [];
+  categories$: Observable<ICategory[]>;
   isSidebarOpen = false;
 
 
@@ -39,8 +39,8 @@ export class Navbar implements OnInit {
       this.wishlistService.loadWishlist().subscribe();
        this.cartService.loadCart().subscribe();
     }
-    
-    this.categoryService.getCategories().subscribe(cats => this.categories = cats);
+
+    // categories are bound with async pipe in template to avoid sync replay timing issues
   }
 
   onCategoryChange(value: string): void {
@@ -71,6 +71,8 @@ export class Navbar implements OnInit {
     private router: Router,
     private categoryService:CategoryService
   ) {
+    this.categories$ = this.categoryService.getCategories();
+
     this.searchInput$.pipe(
       debounceTime(400),
       distinctUntilChanged()
@@ -107,5 +109,5 @@ export class Navbar implements OnInit {
     input.value = '';
     this.homeService.search('');
   }
-  
+
 }

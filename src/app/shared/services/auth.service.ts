@@ -26,6 +26,56 @@ export class AuthService {
   }
 
   /**
+   * Login user with Google credential (ID token)
+   */
+  loginWithGoogle(credential: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/LoginWithGoogle`, { credential }).pipe(
+      tap((response: AuthResponse) => {
+        this.setTokens(response.token, response.refreshToken);
+        this.setUser(response);
+        this.authState.set({ isAuthenticated: true, user: response, token: response.token });
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Google login failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Google login failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
+   * Register a user with Google credential (uses the same backend endpoint)
+   */
+  registerWithGoogle(credential: string): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.apiUrl}/LoginWithGoogle`, { credential }).pipe(
+      tap((response: AuthResponse) => {
+        this.setTokens(response.token, response.refreshToken);
+        this.setUser(response);
+        this.authState.set({ isAuthenticated: true, user: response, token: response.token });
+      }),
+      catchError((error: HttpErrorResponse) => {
+        // Extract error message from backend response
+        let errorMessage = 'Google registration failed';
+        if (error.error?.Errors && Array.isArray(error.error.Errors)) {
+          errorMessage = error.error.Errors[1] || error.error.Errors[0] || error.error.title || 'Google registration failed';
+        } else if (error.error?.message) {
+          errorMessage = error.error.message;
+        } else if (error.error?.title) {
+          errorMessage = error.error.title;
+        }
+        return throwError(() => new Error(errorMessage));
+      })
+    );
+  }
+
+  /**
    * Initialize auth state from stored data
    */
   private initializeAuthState(): void {
@@ -363,11 +413,20 @@ export class AuthService {
     const payload = this.decodeToken(token);
     if (!payload) return [];
 
-    // Handle both single role and array of roles from JWT
-    if (payload.roles && Array.isArray(payload.roles)) {
-      return payload.roles;
-    } else if (payload.roles && typeof payload.roles === 'string') {
-      return [payload.roles];
+    const roleClaims = [
+      payload.roles,
+      payload.role,
+      payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role']
+    ];
+
+    for (const roleValue of roleClaims) {
+      if (Array.isArray(roleValue)) {
+        return roleValue;
+      }
+
+      if (typeof roleValue === 'string' && roleValue.trim()) {
+        return [roleValue];
+      }
     }
 
     return [];

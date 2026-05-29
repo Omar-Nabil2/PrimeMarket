@@ -293,7 +293,7 @@ export class ProductForm implements OnInit {
     this.productService.createProduct(formData).subscribe({
       next: () => {
         this.isSaving = false;
-        this.router.navigate(['/dashboard/products']);
+        this.router.navigate(['/seller-dashboard/products']);
       },
       error: () => {
         this.isSaving = false;
@@ -317,11 +317,11 @@ export class ProductForm implements OnInit {
         this.handleImageUploads().subscribe({
           next: () => {
             this.isSaving = false;
-            this.router.navigate(['/dashboard/products']);
+            this.router.navigate(['/seller-dashboard/products']);
           },
           error: () => {
             this.isSaving = false;
-            this.router.navigate(['/dashboard/products']);
+            this.router.navigate(['/seller-dashboard/products']);
           },
         });
       },

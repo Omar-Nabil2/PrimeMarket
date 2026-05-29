@@ -7,7 +7,7 @@
         {{ isEditMode ? 'Update your product details' : 'Fill in the details to list a new product' }}
       </p>
     </div>
-    <a routerLink="/dashboard/products" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
+    <a routerLink="/seller-dashboard/products" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-2">
       <i class="ti ti-arrow-left"></i> Back
     </a>
   </div>
@@ -184,13 +184,6 @@
               class="d-none"
               (change)="onPrimaryImageChange($event)"
             />
-            @if (primaryImageFile) {
-              <div class="mt-2 d-flex gap-2">
-                <button type="button" class="btn btn-sm btn-outline-primary" (click)="uploadPrimaryFileAndSetPrimary()" [disabled]="uploadingPrimary">
-                  <i class="ti ti-star"></i> Mark as Primary (applied on Save)
-                </button>
-              </div>
-            }
           </div>
 
           @if (isEditMode) {
@@ -299,7 +292,7 @@
       </div>
 
       <div class="submit-bar">
-        <a routerLink="/dashboard/products" class="btn btn-outline-secondary">Cancel</a>
+        <a routerLink="/seller-dashboard/products" class="btn btn-outline-secondary">Cancel</a>
         <button type="submit" class="btn btn-danger d-flex align-items-center gap-2" [disabled]="isSaving">
           @if (isSaving) {
             <span class="spinner-border spinner-border-sm"></span>

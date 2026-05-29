@@ -13,27 +13,27 @@
     </div>
 
     <nav class="sidebar-nav">
-      <a routerLink="/dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <a routerLink="/seller-dashboard" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-dashboard"></i>
         @if (!isCollapsed) { <span>Overview</span> }
       </a>
 
-      <a routerLink="/dashboard/products" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <a routerLink="/seller-dashboard/products" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-package"></i>
         @if (!isCollapsed) { <span>Products</span> }
       </a>
 
-      <a routerLink="/dashboard/products/create" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <a routerLink="/seller-dashboard/products/create" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-circle-plus"></i>
         @if (!isCollapsed) { <span>Add Product</span> }
       </a>
 
-      <a routerLink="/dashboard/inventory" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <a routerLink="/seller-dashboard/inventory" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-building-warehouse"></i>
         @if (!isCollapsed) { <span>Inventory</span> }
       </a>
 
-      <a routerLink="/dashboard/orders" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
+      <a routerLink="/seller-dashboard/orders" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-item">
         <i class="ti ti-receipt"></i>
         @if (!isCollapsed) { <span>Orders</span> }
       </a>

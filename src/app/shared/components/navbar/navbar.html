@@ -88,6 +88,15 @@
       }
 
       @if (isAuthenticated) {
+        <button class="notif-bell-btn" (click)="notifSidebar.open()">
+          <i class="ti ti-bell"></i>
+          @if (notificationService.unreadCount() > 0) {
+            <span class="wishlist-badge">{{ notificationService.unreadCount() }}</span>
+          }
+        </button>
+
+        <app-notification-side-bar #notifSidebar />
+
         <a routerLink="/wishlist" style="position: relative;">
           <i class="ti ti-heart"></i> Wishlist
           @if (wishlistCount$ | async; as count) {

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit,  effect } from '@angular/core';
+import { Component, inject, OnInit,  effect, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink,  Router } from "@angular/router";
 import { HomeService } from '../../../features/home/Services/home-service';
 import { debounceTime, distinctUntilChanged, Observable, startWith, Subject } from 'rxjs';
@@ -9,14 +9,16 @@ import { AuthService } from '../../Services/auth.service';
 import { AuthResponse } from '../../Models/auth.model';
 import { CategoryService } from '../../Services/category-service';
 import { ICategory } from '../../Models/Category/icategory';
+import { NotificationSideBar } from "../notification-side-bar/notification-side-bar";
+import { NotificationService } from '../../Services/notification-service';
 
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [RouterLink, CommonModule],
+  imports: [RouterLink, CommonModule, NotificationSideBar],
   templateUrl: './navbar.html',
-  styleUrl: './navbar.css',
+  styleUrl: './navbar.css'
 })
 export class Navbar implements OnInit {
   private homeService = inject(HomeService);
@@ -32,7 +34,7 @@ export class Navbar implements OnInit {
   categories$: Observable<ICategory[]>;
   isSidebarOpen = false;
 
-
+  notificationService = inject(NotificationService);
 
   ngOnInit(): void {
     if (this.isAuthenticated) {

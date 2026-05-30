@@ -1,0 +1,57 @@
+<!-- Overlay -->
+@if (isOpen()) {
+  <div class="notif-overlay" (click)="close()"></div>
+}
+
+<!-- Sidebar -->
+<div class="notif-sidebar" [class.open]="isOpen()">
+  <div class="notif-sidebar-header">
+    <span>Notifications</span>
+    <div class="notif-header-actions">
+      @if (notificationService.unreadCount() > 0) {
+        <button class="mark-all-btn" (click)="markAllAsRead()">Mark all as read</button>
+      }
+      <i class="ti ti-x" (click)="close()"></i>
+    </div>
+  </div>
+
+  <div class="notif-sidebar-body">
+    @if (notificationService.notifications().length === 0) {
+      <div class="notif-empty">
+        <i class="ti ti-bell-off"></i>
+        <p>No notifications yet</p>
+      </div>
+    }
+    @for (n of notificationService.notifications(); track n.id) {
+      <div class="notif-item" [class.unread]="!n.isRead" (click)="openDetail(n)">
+        <div class="notif-dot-wrapper">
+          <span class="notif-dot" [class.visible]="!n.isRead"></span>
+        </div>
+        <div class="notif-content">
+          <p class="notif-title">{{ n.title }}</p>
+          <p class="notif-message">{{ n.message }}</p>
+          <p class="notif-time">{{ n.createdOn | date: 'MMM d, h:mm a' }}</p>
+        </div>
+        <span class="notif-type-badge">{{ n.type }}</span>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Detail Modal -->
+@if (selectedNotification()) {
+  <div class="notif-modal-overlay" (click)="closeDetail()">
+    <div class="notif-modal" (click)="$event.stopPropagation()">
+      <div class="notif-modal-header">
+        <span class="notif-modal-badge">{{ selectedNotification()!.type }}</span>
+        <i class="ti ti-x" (click)="closeDetail()"></i>
+      </div>
+      <h5 class="notif-modal-title">{{ selectedNotification()!.title }}</h5>
+      <p class="notif-modal-message">{{ selectedNotification()!.message }}</p>
+      <p class="notif-modal-time">
+        <i class="ti ti-clock"></i>
+        {{ selectedNotification()!.createdOn | date: 'MMMM d, y – h:mm a' }}
+      </p>
+    </div>
+  </div>
+}

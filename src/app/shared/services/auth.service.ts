@@ -316,9 +316,9 @@ export class AuthService {
       this.http.post(`${this.apiUrl}/revoke-refresh-token`, { token, refreshToken }).subscribe();
     }
 
-    sessionStorage.removeItem(this.tokenKey);
-    sessionStorage.removeItem(this.refreshTokenKey);
-    sessionStorage.removeItem(this.userKey);
+    localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.refreshTokenKey);
+    localStorage.removeItem(this.userKey);
     this.authState.set({ isAuthenticated: false, user: null, token: null });
   }
 
@@ -326,26 +326,26 @@ export class AuthService {
    * Get stored token
    */
   getToken(): string | null {
-    return sessionStorage.getItem(this.tokenKey);
+    return localStorage.getItem(this.tokenKey);
   }
 
   getRefreshToken(): string | null {
-    return sessionStorage.getItem(this.refreshTokenKey);
+    return localStorage.getItem(this.refreshTokenKey);
   }
 
   /**
    * Set token in storage
    */
   private setTokens(token: string, refreshToken: string): void {
-    sessionStorage.setItem(this.tokenKey, token);
-    sessionStorage.setItem(this.refreshTokenKey, refreshToken);
+    localStorage.setItem(this.tokenKey, token);
+    localStorage.setItem(this.refreshTokenKey, refreshToken);
   }
 
   /**
    * Get stored user data
    */
   getSavedUser(): AuthResponse | null {
-    const userJson = sessionStorage.getItem(this.userKey);
+    const userJson = localStorage.getItem(this.userKey);
     return userJson ? JSON.parse(userJson) : null;
   }
 
@@ -353,7 +353,7 @@ export class AuthService {
    * Set user in storage
    */
   private setUser(user: AuthResponse): void {
-    sessionStorage.setItem(this.userKey, JSON.stringify(user));
+    localStorage.setItem(this.userKey, JSON.stringify(user));
   }
 
   /**

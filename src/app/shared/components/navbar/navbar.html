@@ -5,8 +5,8 @@
       <nav class="top-nav">
         <a routerLink="/">Home</a>
         <a routerLink="/brands">Brands</a>
-        @if (isAuthenticated) {
-          <a routerLink="/seller-dashboard">Seller Dashboard</a>
+        @if (isSeller) {
+          <a routerLink="/seller-dashboard" style="color: #16a085; font-weight: 600;"><i class="ti ti-building-store" style="margin-right: 4px;"></i>Seller Dashboard</a>
         }
         @if (isAdmin) {
           <a routerLink="/admin-dashboard" style="color: #e74c3c; font-weight: 600;"><i class="ti ti-shield-admin" style="margin-right: 4px;"></i>Admin Dashboard</a>

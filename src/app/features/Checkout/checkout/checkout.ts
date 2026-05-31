@@ -51,7 +51,7 @@ export class Checkout implements OnInit {
       this.addresses = addresses;
       const def = addresses.find(a => a.isDefault) ?? addresses[0];
       if (def) this.selectedAddressId = def.id;
-      this.cdr.markForCheck(); // ← change this
+      this.cdr.markForCheck();
     });
     // mount immediately so element is ready
     setTimeout(async () => {
@@ -67,10 +67,12 @@ export class Checkout implements OnInit {
         this.selectedAddressId = address.id;
         this.isAddingAddress = false;
         this.toast.success('Address added!');
+        this.cdr.markForCheck();
       },
       error: () => {
         this.isAddingAddress = false;
         this.toast.error('Failed to add address.');
+        this.cdr.markForCheck();
       }
     });
   }
@@ -89,12 +91,12 @@ export class Checkout implements OnInit {
       } else {
         this.promoError = result.errorMessage ?? 'Invalid promo code.';
       }
-      this.cdr.markForCheck(); // ← add
+      this.cdr.markForCheck();
     },
     error: () => {
       this.isValidatingPromo = false;
       this.promoError = 'Failed to validate promo code.';
-      this.cdr.markForCheck(); // ← add
+      this.cdr.markForCheck();
     }
   });
 }
@@ -107,7 +109,7 @@ export class Checkout implements OnInit {
   }
     
   get canPlaceOrder(): boolean {
-    return !!this.selectedAddressId && !!this.cart?.items.length;
+    return this.selectedAddressId !== null && (this.cart?.items.length ?? 0) > 0;
   }
 
   onPaymentChange(payment: PaymentType): void {
@@ -134,7 +136,7 @@ export class Checkout implements OnInit {
         this.cartService.clearCart();
         this.router.navigate(['/order-confirmation', response.orderId]);
       }
-      this.isPlacingOrder = false; // ← moved here, always resets
+      this.isPlacingOrder = false;
     } else {
       this.toast.success('Order placed successfully!');
       this.cartService.clearCart();

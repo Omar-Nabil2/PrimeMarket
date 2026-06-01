@@ -449,6 +449,9 @@ export class AuthService {
   isAdmin(): boolean {
     return this.hasRole('Admin');
   }
+  /**
+   * Check if user is seller
+   */
   isSeller(): boolean {
     return this.hasRole('Seller');
   }

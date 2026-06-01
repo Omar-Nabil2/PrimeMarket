@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit,  effect, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, effect } from '@angular/core';
 import { RouterLink,  Router } from "@angular/router";
 import { HomeService } from '../../../features/home/Services/home-service';
 import { debounceTime, distinctUntilChanged, Observable, startWith, Subject } from 'rxjs';
@@ -32,6 +32,7 @@ export class Navbar implements OnInit {
   currentUser: AuthResponse | null = null;
   isAdmin = false;
   isSeller=false;
+
   categories$: Observable<ICategory[]>;
   isSidebarOpen = false;
 

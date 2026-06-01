@@ -14,7 +14,6 @@ export class AuthService {
   private readonly tokenKey = 'auth_token';
   private readonly userKey = 'auth_user';
   private readonly refreshTokenKey = 'refresh_token';
-  // Signals for reactive state management
   authState = signal<AuthState>({
     isAuthenticated: this.isTokenValid(),
     user: this.getSavedUser(),
@@ -79,21 +78,20 @@ export class AuthService {
    * Initialize auth state from stored data
    */
   private initializeAuthState(): void {
-    const token = this.getToken();
-    const refreshToken = this.getRefreshToken();
-    const user = this.getSavedUser();
+  const token = this.getToken();
+  const user = this.getSavedUser();
 
-    if (token && user && !this.isTokenExpired(token)) {
-      this.authState.set({ isAuthenticated: true, user, token });
-    } else if (token && refreshToken) {
-      // only refresh if we actually have both tokens
-      this.refreshToken().subscribe({
-        error: () => this.logout()
-      });
-    } else {
-      this.authState.set({ isAuthenticated: false, user: null, token: null });
-    }
+  if (token && user && !this.isTokenExpired(token)) {
+    this.authState.set({ isAuthenticated: true, user, token });
+  } else if (this.getRefreshToken()) {
+    // Don't refresh eagerly — just mark as authenticated optimistically.
+    // The interceptor will handle the 401 and refresh when the first request fires.
+    this.authState.set({ isAuthenticated: true, user, token: null });
+  } else {
+    this.authState.set({ isAuthenticated: false, user: null, token: null });
   }
+  // ← No logout() call here. Never wipe tokens during initialization.
+}
 
   /**
    * Login user with email and password
@@ -303,6 +301,7 @@ export class AuthService {
       })
     );
   }
+  
 
 
   /**
@@ -312,10 +311,14 @@ export class AuthService {
     const token = this.getToken();
     const refreshToken = this.getRefreshToken();
 
-    if (token && refreshToken) {
+    if (token && refreshToken && !this.isTokenExpired(token)) {
       this.http.post(`${this.apiUrl}/revoke-refresh-token`, { token, refreshToken }).subscribe();
     }
 
+    this.clearTokens();
+  }
+
+  clearTokens(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.refreshTokenKey);
     localStorage.removeItem(this.userKey);
@@ -381,7 +384,7 @@ export class AuthService {
   /**
    * Check if JWT token is expired
    */
-  private isTokenExpired(token: string): boolean {
+  public isTokenExpired(token: string): boolean {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       const expirationTime = payload.exp * 1000; // Convert to milliseconds
@@ -446,7 +449,6 @@ export class AuthService {
   isAdmin(): boolean {
     return this.hasRole('Admin');
   }
-
   /**
    * Check if user is seller
    */

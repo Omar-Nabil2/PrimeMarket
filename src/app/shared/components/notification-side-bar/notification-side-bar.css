@@ -233,3 +233,18 @@
   gap: 6px;
   margin: 0;
 }
+
+.role-upgrade-banner {
+  background: linear-gradient(135deg, #fff8e1, #fff3cd);
+  border: 1px solid #ffc107;
+  border-radius: 10px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.role-upgrade-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 4px;
+}

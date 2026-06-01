@@ -35,7 +35,7 @@ export class HomeService {
     );
   constructor(private http: HttpClient, private categoryService: CategoryService) {}
 
-  private getProducts(filter: IRequestFilter): Observable<IPaginatedResul<IProcuctCard>> {
+  public getProducts(filter: IRequestFilter): Observable<IPaginatedResul<IProcuctCard>> {
     const params = new HttpParams({ fromObject: { ...filter } as any });
     return this.http.get<IPaginatedResul<IProcuctCard>>(
       `${this.baseUrl}/api/Products/all`, { params }

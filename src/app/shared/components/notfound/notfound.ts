@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-notfound',
-  imports: [],
+  imports: [RouterModule],
   templateUrl: './notfound.html',
   styleUrl: './notfound.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class Notfound {}

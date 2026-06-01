@@ -31,7 +31,8 @@ export class Navbar implements OnInit {
   isAuthenticated = false;
   currentUser: AuthResponse | null = null;
   isAdmin = false;
-  isSeller = false;
+  isSeller=false;
+
   categories$: Observable<ICategory[]>;
   isSidebarOpen = false;
 

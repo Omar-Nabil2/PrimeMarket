@@ -225,3 +225,78 @@
   height: 1rem;
   border-width: 0.2em;
 }
+/* Details Modal */
+.details-section-title {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.applicant-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.applicant-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e9ecef;
+}
+
+.applicant-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #1a1a2e;
+}
+
+.applicant-email {
+  font-size: 13px;
+}
+
+.brand-details-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.details-brand-logo {
+  width: 64px;
+  height: 64px;
+  border-radius: 8px;
+  object-fit: cover;
+  border: 1px solid #e9ecef;
+  flex-shrink: 0;
+}
+
+.details-map {
+  height: 240px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  overflow: hidden;
+  margin-top: 8px;
+}
+
+.no-map-placeholder {
+  padding: 16px;
+  background: #f8f9fa;
+  border-radius: 8px;
+  border: 1px dashed #dee2e6;
+}
+
+/* cap the modal body so it doesn't stretch full screen */
+.modal-lg .modal-body {
+  max-height: 65vh;
+  overflow-y: auto;
+}
+
+.details-map {
+  height: 200px; /* reduce from 240px */
+}

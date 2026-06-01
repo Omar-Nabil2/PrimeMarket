@@ -8,17 +8,34 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
   const authService = inject(AuthService);
   const router = inject(Router);
 
-  const publicUrls = [
-    '/api/auth',
-    '/api/Categories'
-  ];
-
- const isPublic = publicUrls.some(url => req.url.toLowerCase().includes(url.toLowerCase()));
-
+  const publicUrls = ['/api/Categories'];
+  const isPublic = publicUrls.some(url => req.url.toLowerCase().includes(url.toLowerCase()));
   if (isPublic) return next(req);
 
+  const isAuthEndpoint = req.url.toLowerCase().includes('/api/auth');
+  if (isAuthEndpoint) return next(req);
+
   const token = authService.getToken();
-  const authReq = token ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } }) : req;
+
+  if ((!token || authService.isTokenExpired(token)) && authService.getRefreshToken()) {
+    return authService.refreshToken().pipe(
+      switchMap((response) => {
+        const retryReq = req.clone({ setHeaders: { Authorization: `Bearer ${response.token}` } });
+        return next(retryReq);
+      }),
+      catchError((refreshError: HttpErrorResponse) => {
+        if (refreshError.status === 401 || refreshError.status === 400) {
+          authService.clearTokens(); // ← new method, doesn't call revoke
+          router.navigate(['/auth']);
+        }
+        return throwError(() => refreshError);
+      })
+    );
+  }
+
+  const authReq = token
+    ? req.clone({ setHeaders: { Authorization: `Bearer ${token}` } })
+    : req;
 
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -28,9 +45,12 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
             const retryReq = req.clone({ setHeaders: { Authorization: `Bearer ${response.token}` } });
             return next(retryReq);
           }),
-          catchError((refreshError) => {
-            authService.logout();
-            router.navigate(['/auth']);
+          catchError((refreshError: HttpErrorResponse) => {
+            // ✅ Same logic — only clear on genuine rejection
+            if (refreshError.status === 401 || refreshError.status === 400) {
+              authService.clearTokens();
+              router.navigate(['/auth']);
+            }
             return throwError(() => refreshError);
           })
         );

@@ -3,11 +3,12 @@ import { ActivatedRoute, NavigationEnd, Router, RouterLink, RouterOutlet } from 
 import { Navbar } from '../../../shared/components/navbar/navbar';
 import { Footer } from '../../../shared/components/footer/footer';
 import { filter } from 'rxjs';
+import { HeroComponent } from "../../../features/app-hero/app-hero";
 
 @Component({
   selector: 'app-mainlayout',
   standalone: true,
-  imports: [RouterOutlet,RouterLink, Navbar, Footer],
+  imports: [RouterOutlet, RouterLink, Navbar, Footer],
   templateUrl: './mainlayout.html',
   styleUrl: './mainlayout.css',
 })

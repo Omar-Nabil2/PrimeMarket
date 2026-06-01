@@ -17,23 +17,22 @@ export const roleGuard = (allowedRoles: string[]): CanActivateFn => {
     const authService = inject(AuthService);
     const router = inject(Router);
     const toast = inject(ToastService);
-    
-    const token = authService.getToken();
 
-    if (!token) {
+    if (!authService.isAuthenticated()) {
       toast.error('You need to be logged in to access this page.');
       return router.createUrlTree(['/auth']);
     }
 
-    const roles = getRolesFromToken(token);
+    const token = authService.getToken();
 
-    const hasRole = roles.some(role =>
-      allowedRoles.includes(role)
-    );
+    // Token may be null if expired but refresh token exists.
+    // In that case, fall back to roles from the saved user/signal.
+    const roles = token ? getRolesFromToken(token) : authService.getRoles();
 
-    if (hasRole) {
-      return true;
-    }
+    const hasRole = roles.some(role => allowedRoles.includes(role));
+
+    if (hasRole) return true;
+
     toast.error('You do not have permission to access this page.');
     return router.createUrlTree(['/']);
   };

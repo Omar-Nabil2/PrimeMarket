@@ -5,7 +5,7 @@
       <nav class="top-nav">
         <a routerLink="/">Home</a>
         <a routerLink="/brands">Brands</a>
-        @if (isAuthenticated) {
+        @if (isSeller) {
           <a routerLink="/seller-dashboard">Seller Dashboard</a>
         }
         @if (isAdmin) {

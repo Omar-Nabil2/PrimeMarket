@@ -31,6 +31,7 @@ export class Navbar implements OnInit {
   isAuthenticated = false;
   currentUser: AuthResponse | null = null;
   isAdmin = false;
+  isSeller=false;
   categories$: Observable<ICategory[]>;
   isSidebarOpen = false;
 
@@ -86,6 +87,7 @@ export class Navbar implements OnInit {
       this.isAuthenticated = state.isAuthenticated;
       this.currentUser = state.user;
       this.isAdmin = this.authService.isAdmin();
+      this.isSeller = this.authService.isSeller();
 
       if (state.isAuthenticated) {
         setTimeout(() => {

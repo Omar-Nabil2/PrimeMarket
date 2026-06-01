@@ -16,6 +16,22 @@
   </div>
 
   <div class="notif-sidebar-body">
+
+    @if (notificationService.roleUpgraded()) {
+      <div class="role-upgrade-banner">
+        <div class="role-upgrade-content">
+          <i class="ti ti-confetti text-warning" style="font-size: 24px;"></i>
+          <div>
+            <p class="fw-semibold mb-0">You're approved as a Seller! 🎉</p>
+            <p class="text-muted small mb-0">Ready to access your seller dashboard?</p>
+          </div>
+        </div>
+        <button class="btn btn-sm btn-danger mt-2 w-100" (click)="activateSeller()">
+          Activate Seller Account
+        </button>
+      </div>
+    }
+
     @if (notificationService.notifications().length === 0) {
       <div class="notif-empty">
         <i class="ti ti-bell-off"></i>
@@ -55,3 +71,4 @@
     </div>
   </div>
 }
+

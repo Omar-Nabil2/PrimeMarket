@@ -57,6 +57,11 @@
 
               <div class="card-footer">
                 <button
+                  class="btn btn-sm btn-outline-secondary me-2"
+                  (click)="openDetailsModal(request.brandId)">
+                  <i class="ti ti-info-circle me-1"></i>Details
+                </button>
+                <button
                   class="btn btn-sm btn-outline-danger me-2"
                   (click)="openConfirmModal('reject', request)"
                   [disabled]="(processingIds$ | async)?.has(request.brandId)">
@@ -86,7 +91,7 @@
 
   <!-- Confirmation Modal -->
   @if (confirmAction) {
-    <div class="modal-backdrop show"></div>
+  <div class="modal-backdrop show"></div>
     <div class="modal show d-block" tabindex="-1" role="dialog" style="display: block;">
       <div class="modal-dialog modal-dialog-centered" role="document">
         <div class="modal-content">
@@ -147,4 +152,96 @@
       </div>
     </div>
   }
+
+  <!-- Details Modal -->
+@if ((selectedDetails$ | async) !== null || (detailsLoading$ | async)) {
+  <div class="modal-backdrop show"></div>
+  <div class="modal show d-block" tabindex="-1" role="dialog">
+  <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg" role="document">
+      <div class="modal-content">
+
+        <div class="modal-header border-bottom-0">
+          <h5 class="modal-title">
+            <i class="ti ti-building-store text-danger me-2"></i>Seller Request Details
+          </h5>
+          <button type="button" class="btn-close" (click)="closeDetailsModal()"></button>
+        </div>
+
+        @if (detailsLoading$ | async) {
+          <div class="modal-body d-flex justify-content-center py-5">
+            <div class="spinner-border text-danger" role="status">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        } @else if (selectedDetails$ | async; as details) {
+          <div class="modal-body">
+
+            <!-- Applicant -->
+            <div class="details-section mb-4">
+              <h6 class="details-section-title">Applicant</h6>
+              <div class="applicant-row">
+                <img
+                  [src]="details.applicantProfilePicture || 'https://via.placeholder.com/48'"
+                  class="applicant-avatar"
+                  alt="applicant" />
+                <div>
+                  <p class="applicant-name mb-0">{{ details.applicantFullName }}</p>
+                  <p class="applicant-email text-muted small mb-0">{{ details.applicantEmail }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Brand Info -->
+            <div class="details-section mb-4">
+              <h6 class="details-section-title">Brand Info</h6>
+              <div class="brand-details-row">
+                <img
+                  [src]="details.logoUrl || 'https://via.placeholder.com/64'"
+                  class="details-brand-logo"
+                  alt="logo" />
+                <div>
+                  <p class="fw-semibold mb-1">{{ details.brandName }}</p>
+                  <p class="text-muted small mb-0">{{ details.description || 'No description provided' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Location -->
+            <div class="details-section mb-4">
+              <h6 class="details-section-title">Location</h6>
+              <div class="d-flex align-items-center justify-content-between mb-2">
+                <p class="info-value mb-0">
+                  <i class="ti ti-map-pin me-1 text-danger"></i>
+                  {{ details.street }}, {{ details.city }}, {{ details.country }}
+                </p>
+                <a
+                  [href]="getGoogleMapsUrl(details)"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-sm btn-outline-secondary">
+                  <i class="ti ti-brand-google-maps me-1"></i>Open in Google Maps
+                </a>
+              </div>
+              @if (details.latitude && details.longitude) {
+                <div id="seller-map" class="details-map"></div>
+              } @else {
+                <div class="no-map-placeholder text-muted small">
+                  <i class="ti ti-map-off me-1"></i>No coordinates provided
+                </div>
+              }
+            </div>
+
+          </div>
+
+          <div class="modal-footer border-top-0">
+            <button type="button" class="btn btn-secondary" (click)="closeDetailsModal()">
+              Close
+            </button>
+          </div>
+        }
+
+      </div>
+    </div>
+  </div>
+}
 </div>

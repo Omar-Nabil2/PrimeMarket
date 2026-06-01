@@ -1,0 +1,84 @@
+@if (loading()) {
+  <div class="hero hero--skeleton">
+    <div class="skeleton-content">
+      <div class="skeleton skeleton--badge"></div>
+      <div class="skeleton skeleton--title"></div>
+      <div class="skeleton skeleton--desc"></div>
+      <div class="skeleton skeleton--actions"></div>
+    </div>
+    <div class="skeleton-images">
+      @for (n of [1,2,3,4]; track n) {
+        <div class="skeleton skeleton--img"></div>
+      }
+    </div>
+  </div>
+} @else {
+  <section class="hero">
+    @for (slide of slides(); track slide.colorClass; let i = $index) {
+      <div
+        class="hero__slide"
+        [class]="slide.colorClass"
+        [class.hero__slide--active]="i === current()"
+      >
+        <div class="hero__content">
+          <span class="hero__badge">{{ slide.badge }}</span>
+          <h1 class="hero__title">
+            {{ slide.title }}
+            <span class="hero__highlight">{{ slide.highlight }}</span>
+            {{ slide.titleAfter }}
+          </h1>
+          <p class="hero__desc">{{ slide.description }}</p>
+          <div class="hero__actions">
+            <a [routerLink]="slide.primaryRoute" class="btn btn--primary">
+              {{ slide.primaryBtn }} →
+            </a>
+            <a [routerLink]="slide.secondaryRoute" class="btn btn--secondary">
+              {{ slide.secondaryBtn }}
+            </a>
+          </div>
+        </div>
+
+        <div class="hero__images">
+          @if (slide.images.length > 0) {
+            @for (img of slide.images; track img) {
+              <div class="hero__img-wrap">
+                <img [src]="img" alt="" loading="lazy" />
+              </div>
+            }
+          } @else {
+            <div class="hero__img-placeholder">🛍️</div>
+          }
+        </div>
+      </div>
+    }
+
+    <button class="hero__arrow hero__arrow--prev" (click)="prev()" aria-label="Previous slide">‹</button>
+    <button class="hero__arrow hero__arrow--next" (click)="next()" aria-label="Next slide">›</button>
+
+    <div class="hero__dots">
+      @for (i of dots(); track i) {
+        <button
+          class="hero__dot"
+          [class.hero__dot--active]="i === current()"
+          (click)="goTo(i)"
+          [attr.aria-label]="'Slide ' + (i + 1)"
+        ></button>
+      }
+    </div>
+  </section>
+}
+
+<!-- ↓ promo strip always visible below the hero, outside the @if -->
+<div class="promo-strip">
+  @for (item of promoItems; track item.label) {
+    <div class="promo-strip__item">
+      <div class="promo-strip__icon">
+        <i class="ti {{ item.icon }}"></i>
+      </div>
+      <div>
+        <p class="promo-strip__label">{{ item.label }}</p>
+        <p class="promo-strip__sub">{{ item.sub }}</p>
+      </div>
+    </div>
+  }
+</div>

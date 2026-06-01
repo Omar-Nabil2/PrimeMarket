@@ -6,6 +6,7 @@ import { Observable } from 'rxjs';
 import { IBrandDetails } from '../Models/Brands/ibrand-details';
 import { IBecomeSelerRequest } from '../Models/Brands/ibecome-seler-request';
 import { ISellerRequest } from '../Models/Brands/iseller-request';
+import { ISellerRequestDetails } from '../Models/Brands/iseller-request-details';
 
 @Injectable({
   providedIn: 'root',
@@ -48,5 +49,8 @@ export class IBrandService {
 
   rejectSeller(brandId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${brandId}/reject`);
+  }
+  getSellerRequestDetails(brandId: number): Observable<ISellerRequestDetails> {
+    return this.http.get<ISellerRequestDetails>(`${this.apiUrl}/${brandId}/details`);
   }
 }

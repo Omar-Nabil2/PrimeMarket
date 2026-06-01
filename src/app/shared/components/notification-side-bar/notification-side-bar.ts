@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/cor
 import { NotificationService } from '../../Services/notification-service';
 import { Inotification } from '../../Models/Common/inotification';
 import { DatePipe } from '@angular/common';
+import { AuthService } from '../../Services/auth.service';
 
 @Component({
   selector: 'app-notification-side-bar',
@@ -12,6 +13,7 @@ import { DatePipe } from '@angular/common';
 })
 export class NotificationSideBar {
   notificationService = inject(NotificationService);
+  authService = inject(AuthService);
   isOpen = signal(false);
   selectedNotification = signal<Inotification | null>(null);
 
@@ -28,5 +30,17 @@ export class NotificationSideBar {
 
   markAllAsRead() {
     this.notificationService.markAllAsRead().subscribe();
+  }
+
+  activateSeller(): void {
+    this.authService.refreshToken().subscribe({
+      next: () => {
+        window.location.href = '/seller-dashboard';
+      },
+      error: () => {
+        this.authService.logout();
+        window.location.href = '/auth/login';
+      }
+    });
   }
 }

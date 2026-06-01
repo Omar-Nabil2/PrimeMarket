@@ -13,6 +13,7 @@ import { Inotification } from '../Models/Common/inotification';
 export class NotificationService {
   private readonly apiUrl = `${environment.apiUrl}/api/notification`;
   private hub!: HubConnection;
+  roleUpgraded = signal(false);
 
   notifications = signal<Inotification[]>([]);
   unreadCount = computed(() => this.notifications().filter(n => !n.isRead).length);
@@ -20,8 +21,7 @@ export class NotificationService {
   constructor(private http: HttpClient, private authService: AuthService) {}
 
   connect(): void {
-    const token = this.authService.getToken();
-    if (!token) return;
+    if (!this.authService.isAuthenticated()) return;
 
     this.hub = new HubConnectionBuilder()
       .withUrl(`${environment.apiUrl}/hubs/notifications`, {
@@ -32,6 +32,10 @@ export class NotificationService {
 
     this.hub.on('ReceiveNotification', (notification: Inotification) => {
       this.notifications.update(list => [notification, ...list]);
+    });
+
+    this.hub.on('RoleUpdated', () => {
+      this.roleUpgraded.set(true);
     });
 
     this.hub.start()

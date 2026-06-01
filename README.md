@@ -14,7 +14,7 @@
 A reactive, multi-role single-page application for a modern e-commerce marketplace.
 Built as a capstone project for the **ITI Professional Development & BI-infused CRM** track.
 
-[GitHub — Backend](https://github.com/iibrahimshaban/PrimeMarket.git) · [Live Demo](#) · [Demo Video](#) · [Documentation](#)
+[GitHub — Backend](https://github.com/iibrahimshaban/PrimeMarket.git) · [Live Demo](https://primemarket-hub.netlify.app/) · [Demo Video](https://drive.google.com/drive/folders/10MTw88EuSTDAkqmA8uTsj0_GNZw7rPj4?usp=sharing) · [Documentation](https://drive.google.com/drive/folders/10MTw88EuSTDAkqmA8uTsj0_GNZw7rPj4?usp=sharing)
 
 </div>
 
@@ -381,8 +381,8 @@ src/
 | Code | Name | Contribution |
 |---|---|---|
 | 6 | **Ibrahim Khaled** | Home page · Product browsing · Cart · Wishlist · Checkout (Stripe) · Order history · Order confirmation |
-| 17 | **Mohamed ElMassry** | Seller dashboard · Product management · Seller orders · Inventory · Promo codes · Route guards · Seller onboarding |
-| 20 | **Omar Nabil** | Admin dashboard · Auth pages · JWT interceptor · SignalR notifications · User management · Category management · Auth/guest/role guards |
+| 15 | **Mohamed ElMassry** | Seller dashboard · Product management · Seller orders · Inventory · Promo codes · Route guards · Seller onboarding |
+| 24 | **Omar Nabil** | Admin dashboard · Auth pages · JWT interceptor · SignalR notifications · User management · Category management · Auth/guest/role guards |
 
 ---
 
@@ -391,14 +391,14 @@ src/
 | Resource | Link |
 |---|---|
 | Backend Repository | [github.com/iibrahimshaban/PrimeMarket](https://github.com/iibrahimshaban/PrimeMarket.git) |
-| Live Frontend | _Coming soon_ |
-| Live API | _Coming soon_ |
-| Demo Video | _Coming soon_ |
+| Live Frontend |https://primemarket-hub.netlify.app/ |
+| Live API |  https://primemarket.runasp.net/swagger/index.html |
+| Demo Video | https://drive.google.com/drive/folders/10MTw88EuSTDAkqmA8uTsj0_GNZw7rPj4?usp=sharing |
 
 ---
 
 <div align="center">
 
-Made with ❤️ by the PrimeMarket team · ITI 2024/2025
+Made with ❤️ by the PrimeMarket team · ITI 2026
 
 </div>

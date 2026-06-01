@@ -19,77 +19,80 @@
   </div>
 
   <div class="main-bar">
-    <div class="brand">
-      <img src="Logo.jpg" alt="logo" />
-      <div>
-        <span class="brand-name">PrimeMarket</span>
-        <span class="brand-tagline">Your Online Store</span>
-      </div>
-    </div>
+  <i class="ti ti-menu-2" style="font-size: 20px; cursor: pointer; flex-shrink:0;"
+     (click)="toggleSidebar()"></i>
 
-    <div class="search-bar">
-      <div class="input-wrapper">
-        <input
-          #searchInput
-          type="text"
-          placeholder="Search for items..."
-          (input)="onSearch($any($event.target).value)"
-        />
-        @if (searchInput.value) {
-          <button class="clear-btn" (click)="onClear(searchInput)">
-            <i class="ti ti-x"></i>
+  <a class="brand" routerLink="/">
+    <img src="Logo.jpg" alt="logo" />
+    <div>
+      <span class="brand-name">PrimeMarket</span>
+      <span class="brand-tagline">Your Online Store</span>
+    </div>
+  </a>
+
+  <!-- Desktop search (hidden on mobile) -->
+  <div class="search-bar">
+    <div class="input-wrapper">
+      <input
+        #searchInput
+        type="text"
+        placeholder="Search for items..."
+        (input)="onSearch($any($event.target).value)"
+      />
+      @if (searchInput.value) {
+        <button class="clear-btn" (click)="onClear(searchInput)">
+          <i class="ti ti-x"></i>
+        </button>
+      }
+    </div>
+    <select (change)="onCategoryChange($any($event.target).value)">
+      <option value="">All Categories</option>
+      @for (cat of (categories$ | async) ?? []; track cat.id) {
+        <option [value]="cat.id">{{ cat.name }}</option>
+      }
+    </select>
+    <button><i class="ti ti-search"></i></button>
+  </div>
+
+  <!-- Mobile search toggle (visible on mobile only) -->
+  <button class="search-toggle-btn" (click)="toggleMobileSearch()"
+          aria-label="Toggle search">
+    <i class="ti ti-search"></i>
+  </button>
+
+  <div class="actions">
+    @if (!isAuthenticated) {
+      <a routerLink="/auth" class="login-link">
+        <i class="ti ti-login"></i>
+        <span>Login</span>
+      </a>
+    }
+    @if (isAuthenticated) {
+      <div class="auth-actions">
+        <div class="dropdown">
+          <button class="user-button dropdown-toggle" type="button"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="ti ti-user"></i>
+            <span class="user-name">{{ getFullName() }}</span>
+            <i class="ti ti-chevron-down"></i>
           </button>
-        }
-      </div>
-      <select (change)="onCategoryChange($any($event.target).value)">
-        <option value="">All Categories</option>
-        @if (categories$ | async; as categories) {
-          @for (cat of categories; track cat.id) {
-            <option [value]="cat.id">{{ cat.name }}</option>
-          }
-        }
-      </select>
-      <button><i class="ti ti-search"></i></button>
-    </div>
-
-    <div class="actions">
-      <!-- Not Authenticated View -->
-      @if (!isAuthenticated) {
-        <a routerLink="/auth" class="login-link">
-          <i class="ti ti-login"></i> Login
-        </a>
-      }
-
-      <!-- Authenticated View -->
-      @if (isAuthenticated) {
-        <div class="auth-actions">
-          <!-- User Menu Dropdown (Bootstrap) -->
-          <div class="dropdown">
-            <button class="user-button dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="ti ti-user"></i>
-              <span class="user-name">{{ getFullName() }}</span>
-              <i class="ti ti-chevron-down"></i>
-            </button>
-            <ul class="dropdown-menu dropdown-menu-end custom-dropdown-menu">
-              <li>
-                <a class="dropdown-item" routerLink="/auth/account">
-                  <i class="ti ti-user"></i> Account
-                </a>
-              </li>
-              <li><hr class="dropdown-divider"></li>
-              <li>
-                <button (click)="logout()" class="dropdown-item logout-item">
-                  <i class="ti ti-logout"></i> Logout
-                </button>
-              </li>
-            </ul>
-          </div>
+          <ul class="dropdown-menu dropdown-menu-end custom-dropdown-menu">
+            <li>
+              <a class="dropdown-item" routerLink="/auth/account">
+                <i class="ti ti-user"></i> Account
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <button (click)="logout()" class="dropdown-item logout-item">
+                <i class="ti ti-logout"></i> Logout
+              </button>
+            </li>
+          </ul>
         </div>
-      }
 
-      @if (isAuthenticated) {
         <button class="notif-bell-btn" (click)="notifSidebar.open()">
-          <i class="ti ti-bell"></i>
+          <i class="ti ti-bell" style="font-size:20px;"></i>
           @if (notificationService.unreadCount() > 0) {
             <span class="wishlist-badge">{{ notificationService.unreadCount() }}</span>
           }
@@ -97,25 +100,48 @@
 
         <app-notification-side-bar #notifSidebar />
 
-        <a routerLink="/wishlist" style="position: relative;">
-          <i class="ti ti-heart"></i> Wishlist
-          @if (wishlistCount$ | async; as count) {
-            @if (count > 0) {
-              <span class="wishlist-badge">{{ count }}</span>
-            }
+        <a routerLink="/wishlist" style="position:relative; font-size:0;">
+          <i class="ti ti-heart" style="font-size:20px;"></i>
+          @if ((wishlistCount$ | async) ?? 0; as count) {
+            @if (count > 0) { <span class="wishlist-badge">{{ count }}</span> }
           }
         </a>
-        <a routerLink="/cart" style="position: relative;">
-          <i class="ti ti-shopping-cart"></i> Cart
-          @if (cartCount$ | async; as count) {
-            @if (count > 0) {
-              <span class="wishlist-badge">{{ count }}</span>
-            }
+        <a routerLink="/cart" style="position:relative; font-size:0;">
+          <i class="ti ti-shopping-cart" style="font-size:20px;"></i>
+          @if ((cartCount$ | async) ?? 0; as count) {
+            @if (count > 0) { <span class="wishlist-badge">{{ count }}</span> }
           }
         </a>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- Mobile search row (toggled) -->
+<div class="mobile-search-row" [class.open]="isMobileSearchOpen">
+  <div class="search-bar">
+    <div class="input-wrapper">
+      <input
+        #mobileSearchInput
+        type="text"
+        placeholder="Search for items..."
+        (input)="onSearch($any($event.target).value)"
+      />
+      @if (mobileSearchInput.value) {
+        <button class="clear-btn" (click)="onClear(mobileSearchInput)">
+          <i class="ti ti-x"></i>
+        </button>
       }
     </div>
+    <select (change)="onCategoryChange($any($event.target).value)">
+      <option value="">All Categories</option>
+      @for (cat of (categories$ | async) ?? []; track cat.id) {
+        <option [value]="cat.id">{{ cat.name }}</option>
+      }
+    </select>
+    <button><i class="ti ti-search"></i></button>
   </div>
+</div>
   @if (isSidebarOpen) {
   <div class="sidebar-overlay" (click)="closeSidebar()"></div>
 }

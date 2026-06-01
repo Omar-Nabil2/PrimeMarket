@@ -114,5 +114,10 @@ export class Navbar implements OnInit {
     input.value = '';
     this.homeService.search('');
   }
+  isMobileSearchOpen = false;
+
+  toggleMobileSearch() {
+    this.isMobileSearchOpen = !this.isMobileSearchOpen;
+  }
 
 }

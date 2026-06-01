@@ -293,3 +293,94 @@
 
 .promo-strip__label { font-size: 13px; font-weight: 600; color: #111; margin: 0; }
 .promo-strip__sub   { font-size: 12px; color: #888; margin: 0; }
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (max-width: 640px) {
+
+  /* Hero */
+  .hero {
+    height: auto;
+    min-height: 340px;
+  }
+
+  .hero__slide {
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 40px 20px 64px;
+    gap: 24px;
+  }
+
+  .hero__title {
+    font-size: 24px;
+  }
+
+  .hero__desc {
+    font-size: 14px;
+    margin-bottom: 20px;
+  }
+
+  .hero__badge {
+    font-size: 10px;
+    margin-bottom: 12px;
+  }
+
+  /* Show image grid full-width, single image only */
+  .hero__images {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+    width: 100%;
+    height: 180px;
+  }
+
+  .hero__img-wrap:not(:first-child) {
+    display: none;
+  }
+
+  .hero__img-placeholder {
+    width: 100%;
+    height: 160px;
+    font-size: 48px;
+  }
+
+  /* Arrows */
+  .hero__arrow {
+    width: 34px;
+    height: 34px;
+    font-size: 16px;
+  }
+
+  .hero__arrow--prev { left: 8px; }
+  .hero__arrow--next { right: 8px; }
+
+  /* Skeleton */
+  .hero--skeleton {
+    height: auto;
+    min-height: 280px;
+    padding: 40px 20px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .skeleton-images { display: none; }
+
+  .skeleton--title  { width: 100%; max-width: 260px; }
+  .skeleton--desc   { width: 100%; max-width: 300px; }
+  .skeleton--actions { width: 200px; }
+
+  /* Promo strip — stack into 2-column grid */
+  .promo-strip {
+    flex-wrap: wrap;
+  }
+
+  .promo-strip__item {
+    flex: 1 1 50%;
+    border-right: none;
+    border-bottom: 1px solid #f0f0f0;
+  }
+
+  .promo-strip__item:nth-last-child(-n+2) {
+    border-bottom: none;
+  }
+}

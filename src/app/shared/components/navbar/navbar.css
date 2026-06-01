@@ -405,3 +405,101 @@ header {
 .notif-bell-btn .ti-bell {
   font-size: 20px;
 }
+/* ── Mobile search toggle ─────────────────────────────── */
+.search-toggle-btn {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #333;
+  font-size: 20px;
+  padding: 4px;
+  transition: color 0.2s;
+}
+
+.search-toggle-btn:hover { color: #e74c3c; }
+
+.mobile-search-row {
+  display: none;
+  padding: 10px 16px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.mobile-search-row.open {
+  display: flex;
+}
+
+.mobile-search-row .search-bar {
+  max-width: 100%;
+  width: 100%;
+  flex: 1;
+}
+
+/* ── Responsive header ────────────────────────────────── */
+@media (max-width: 1000px) {
+
+  /* Hide top bar entirely */
+  .top-bar { display: none; }
+
+  /* Main bar */
+  .main-bar {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  /* Hide desktop search bar */
+  .main-bar .search-bar { display: none; }
+
+  /* Show search icon button */
+  .search-toggle-btn { display: flex; }
+
+  /* Brand: smaller */
+  .brand { min-width: unset; }
+
+  .brand img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .brand-name  { font-size: 15px; }
+  .brand-tagline { display: none; }
+
+  /* Actions: tighten, hide labels */
+  .actions { gap: 16px; }
+
+  .action-label { display: none; }
+
+  /* Hide "Login" text, keep icon */
+  .login-link span,
+  .login-link + span { display: none; }
+
+  /* User button: icon only */
+  .user-name { display: none; }
+
+  .user-button {
+    padding: 6px 10px;
+    gap: 0;
+  }
+
+  /* Hide chevron on mobile */
+  .user-button .ti-chevron-down { display: none; }
+
+  /* Hide Wishlist / Cart labels */
+  .actions a .action-label,
+  .actions > a {
+    font-size: 0; /* hides text but keeps icon */
+    gap: 0;
+  }
+
+  .actions > a i,
+  .actions > a .ti-heart,
+  .actions > a .ti-shopping-cart {
+    font-size: 20px;
+  }
+
+  /* Mobile search row */
+  .mobile-search-row {
+    padding: 10px 16px;
+    border-top: 1px solid #f0f0f0;
+  }
+}

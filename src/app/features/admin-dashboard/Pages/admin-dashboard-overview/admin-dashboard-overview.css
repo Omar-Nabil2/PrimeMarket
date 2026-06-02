@@ -179,12 +179,14 @@
 }
 
 .table-wrap {
-  overflow-x: auto;
+  overflow: hidden;
+  width: 100%;
 }
 
 table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;
 }
 
 th,
@@ -193,6 +195,8 @@ td {
   text-align: left;
   border-bottom: 1px solid #e2e8f0;
   vertical-align: top;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 th {
@@ -215,6 +219,7 @@ tbody tr:hover {
 .inline-value {
   color: #64748b;
   font-size: 13px;
+  overflow-wrap: anywhere;
 }
 
 .status-chip {
@@ -504,6 +509,10 @@ tbody tr:hover {
   .quick-links {
     grid-template-columns: 1fr;
   }
+
+  .panel--wide {
+    overflow: hidden;
+  }
 }
 
 @media (max-width: 768px) {
@@ -518,6 +527,19 @@ tbody tr:hover {
 
   .metric-grid {
     grid-template-columns: 1fr;
+  }
+
+  .table-wrap {
+    overflow: hidden;
+  }
+
+  table {
+    table-layout: auto;
+  }
+
+  th,
+  td {
+    padding: 12px 10px;
   }
 
   .panel {

@@ -21,18 +21,29 @@
         placeholder="Search users by email, name, or username..."
       />
     </div>
-    <div class="stats">
-      <div class="stat-item">
-        <span class="stat-label">Total Users</span>
-        <span class="stat-value">{{ users.length }}</span>
+    <div class="stats-and-pagination">
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">Total Users</span>
+          <span class="stat-value">{{ users.length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Active</span>
+          <span class="stat-value">{{ users.filter(u => !u.isDisabled).length }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Inactive</span>
+          <span class="stat-value">{{ users.filter(u => u.isDisabled).length }}</span>
+        </div>
       </div>
-      <div class="stat-item">
-        <span class="stat-label">Active</span>
-        <span class="stat-value">{{ users.filter(u => !u.isDisabled).length }}</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-label">Inactive</span>
-        <span class="stat-value">{{ users.filter(u => u.isDisabled).length }}</span>
+
+      <div class="page-size-control">
+        <label for="userPageSize">Rows per page</label>
+        <select id="userPageSize" class="page-size-select" [value]="pageSize" (change)="onPageSizeChange($any($event.target).value)">
+          @for (size of pageSizeOptions; track size) {
+            <option [value]="size">{{ size }}</option>
+          }
+        </select>
       </div>
     </div>
   </div>
@@ -61,7 +72,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of filteredUsers" [class.inactive]="user.isDisabled">
+        <tr *ngFor="let user of paginatedUsers" [class.inactive]="user.isDisabled">
           <td class="user-cell">
             <div class="user-info">
               <div>
@@ -101,6 +112,32 @@
         </tr>
       </tbody>
     </table>
+
+    <div *ngIf="!isLoading && filteredUsers.length > 0 && totalPages > 1" class="pagination-container">
+      <div class="pagination-info">
+        Showing <strong>{{ startItemIndex }}</strong> to <strong>{{ endItemIndex }}</strong> of <strong>{{ totalUsers }}</strong> users
+      </div>
+
+      <div class="pagination-controls">
+        <button type="button" class="btn btn-outline-danger btn-sm pagination-btn pagination-btn--arrow" (click)="previousPage()" [disabled]="currentPage === 1" aria-label="Previous page">
+          <i class="ti ti-chevron-left"></i>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-outline-danger btn-sm pagination-btn"
+          *ngFor="let page of pageNumbers(); trackBy: trackByPage"
+          [class.pagination-btn--active]="page === currentPage"
+          (click)="onPageChange(page)"
+        >
+          {{ page }}
+        </button>
+
+        <button type="button" class="btn btn-outline-danger btn-sm pagination-btn pagination-btn--arrow" (click)="nextPage()" [disabled]="currentPage === totalPages" aria-label="Next page">
+          <i class="ti ti-chevron-right"></i>
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Add User Modal -->

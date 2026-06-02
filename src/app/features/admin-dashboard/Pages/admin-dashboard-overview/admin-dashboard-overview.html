@@ -1,4 +1,236 @@
-<div class="overview-container">
-  <h2>Dashboard Overview</h2>
-  <p>Welcome to the Admin Dashboard. Manage your platform here.</p>
+<div class="overview-shell">
+  <section class="overview-header">
+    <div>
+      <p class="eyebrow">Admin dashboard overview</p>
+      <h1>Live operational snapshot</h1>
+      <p class="overview-summary">
+        A compact summary of the main admin activity across orders, catalog, users, and seller requests.
+      </p>
+    </div>
+
+    <div class="overview-header__actions">
+      <button type="button" class="refresh-button" (click)="refreshOverview()" [disabled]="loading()">
+        @if (loading()) {
+          <span class="spinner" aria-hidden="true"></span>
+        }
+        <span>Refresh</span>
+      </button>
+
+      <div class="mini-meta">
+        <span>Last updated</span>
+        <strong>{{ lastUpdated() ? (lastUpdated() | date: 'short') : 'Waiting for first refresh' }}</strong>
+      </div>
+    </div>
+  </section>
+
+  @if (loading()) {
+    <div class="loading-banner" role="status" aria-live="polite">
+      Loading admin data...
+    </div>
+  }
+
+  <section class="metric-grid" aria-label="Core admin metrics">
+    @for (card of metricCards(); track card.label) {
+      <app-stats-card
+        [label]="card.label"
+        [value]="card.value"
+        [icon]="card.icon"
+        [color]="card.color"
+        [sublabel]="card.sublabel"
+      />
+    }
+  </section>
+
+  <section class="content-grid">
+    <article class="panel panel--wide">
+      <div class="panel-header">
+        <div>
+          <p class="section-label">Recent orders</p>
+          <h2>Latest order activity</h2>
+        </div>
+        <a routerLink="/admin-dashboard/orders" class="panel-link">View all</a>
+      </div>
+
+      @if (recentOrders().length) {
+        <div class="table-wrap" role="region" aria-label="Recent orders table">
+          <table>
+            <thead>
+              <tr>
+                <th scope="col">Order</th>
+                <th scope="col">Customer</th>
+                <th scope="col">Seller(s)</th>
+                <th scope="col">Status</th>
+                <th scope="col">Total</th>
+                <th scope="col">Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (order of recentOrders(); track order.orderId) {
+                <tr>
+                  <td>
+                    <div class="cell-title">#{{ order.orderId }}</div>
+                    <div class="cell-subtitle">{{ order.paymentMethod }}</div>
+                  </td>
+                  <td>
+                    <div class="cell-title">{{ order.customerUserName }}</div>
+                    <div class="cell-subtitle">{{ order.customerEmail }}</div>
+                  </td>
+                  <td>
+                    <span class="inline-value">{{ getSellerName(order) }}</span>
+                  </td>
+                  <td>
+                    <span
+                      class="status-chip"
+                      [class.status-chip--pending]="order.status === 'Pending'"
+                      [class.status-chip--confirmed]="order.status === 'Confirmed'"
+                      [class.status-chip--shipped]="order.status === 'Shipped'"
+                      [class.status-chip--delivered]="order.status === 'Delivered'"
+                      [class.status-chip--cancelled]="order.status === 'Cancelled'"
+                    >
+                      {{ order.status }}
+                    </span>
+                  </td>
+                  <td>{{ order.totalAmount | currency : 'EGP' : 'symbol' : '1.0-0' }}</td>
+                  <td>{{ order.orderDate | date : 'mediumDate' }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      } @else {
+        <p class="empty-state">No admin orders are available yet.</p>
+      }
+    </article>
+
+    <aside class="panel panel--status">
+      <div class="panel-header">
+        <div>
+          <p class="section-label">Order status mix</p>
+          <h2>Fulfillment breakdown</h2>
+        </div>
+      </div>
+
+      <div class="status-list">
+        @for (item of statusBreakdown(); track item.label) {
+          <div class="status-row">
+              <div class="status-row__heading">
+              <span
+                class="status-dot"
+                [class.status-dot--pending]="item.tone === 'pending'"
+                [class.status-dot--confirmed]="item.tone === 'confirmed'"
+                [class.status-dot--shipped]="item.tone === 'shipped'"
+                [class.status-dot--delivered]="item.tone === 'delivered'"
+                [class.status-dot--cancelled]="item.tone === 'cancelled'"
+              ></span>
+              <span>{{ item.label }}</span>
+            </div>
+            <strong>{{ item.count }}</strong>
+          </div>
+          <div class="progress-bar" [attr.aria-label]="item.label + ' orders'">
+            <span
+              class="progress-bar__fill"
+              [class.progress-bar__fill--pending]="item.tone === 'pending'"
+              [class.progress-bar__fill--confirmed]="item.tone === 'confirmed'"
+              [class.progress-bar__fill--shipped]="item.tone === 'shipped'"
+              [class.progress-bar__fill--delivered]="item.tone === 'delivered'"
+              [class.progress-bar__fill--cancelled]="item.tone === 'cancelled'"
+              [style.width.%]="item.percent"
+            ></span>
+          </div>
+          <p class="status-percent">{{ item.percent }}% of orders</p>
+        }
+      </div>
+
+      <div class="summary-card">
+        <p class="summary-card__label">Seller requests</p>
+        <strong>{{ sellerRequests().length }}</strong>
+        <span>Pending applications from brands</span>
+      </div>
+    </aside>
+  </section>
+
+  <section class="content-grid content-grid--secondary">
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="section-label">Recent products</p>
+          <h2>Newest catalog items</h2>
+        </div>
+        <a routerLink="/admin-dashboard/products" class="panel-link">View all</a>
+      </div>
+
+      @if (recentProducts().length) {
+        <div class="list-stack">
+          @for (product of recentProducts(); track product.id) {
+            <div class="list-card">
+              <div class="list-card__badge">
+                {{ product.name.slice(0, 1).toUpperCase() }}
+              </div>
+              <div class="list-card__body">
+                <div class="list-card__topline">
+                  <h3>{{ product.name }}</h3>
+                  <span
+                    class="status-chip"
+                    [class.status-chip--delivered]="product.stock > 0"
+                    [class.status-chip--cancelled]="product.stock <= 0"
+                  >
+                    {{ product.stock > 0 ? 'In stock' : 'Out of stock' }}
+                  </span>
+                </div>
+                <p>{{ product.sellerName }}</p>
+                <div class="list-card__meta">
+                  <span>{{ product.price | currency : 'EGP' : 'symbol' : '1.0-0' }}</span>
+                  <span>{{ product.stock }} available</span>
+                  <span>Rating {{ product.averageRating | number : '1.0-1' }}</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">No products are available yet.</p>
+      }
+    </article>
+
+    <article class="panel">
+      <div class="panel-header">
+        <div>
+          <p class="section-label">Seller requests</p>
+          <h2>Pending applications</h2>
+        </div>
+        <a routerLink="/admin-dashboard/seller-requests" class="panel-link">Review queue</a>
+      </div>
+
+      @if (sellerRequests().length) {
+        <div class="list-stack">
+          @for (request of sellerRequests().slice(0, 5); track request.brandId) {
+            <div class="request-card">
+              <div class="request-card__brand">{{ request.brandName.slice(0, 1).toUpperCase() }}</div>
+              <div class="request-card__body">
+                <h3>{{ request.brandName }}</h3>
+                <p>{{ request.location }}</p>
+                <span>{{ request.description || 'No description provided' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <p class="empty-state">There are no pending seller requests right now.</p>
+      }
+    </article>
+  </section>
+
+  <section class="quick-links">
+    @for (link of quickLinks; track link.route) {
+      <a class="quick-link" [routerLink]="link.route">
+        <span class="quick-link__icon">
+          <i class="ti" [class]="'ti ' + link.icon"></i>
+        </span>
+        <span class="quick-link__copy">
+          <strong>{{ link.label }}</strong>
+          <span>{{ link.description }}</span>
+        </span>
+      </a>
+    }
+  </section>
 </div>

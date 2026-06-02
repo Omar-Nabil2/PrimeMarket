@@ -16,6 +16,9 @@ import { UserService, User, CreateUserRequest, UpdateUserRequest } from '../../.
 export class AdminUsers implements OnInit, OnDestroy {
   users: User[] = [];
   filteredUsers: User[] = [];
+  pageSize = 10;
+  pageSizeOptions = [5, 10, 20, 50];
+  currentPage = 1;
   isLoading = false;
   searchTerm = '';
   selectedUser: User | null = null;
@@ -55,6 +58,28 @@ export class AdminUsers implements OnInit, OnDestroy {
     this.loadUsers();
   }
 
+  get totalUsers(): number {
+    return this.filteredUsers.length;
+  }
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.totalUsers / this.pageSize));
+  }
+
+  get paginatedUsers(): User[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredUsers.slice(start, start + this.pageSize);
+  }
+
+  get startItemIndex(): number {
+    if (this.totalUsers === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get endItemIndex(): number {
+    return Math.min(this.currentPage * this.pageSize, this.totalUsers);
+  }
+
   loadUsers(): void {
     this.isLoading = true;
     this.userService
@@ -64,6 +89,7 @@ export class AdminUsers implements OnInit, OnDestroy {
         next: (data) => {
           this.users = data;
           this.filteredUsers = data;
+          this.currentPage = 1;
           this.isLoading = false;
           this.cdr.detectChanges();
         },
@@ -87,6 +113,60 @@ export class AdminUsers implements OnInit, OnDestroy {
           user.lastName.toLowerCase().includes(term) ||
           (user.userName && user.userName.toLowerCase().includes(term))
       );
+    }
+
+    this.currentPage = 1;
+    this.ensureCurrentPageInRange();
+  }
+
+  onPageSizeChange(value: string): void {
+    this.pageSize = Number(value) || 10;
+    this.currentPage = 1;
+    this.cdr.detectChanges();
+  }
+
+  onPageChange(page: number): void {
+    this.currentPage = Math.min(Math.max(page, 1), this.totalPages);
+    this.cdr.detectChanges();
+  }
+
+  previousPage(): void {
+    if (this.currentPage > 1) {
+      this.onPageChange(this.currentPage - 1);
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.onPageChange(this.currentPage + 1);
+    }
+  }
+
+  pageNumbers(maxVisible = 5): number[] {
+    const total = this.totalPages;
+    const current = this.currentPage;
+    const half = Math.floor(maxVisible / 2);
+    let start = Math.max(1, current - half);
+    let end = Math.min(total, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    const pages: number[] = [];
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    return pages;
+  }
+
+  trackByPage(_: number, page: number): number {
+    return page;
+  }
+
+  private ensureCurrentPageInRange(): void {
+    if (this.currentPage > this.totalPages) {
+      this.currentPage = this.totalPages;
     }
   }
 
